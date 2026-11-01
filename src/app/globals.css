@@ -1,26 +1,561 @@
 @import "tailwindcss";
 
+/*
+ * Departures design tokens.
+ * Every colour that changes between dark and light mode is a variable on <html data-mode>.
+ * Components use the Tailwind names below (bg-board, text-on-board…) and never raw hex values.
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Accent: the LED colour. "ink" is a darker shade for text on light backgrounds. */
+  --accent: #bfe6ff;
+  --accent-ink: #1d5a86;
+  --accent-glow: rgba(191, 230, 255, 0.55);
+
+  --ink: #141517;
+  --paper: #f7f7f3;
+  --muted: #52565d;
+  --label: #5e636b;
+  --rule: #c8cac3;
+  --danger: #b42318;
+
+  --header-h: 78px;
+  --stencil: var(--font-stencil-face), "Big Shoulders Stencil Display", Impact, sans-serif;
+  --sans: var(--font-body-face), "Familjen Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+[data-mode="dark"] {
+  --page: #ecede8;
+  --board: #141517;
+  --on-board: #ecede8;
+  --on-board-2: #c9cdd3;
+  --muted-board: #9ca1a9;
+  --rule-board: #2a2c30;
+  --row-hover: #1c1d20;
+  --line-strong: #3a3d42;
+  --dot-dim: #2b2d31;
+  --text-off: #4a4d53;
+  --knob: #2a2c30;
+  --led: var(--accent);
+  --led-glow: var(--accent-glow);
+  --led-white: #eef0f2;
+  --led-grey: #b9bec6;
+  --led-dim: #5a5e66;
+  --led-off: #26282b;
+  --soft-glow: rgba(238, 240, 242, 0.5);
+  --fill-accent: #ffffff;
+  --fill-accent-text: #141517;
+  --chip-line: transparent;
+  --outline-card: transparent;
+  color-scheme: dark;
+}
+
+[data-mode="light"] {
+  --page: #ffffff;
+  --board: #ffffff;
+  --on-board: #141517;
+  --on-board-2: #3a3e44;
+  --muted-board: #4b5057;
+  --rule-board: #bfc1ba;
+  --row-hover: #f4f5f2;
+  --line-strong: #979a94;
+  --dot-dim: #e2e3de;
+  --text-off: #868a91;
+  --knob: #e6e7e2;
+  --led: var(--accent-ink);
+  --led-glow: transparent;
+  --led-white: #141517;
+  --led-grey: #535860;
+  --led-dim: #8e929a;
+  --led-off: #edeeea;
+  --soft-glow: transparent;
+  --fill-accent: #141517;
+  --fill-accent-text: #ecede8;
+  --chip-line: #bcbeb7;
+  --outline-card: #bfc1ba;
+  color-scheme: light;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-page: var(--page);
+  --color-board: var(--board);
+  --color-on-board: var(--on-board);
+  --color-on-board-2: var(--on-board-2);
+  --color-muted-board: var(--muted-board);
+  --color-rule-board: var(--rule-board);
+  --color-row-hover: var(--row-hover);
+  --color-line-strong: var(--line-strong);
+  --color-knob: var(--knob);
+  --color-led: var(--led);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-muted: var(--muted);
+  --color-label: var(--label);
+  --color-rule: var(--rule);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--sans);
+  --font-stencil: var(--stencil);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--header-h) + 16px);
+  }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 18px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a {
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--led);
+    outline-offset: 3px;
+  }
+  @media (max-width: 1023px) {
+    :root {
+      --header-h: 64px;
+    }
+    body {
+      font-size: 17px;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Component styles sit in a layer so Tailwind utilities (hidden, lg:flex…) can still override them. */
+@layer components {
+  /* ---------- Boards: the dark (or white) panels ---------- */
+  .board {
+    background: var(--board);
+    color: var(--on-board);
+  }
+  .board a:hover {
+    color: var(--led);
+  }
+  /* In light mode, rounded cards get a thin edge so they don't vanish into the white page. */
+  .card-edge {
+    outline: 1px solid var(--outline-card);
+    outline-offset: -1px;
+  }
+  .chip-line {
+    box-shadow: inset 0 0 0 1px var(--chip-line);
+  }
+
+  /* ---------- LED lettering ---------- */
+  .led-text {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .led-col {
+    animation: led-on 0.18s steps(1, end) both;
+  }
+  @keyframes led-on {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .blink {
+    animation: blink 1.4s steps(2, jump-none) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.2;
+    }
+  }
+
+  /* ---------- Buttons: colour fills up from the bottom on hover ---------- */
+  .btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-family: var(--stencil);
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    transition:
+      color 0.35s cubic-bezier(0.65, 0, 0.35, 1),
+      border-color 0.35s;
+  }
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--fill);
+    transform: scaleY(0);
+    transform-origin: 50% 100%;
+    transition: transform 0.38s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .btn:hover::before,
+  .btn:focus-visible::before {
+    transform: scaleY(1);
+  }
+  .btn:hover,
+  .btn:focus-visible {
+    color: var(--fill-text) !important;
+    border-color: var(--fill) !important;
+  }
+  .btn-accent {
+    background: var(--accent);
+    color: var(--ink);
+    --fill: var(--fill-accent);
+    --fill-text: var(--fill-accent-text);
+  }
+  .btn-ink {
+    background: var(--ink);
+    color: var(--accent);
+    --fill: var(--accent);
+    --fill-text: var(--ink);
+  }
+  .btn-ghost {
+    border: 2px solid var(--line-strong);
+    color: var(--on-board);
+    font-weight: 800;
+    --fill: var(--on-board);
+    --fill-text: var(--board);
+  }
+  .btn-outline {
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    font-weight: 800;
+    --fill: var(--ink);
+    --fill-text: #ecede8;
+  }
+
+  /* ---------- Navigation ---------- */
+  .nav-item {
+    position: relative;
+    text-decoration: none;
+  }
+  .nav-item::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    background: var(--led);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s;
+  }
+  .nav-item:hover::after,
+  .nav-item[aria-current="page"]::after {
+    transform: scaleX(1);
+  }
+  .lang-off {
+    opacity: 0.45;
+    transition: opacity 0.2s;
+  }
+  .lang-off:hover {
+    opacity: 1;
+  }
+  .row-board {
+    transition: background-color 0.15s;
+  }
+  .row-board:hover {
+    background-color: var(--row-hover);
+  }
+  .row-go {
+    transition:
+      transform 0.2s,
+      color 0.2s;
+  }
+  .row-board:hover .row-go {
+    color: var(--led);
+    transform: translateX(4px);
+  }
+
+  /* Mode switch: the knob slides under the moon or the sun. */
+  .mode-switch {
+    transition: border-color 0.2s;
+  }
+  .mode-switch:hover {
+    border-color: var(--led);
+  }
+  .mode-knob {
+    transition: transform 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  [data-mode="light"] .mode-knob {
+    transform: translateX(36px);
+  }
+  .mode-moon {
+    fill: var(--led);
+  }
+  .mode-sun {
+    fill: var(--led-dim);
+  }
+  [data-mode="light"] .mode-moon {
+    fill: var(--led-dim);
+  }
+  [data-mode="light"] .mode-sun {
+    fill: var(--led);
+  }
+
+  .menu-row {
+    animation: menu-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* ---------- Scroll progress: the runway under the header and the back-to-top frame ----------
+ * Browsers with scroll-driven animations do it in CSS. Others (Firefox today) get --scroll
+ * from a small script, 0 at the top of the page and 1 at the bottom.
+ */
+.runway-fill {
+  transform: scaleX(var(--scroll, 0));
+  transform-origin: left;
+}
+.totop {
+  opacity: clamp(0, calc((var(--scroll, 0) - 0.07) * 20), 1);
+  visibility: visible;
+  transition: transform 0.25s;
+}
+.totop-dot {
+  fill: color-mix(
+    in srgb,
+    var(--led) calc(clamp(0, (var(--scroll, 0) - var(--t)) * 100000, 1) * 100%),
+    var(--line-strong)
+  );
+}
+.totop-arrow {
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.totop:hover .totop-arrow,
+.totop:focus-visible .totop-arrow {
+  transform: translate(-50%, -62%);
+}
+
+@supports (animation-timeline: scroll()) {
+  .runway-fill {
+    transform: scaleX(0);
+    animation: grow-x linear both;
+    animation-timeline: scroll(root block);
+  }
+  .totop {
+    opacity: 1;
+    animation: totop-in linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0% 12%;
+  }
+  .totop-dot {
+    fill: var(--line-strong);
+    animation: dot-on linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes totop-in {
+  0%,
+  60% {
+    opacity: 0;
+    transform: translateY(18px);
+    visibility: hidden;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+  }
+}
+@keyframes dot-on {
+  from {
+    fill: var(--line-strong);
+  }
+  to {
+    fill: var(--led);
+  }
+}
+
+/* ---------- Scroll reveals ----------
+ * Each animation finishes once the element is fully on screen, so content at the very end of a page
+ * is never left half-revealed.
+ * Modern browsers: driven by the element's position in the viewport, pure CSS.
+ * Others: <ScrollEffects> adds .no-sda to <html> and toggles .is-in when the element appears.
+ * Without JavaScript, nothing is hidden.
+ */
+@supports (animation-timeline: view()) {
+  .rv,
+  .rv-left,
+  .rv-wipe,
+  .rv-scale,
+  .rv-line,
+  .rv-flap {
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 90%;
+  }
+  .rv {
+    animation-name: rv-up;
+  }
+  .rv-left {
+    animation-name: rv-left;
+  }
+  .rv-wipe {
+    animation-name: rv-wipe;
+    animation-range: entry 10% entry 100%;
+  }
+  .rv-scale {
+    animation-name: rv-scale;
+    animation-range: entry 0% entry 100%;
+  }
+  .rv-line {
+    animation-name: rv-line;
+    transform-origin: left center;
+    animation-range: entry 20% entry 100%;
+  }
+  .rv-flap {
+    animation-name: rv-flap;
+    transform-origin: 50% 0;
+    animation-range: entry 0% entry 80%;
+  }
+}
+@keyframes rv-up {
+  from {
+    opacity: 0;
+    transform: translateY(48px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rv-left {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rv-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.2;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+@keyframes rv-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rv-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes rv-flap {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateX(-82deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Fallback: same moves as transitions, triggered once by IntersectionObserver. */
+.no-sda :is(.rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap) {
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+    clip-path 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.no-sda .rv:not(.is-in) {
+  opacity: 0;
+  transform: translateY(48px);
+}
+.no-sda .rv-left:not(.is-in) {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+.no-sda .rv-wipe:not(.is-in) {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0.2;
+}
+.no-sda .rv-scale:not(.is-in) {
+  opacity: 0;
+  transform: scale(0.92) translateY(30px);
+}
+.no-sda .rv-line:not(.is-in) {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.no-sda .rv-flap:not(.is-in) {
+  opacity: 0;
+  transform: perspective(900px) rotateX(-82deg);
+  transform-origin: 50% 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .no-sda :is(.rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap) {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  .totop {
+    opacity: 1;
+    visibility: visible;
+  }
 }
