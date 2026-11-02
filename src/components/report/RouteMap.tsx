@@ -24,7 +24,7 @@ const SIZES = {
 /**
  * A small dotted map of the route, CM → DE. The plane flies along the curve as you read the
  * page: at the top it's leaving Cameroon, at the bottom it has landed in Germany
- * (`.route-plane` in globals.css, driven by the page's scroll position).
+ * (`.route-plane`, moved by MotionEffects with the page's scroll position).
  */
 export function RouteMap({ size, label }: { size: keyof typeof SIZES; label: string }) {
   const { w, h, path, from, to, pitch } = SIZES[size];

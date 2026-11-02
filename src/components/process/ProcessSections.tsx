@@ -79,15 +79,12 @@ function StopArticle({ stop, index, text }: { stop: Stop; index: number; text: P
 /**
  * The four stops with the cockpit. Desktop: cockpit on the left (sticky), stops on the right.
  * Phones: the slim cockpit strip sticks under the header above the stops.
- * `data-scroll-progress` lets the Firefox fallback drive the cockpit.
+ * MotionEffects follows the scroll through `.proc` and drives the cockpit from it.
  */
 export function Stops({ text }: { text: ProcessContent }) {
   return (
     <section aria-label={text.stopsLabel} className={`${container} lg:pt-5`}>
-      <div
-        data-scroll-progress
-        className="proc relative mt-2.5 lg:mt-17.5 lg:grid lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-18"
-      >
+      <div className="proc relative mt-2.5 lg:mt-17.5 lg:grid lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-18">
         <div className="hidden lg:block">
           <Cockpit text={text} />
         </div>

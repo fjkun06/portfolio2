@@ -46,7 +46,7 @@ describe("<Stops>", () => {
       expect(screen.getByText(s.me)).toBeInTheDocument();
       expect(screen.getByText(s.get)).toBeInTheDocument();
     }
-    expect(container.querySelector("[data-scroll-progress].proc")).not.toBeNull();
+    expect(container.querySelector(".proc")).not.toBeNull();
     expect(container.querySelector("#stop-4")).not.toBeNull();
   });
 });

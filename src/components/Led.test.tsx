@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { layoutLed } from "@/lib/led";
 
-import { Led } from "./Led";
+import { dotsPath, Led } from "./Led";
 
 describe("<Led>", () => {
   it("sizes the SVG from the text width and the pitch", () => {
@@ -14,10 +14,13 @@ describe("<Led>", () => {
     expect(svg).toHaveAttribute("viewBox", "0 0 66 42");
   });
 
-  it("draws one circle per lit dot", () => {
+  it("draws every lit dot in a single path, one round dot per segment", () => {
     const { container } = render(<Led text="I" board={false} />);
     const lit = layoutLed("I").columns.reduce((sum, c) => sum + c.rows.length, 0);
-    expect(container.querySelectorAll("circle")).toHaveLength(lit);
+    const paths = container.querySelectorAll("path");
+    expect(paths).toHaveLength(1);
+    expect(paths[0].getAttribute("d")!.match(/M/g)).toHaveLength(lit);
+    expect(container.querySelector("circle")).toBeNull();
   });
 
   it("is hidden from screen readers by default", () => {
@@ -41,7 +44,8 @@ describe("<Led>", () => {
   it("colours the lit dots with the tone's CSS variable", () => {
     const { container } = render(<Led text="A" tone="white" />);
     const group = container.querySelector("svg > g") as SVGGElement;
-    expect(group.style.fill).toBe("var(--led-white)");
+    expect(group.style.stroke).toBe("var(--led-white)");
+    expect(group).toHaveAttribute("stroke-linecap", "round");
   });
 
   it("adds a glow by default and none when glow is off", () => {
@@ -66,5 +70,12 @@ describe("<Led>", () => {
     const svg = container.querySelector("svg")!;
     expect(svg).toHaveClass("led-text", "blink");
     expect(svg.style.width).toBe("20px");
+  });
+});
+
+describe("dotsPath", () => {
+  it("writes one zero-length segment per dot, at the dot centres", () => {
+    expect(dotsPath([{ x: 0, rows: [0, 1] }], 10)).toBe("M5 5h0M5 15h0");
+    expect(dotsPath([{ x: 2, rows: [6] }], 3.4)).toBe("M8.5 22.1h0");
   });
 });

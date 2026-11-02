@@ -170,6 +170,10 @@
       opacity: 1;
     }
   }
+  /* Hero headlines: the hidden languages don't animate; the one that becomes active relights. */
+  .hero-variant[data-active="false"] .led-col {
+    animation: none;
+  }
   .blink {
     animation: blink 1.4s steps(2, jump-none) infinite;
   }
@@ -516,8 +520,10 @@
 
 /* ---------- Flight plan: the plane flies the route as you scroll ----------
  * Desktop (.orbit): around an ellipse. Phones and tablets (.vtrack): straight down.
- * Stop markers and numbers light up as the plane passes them (28.3 %, 56.7 % and 85 % of the way).
- * Default state (no animation support, reduced motion): every stop lit, plane at the start.
+ * MotionEffects moves the plane with Motion and writes the section's scroll progress to --p
+ * (0 to 1). Everything else here follows from --p: stop markers and numbers light up as the
+ * plane passes them (28.3 %, 56.7 % and 85 % of the way).
+ * Without JavaScript, or with reduced motion: plane at the start, first stop shown.
  */
 .orbit-plane {
   position: absolute;
@@ -540,267 +546,53 @@
   top: 0;
   left: -4px;
 }
-@supports (animation-timeline: view()) {
-  .orbit {
-    view-timeline-name: --plan;
-  }
-  .vtrack {
-    view-timeline-name: --planm;
-  }
-  .orbit-plane,
-  .stop-mark,
-  .stop-lit,
-  .stop-num {
-    animation-timing-function: linear;
-    animation-fill-mode: both;
-    animation-timeline: --plan;
-    animation-range: cover 18% cover 72%;
-  }
-  .vtrack .stop-mark,
-  .vtrack .stop-lit,
-  .vplane {
-    animation-timing-function: linear;
-    animation-fill-mode: both;
-    animation-timeline: --planm;
-    animation-range: cover 25% cover 75%;
-  }
-  .orbit-plane {
-    animation-name: orbit-fly;
-  }
-  .vplane {
-    animation-name: vertical-fly;
-  }
-  .stop-mark.s1 {
-    animation-name: mark1;
-  }
-  .stop-mark.s2 {
-    animation-name: mark2;
-  }
-  .stop-mark.s3 {
-    animation-name: mark3;
-  }
-  .stop-lit.s1 {
-    animation-name: lit1;
-  }
-  .stop-lit.s2 {
-    animation-name: lit2;
-  }
-  .stop-lit.s3 {
-    animation-name: lit3;
-  }
-  .stop-num.n0 {
-    animation-name: num0;
-  }
-  .stop-num.n1 {
-    animation-name: num1;
-  }
-  .stop-num.n2 {
-    animation-name: num2;
-  }
-  .stop-num.n3 {
-    animation-name: num3;
-  }
-}
-@keyframes orbit-fly {
-  0% {
-    offset-distance: 0%;
-    transform: scale(1);
-  }
-  28.3% {
-    offset-distance: 25%;
-    transform: scale(0.62);
-  }
-  56.7% {
-    offset-distance: 50%;
-    transform: scale(1);
-  }
-  85%,
-  100% {
-    offset-distance: 75%;
-    transform: scale(1.45);
-  }
-}
-@keyframes vertical-fly {
-  0% {
-    top: 0;
-  }
-  28.3% {
-    top: 180px;
-  }
-  56.7% {
-    top: 360px;
-  }
-  85%,
-  100% {
-    top: 540px;
-  }
-}
-@keyframes mark1 {
-  0%,
-  28.2% {
-    background: var(--page);
-    box-shadow: none;
-    transform: scale(1);
-  }
-  28.3%,
-  100% {
-    background: var(--led);
-    box-shadow: 0 0 0 6px var(--led-glow);
-    transform: scale(1.25);
-  }
-}
-@keyframes mark2 {
-  0%,
-  56.6% {
-    background: var(--page);
-    box-shadow: none;
-    transform: scale(1);
-  }
-  56.7%,
-  100% {
-    background: var(--led);
-    box-shadow: 0 0 0 6px var(--led-glow);
-    transform: scale(1.25);
-  }
-}
-@keyframes mark3 {
-  0%,
-  84.9% {
-    background: var(--page);
-    box-shadow: none;
-    transform: scale(1);
-  }
-  85%,
-  100% {
-    background: var(--led);
-    box-shadow: 0 0 0 6px var(--led-glow);
-    transform: scale(1.25);
-  }
-}
-@keyframes lit1 {
-  0%,
-  28.2% {
-    opacity: 0;
-  }
-  28.3%,
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes lit2 {
-  0%,
-  56.6% {
-    opacity: 0;
-  }
-  56.7%,
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes lit3 {
-  0%,
-  84.9% {
-    opacity: 0;
-  }
-  85%,
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes num0 {
-  0%,
-  28.2% {
-    opacity: 1;
-  }
-  28.3%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes num1 {
-  0%,
-  28.2% {
-    opacity: 0;
-  }
-  28.3%,
-  56.6% {
-    opacity: 1;
-  }
-  56.7%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes num2 {
-  0%,
-  56.6% {
-    opacity: 0;
-  }
-  56.7%,
-  84.9% {
-    opacity: 1;
-  }
-  85%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes num3 {
-  0%,
-  84.9% {
-    opacity: 0;
-  }
-  85%,
-  100% {
-    opacity: 1;
-  }
-}
-/* Fallback (Firefox): ScrollEffects writes the section's scroll progress to --p (0 to 1). */
-.no-sda .orbit {
+.orbit {
   --k: clamp(0, calc((var(--p, 0) - 0.18) / 0.54), 1);
 }
-.no-sda .vtrack {
+.vtrack {
   --k: clamp(0, calc((var(--p, 0) - 0.25) / 0.5), 1);
 }
-.no-sda :is(.orbit, .vtrack) {
+:is(.orbit, .vtrack) {
   --on1: clamp(0, calc((var(--k) - 0.283) * 1000), 1);
   --on2: clamp(0, calc((var(--k) - 0.567) * 1000), 1);
   --on3: clamp(0, calc((var(--k) - 0.85) * 1000), 1);
 }
-.no-sda .orbit-plane {
-  offset-distance: calc(var(--k) * 75%);
+.stop-mark.s1 {
+  --on: var(--on1);
 }
-.no-sda .vplane {
-  top: calc(var(--k) * 540px);
+.stop-mark.s2 {
+  --on: var(--on2);
 }
-.no-sda .stop-mark.s1 {
-  background: color-mix(in srgb, var(--led) calc(var(--on1) * 100%), var(--page)) !important;
+.stop-mark.s3 {
+  --on: var(--on3);
 }
-.no-sda .stop-mark.s2 {
-  background: color-mix(in srgb, var(--led) calc(var(--on2) * 100%), var(--page)) !important;
+.stop-mark:is(.s1, .s2, .s3) {
+  background: color-mix(in srgb, var(--led) calc(var(--on) * 100%), var(--page)) !important;
+  box-shadow: 0 0 0 calc(var(--on) * 6px) var(--led-glow);
+  transform: scale(calc(1 + var(--on) * 0.25));
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.3s;
 }
-.no-sda .stop-mark.s3 {
-  background: color-mix(in srgb, var(--led) calc(var(--on3) * 100%), var(--page)) !important;
-}
-.no-sda .stop-lit.s1 {
+.stop-lit.s1 {
   opacity: var(--on1);
 }
-.no-sda .stop-lit.s2 {
+.stop-lit.s2 {
   opacity: var(--on2);
 }
-.no-sda .stop-lit.s3 {
+.stop-lit.s3 {
   opacity: var(--on3);
 }
-.no-sda .stop-num.n0 {
+.stop-num.n0 {
   opacity: calc(1 - var(--on1));
 }
-.no-sda .stop-num.n1 {
+.stop-num.n1 {
   opacity: calc(var(--on1) - var(--on2));
 }
-.no-sda .stop-num.n2 {
+.stop-num.n2 {
   opacity: calc(var(--on2) - var(--on3));
 }
-.no-sda .stop-num.n3 {
+.stop-num.n3 {
   opacity: var(--on3);
 }
 
@@ -809,115 +601,24 @@
  * .px-media / .px-up / .px-down: parallax; images drift slower or faster than the page.
  * .read-on: a big sentence fills in from grey to black as you read down.
  * .route-plane: the plane on the report's route map flies from CM to DE over the whole page.
- * All are pure CSS where supported; elsewhere (and with reduced motion) everything simply shows.
+ * All are driven by Motion in MotionEffects; with reduced motion everything simply shows.
  */
 .route-plane {
   position: absolute;
   top: 0;
   left: 0;
   offset-rotate: auto;
-  offset-distance: calc(var(--scroll, 0) * 100%);
+  offset-distance: 0%;
   color: var(--led);
   filter: drop-shadow(0 0 6px var(--led-glow));
 }
-@supports (animation-timeline: view()) {
-  .rv-tilt {
-    animation: rv-tilt cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 100%;
-    transform-origin: 50% 100%;
-  }
-  .px-media {
-    animation: px-move linear both;
-    animation-timeline: view();
-    animation-range: cover 0% cover 100%;
-  }
-  /* Phones in a row drift apart only on wide screens; on phones they sit in a swipe strip. */
-  @media (min-width: 1024px) {
-    .px-up {
-      animation: px-up linear both;
-      animation-timeline: view();
-      animation-range: cover 0% cover 100%;
-    }
-    .px-down {
-      animation: px-down linear both;
-      animation-timeline: view();
-      animation-range: cover 0% cover 100%;
-    }
-  }
-  .read-on {
-    background: linear-gradient(90deg, var(--ink) 50%, #b9bcb6 50%) 100% 0 / 200% 100% no-repeat;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: read-on linear both;
-    animation-timeline: view();
-    animation-range: cover 15% cover 50%;
-  }
-}
-@supports (animation-timeline: scroll()) {
-  .route-plane {
-    offset-distance: 0%;
-    animation: route-fly linear both;
-    animation-timeline: scroll(root block);
-  }
-}
-@keyframes rv-tilt {
-  from {
-    opacity: 0.25;
-    transform: perspective(1400px) rotateX(26deg) scale(0.88);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes px-move {
-  from {
-    transform: translateY(-7%) scale(1.14);
-  }
-  to {
-    transform: translateY(7%) scale(1.14);
-  }
-}
-@keyframes px-up {
-  from {
-    transform: translateY(60px);
-  }
-  to {
-    transform: translateY(-60px);
-  }
-}
-@keyframes px-down {
-  from {
-    transform: translateY(-30px);
-  }
-  to {
-    transform: translateY(30px);
-  }
-}
-@keyframes read-on {
-  to {
-    background-position: 0 0;
-  }
-}
-@keyframes route-fly {
-  from {
-    offset-distance: 0%;
-  }
-  to {
-    offset-distance: 100%;
-  }
-}
-.no-sda .rv-tilt {
-  transition:
-    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
-    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-  transform-origin: 50% 100%;
-}
-.no-sda .rv-tilt:not(.is-in) {
-  opacity: 0.25;
-  transform: perspective(1400px) rotateX(26deg) scale(0.88);
+/* The sentence starts grey and Motion moves the ink in (only when animations are on: the boot
+   script adds .motion to <html>). */
+.motion .read-on {
+  background: linear-gradient(90deg, var(--ink) 50%, #b9bcb6 50%) 100% 0 / 200% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* ---------- Services page ---------- */
@@ -989,7 +690,8 @@
 /* ---------- Process page: the cockpit follows you through the four stops ----------
  * Desktop: a sticky panel with the stop number, the stop name and a vertical track the plane
  * flies down. Phones: a sticky strip under the header. Both are driven by how far you've
- * scrolled through the stops (view timeline --proc); stops switch at 22 %, 48 % and 74 %.
+ * scrolled through the stops: MotionEffects writes it to --p on .proc and moves the plane and
+ * the fill lines; stops switch at 22 %, 48 % and 74 %.
  */
 .pq {
   grid-area: 1 / 1;
@@ -1025,263 +727,67 @@
 .plab.d0 {
   color: var(--on-board);
 }
-@supports (animation-timeline: view()) {
-  .proc {
-    view-timeline-name: --proc;
-  }
-  .pq,
-  .pfill,
-  .pfillx,
-  .pplane,
-  .pdot,
-  .plab {
-    animation-timing-function: linear;
-    animation-fill-mode: both;
-    animation-timeline: --proc;
-    animation-range: contain 0% contain 100%;
-  }
-  .pq.q0 {
-    animation-name: q0;
-  }
-  .pq.q1 {
-    animation-name: q1;
-  }
-  .pq.q2 {
-    animation-name: q2;
-  }
-  .pq.q3 {
-    animation-name: q3;
-  }
-  .pfill {
-    animation-name: pfill;
-  }
-  .pfillx {
-    animation-name: pfillx;
-  }
-  .pplane {
-    animation-name: pplane;
-  }
-  .pdot.d1 {
-    animation-name: pd1;
-  }
-  .pdot.d2 {
-    animation-name: pd2;
-  }
-  .pdot.d3 {
-    animation-name: pd3;
-  }
-  .plab.d1 {
-    animation-name: pl1;
-  }
-  .plab.d2 {
-    animation-name: pl2;
-  }
-  .plab.d3 {
-    animation-name: pl3;
-  }
-}
-@keyframes q0 {
-  0%,
-  21.9% {
-    opacity: 1;
-  }
-  22%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes q1 {
-  0%,
-  21.9% {
-    opacity: 0;
-  }
-  22%,
-  47.9% {
-    opacity: 1;
-  }
-  48%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes q2 {
-  0%,
-  47.9% {
-    opacity: 0;
-  }
-  48%,
-  73.9% {
-    opacity: 1;
-  }
-  74%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes q3 {
-  0%,
-  73.9% {
-    opacity: 0;
-  }
-  74%,
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes pfill {
-  0% {
-    transform: scaleY(0);
-  }
-  22% {
-    transform: scaleY(0.333);
-  }
-  48% {
-    transform: scaleY(0.667);
-  }
-  74%,
-  100% {
-    transform: scaleY(1);
-  }
-}
-@keyframes pfillx {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-@keyframes pplane {
-  0% {
-    top: 0;
-  }
-  22% {
-    top: 33.3%;
-  }
-  48% {
-    top: 66.7%;
-  }
-  74%,
-  100% {
-    top: 100%;
-  }
-}
-@keyframes pd1 {
-  0%,
-  21.9% {
-    background: var(--board);
-    border-color: var(--line-mid);
-  }
-  22%,
-  100% {
-    background: var(--led);
-    border-color: var(--led);
-  }
-}
-@keyframes pd2 {
-  0%,
-  47.9% {
-    background: var(--board);
-    border-color: var(--line-mid);
-  }
-  48%,
-  100% {
-    background: var(--led);
-    border-color: var(--led);
-  }
-}
-@keyframes pd3 {
-  0%,
-  73.9% {
-    background: var(--board);
-    border-color: var(--line-mid);
-  }
-  74%,
-  100% {
-    background: var(--led);
-    border-color: var(--led);
-  }
-}
-@keyframes pl1 {
-  0%,
-  21.9% {
-    color: var(--text-off);
-  }
-  22%,
-  100% {
-    color: var(--on-board);
-  }
-}
-@keyframes pl2 {
-  0%,
-  47.9% {
-    color: var(--text-off);
-  }
-  48%,
-  100% {
-    color: var(--on-board);
-  }
-}
-@keyframes pl3 {
-  0%,
-  73.9% {
-    color: var(--text-off);
-  }
-  74%,
-  100% {
-    color: var(--on-board);
-  }
-}
-/* Fallback (Firefox): ScrollEffects writes the section's scroll progress to --p. */
-.no-sda .proc {
-  --k: clamp(0, calc((var(--p, 0) - 0.12) / 0.76), 1);
+.proc {
+  --k: var(--p, 0);
   --on1: clamp(0, calc((var(--k) - 0.22) * 1000), 1);
   --on2: clamp(0, calc((var(--k) - 0.48) * 1000), 1);
   --on3: clamp(0, calc((var(--k) - 0.74) * 1000), 1);
 }
-.no-sda .pq.q0 {
+.pq.q0 {
   opacity: calc(1 - var(--on1));
 }
-.no-sda .pq.q1 {
+.pq.q1 {
   opacity: calc(var(--on1) - var(--on2));
 }
-.no-sda .pq.q2 {
+.pq.q2 {
   opacity: calc(var(--on2) - var(--on3));
 }
-.no-sda .pq.q3 {
+.pq.q3 {
   opacity: var(--on3);
 }
-.no-sda .pfill {
-  transform: scaleY(var(--k));
-}
-.no-sda .pfillx {
-  transform: scaleX(var(--k));
-}
-.no-sda .pplane {
-  top: calc(var(--k) * 100%);
-}
-.no-sda .pdot.d1 {
+.pdot.d1 {
   background: color-mix(in srgb, var(--led) calc(var(--on1) * 100%), var(--board));
 }
-.no-sda .pdot.d2 {
+.pdot.d2 {
   background: color-mix(in srgb, var(--led) calc(var(--on2) * 100%), var(--board));
 }
-.no-sda .pdot.d3 {
+.pdot.d3 {
   background: color-mix(in srgb, var(--led) calc(var(--on3) * 100%), var(--board));
+}
+.pdot:is(.d1, .d2, .d3) {
+  border-color: color-mix(in srgb, var(--led) calc(var(--lit, 0) * 100%), var(--line-mid));
+}
+.pdot.d1,
+.plab.d1 {
+  --lit: var(--on1);
+}
+.pdot.d2,
+.plab.d2 {
+  --lit: var(--on2);
+}
+.pdot.d3,
+.plab.d3 {
+  --lit: var(--on3);
+}
+.plab:is(.d1, .d2, .d3) {
+  color: color-mix(in srgb, var(--on-board) calc(var(--lit) * 100%), var(--text-off));
 }
 
 /* ---------- Scroll progress: the runway under the header and the back-to-top frame ----------
- * Browsers with scroll-driven animations do it in CSS. Others (Firefox today) get --scroll
- * from a small script, 0 at the top of the page and 1 at the bottom.
+ * MotionEffects grows the runway with the page's scroll (Motion, on the compositor where the
+ * browser supports scroll timelines) and writes the page progress to --scroll on .totop
+ * (0 at the top, 1 at the bottom). The dots of the frame light up from it.
  */
 .runway-fill {
-  transform: scaleX(var(--scroll, 0));
+  transform: scaleX(0);
   transform-origin: left;
 }
 .totop {
   opacity: clamp(0, calc((var(--scroll, 0) - 0.07) * 20), 1);
-  visibility: visible;
   transition: transform 0.25s;
+}
+.totop:not([data-shown]) {
+  pointer-events: none;
 }
 .totop-dot {
   fill: color-mix(
@@ -1298,191 +804,11 @@
   transform: translate(-50%, -62%);
 }
 
-@supports (animation-timeline: scroll()) {
-  .runway-fill {
-    transform: scaleX(0);
-    animation: grow-x linear both;
-    animation-timeline: scroll(root block);
-  }
-  .totop {
-    opacity: 1;
-    animation: totop-in linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0% 12%;
-  }
-  .totop-dot {
-    fill: var(--line-strong);
-    animation: dot-on linear both;
-    animation-timeline: scroll(root block);
-  }
-}
-@keyframes grow-x {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-@keyframes totop-in {
-  0%,
-  60% {
-    opacity: 0;
-    transform: translateY(18px);
-    visibility: hidden;
-  }
-  100% {
-    opacity: 1;
-    transform: none;
-    visibility: visible;
-  }
-}
-@keyframes dot-on {
-  from {
-    fill: var(--line-strong);
-  }
-  to {
-    fill: var(--led);
-  }
-}
-
 /* ---------- Scroll reveals ----------
- * Each animation finishes once the element is fully on screen, so content at the very end of a page
- * is never left half-revealed.
- * Modern browsers: driven by the element's position in the viewport, pure CSS.
- * Others: <ScrollEffects> adds .no-sda to <html> and toggles .is-in when the element appears.
- * Without JavaScript, nothing is hidden.
+ * .rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap and .rv-tilt are only markers: Motion
+ * animates them in once, when they scroll into view (see src/lib/motion/presets.ts).
+ * Without JavaScript, or with reduced motion, nothing is hidden.
  */
-@supports (animation-timeline: view()) {
-  .rv,
-  .rv-left,
-  .rv-wipe,
-  .rv-scale,
-  .rv-line,
-  .rv-flap {
-    animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
-    animation-fill-mode: both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 90%;
-  }
-  .rv {
-    animation-name: rv-up;
-  }
-  .rv-left {
-    animation-name: rv-left;
-  }
-  .rv-wipe {
-    animation-name: rv-wipe;
-    animation-range: entry 10% entry 100%;
-  }
-  .rv-scale {
-    animation-name: rv-scale;
-    animation-range: entry 0% entry 100%;
-  }
-  .rv-line {
-    animation-name: rv-line;
-    transform-origin: left center;
-    animation-range: entry 20% entry 100%;
-  }
-  .rv-flap {
-    animation-name: rv-flap;
-    transform-origin: 50% 0;
-    animation-range: entry 0% entry 80%;
-  }
-}
-@keyframes rv-up {
-  from {
-    opacity: 0;
-    transform: translateY(48px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes rv-left {
-  from {
-    opacity: 0;
-    transform: translateX(-40px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-/* The clip reaches a little outside the box so accents above tight stencil lines (É, Ü) show. */
-@keyframes rv-wipe {
-  from {
-    clip-path: inset(-0.4em 100% -0.3em -0.2em);
-    opacity: 0.2;
-  }
-  to {
-    clip-path: inset(-0.4em -0.2em -0.3em -0.2em);
-    opacity: 1;
-  }
-}
-@keyframes rv-scale {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes rv-line {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-@keyframes rv-flap {
-  from {
-    opacity: 0;
-    transform: perspective(900px) rotateX(-82deg);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* Fallback: same moves as transitions, triggered once by IntersectionObserver. */
-.no-sda :is(.rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap) {
-  transition:
-    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
-    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
-    clip-path 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.no-sda .rv:not(.is-in) {
-  opacity: 0;
-  transform: translateY(48px);
-}
-.no-sda .rv-left:not(.is-in) {
-  opacity: 0;
-  transform: translateX(-40px);
-}
-.no-sda .rv-wipe:not(.is-in) {
-  clip-path: inset(-0.4em 100% -0.3em -0.2em);
-  opacity: 0.2;
-}
-.no-sda .rv-scale:not(.is-in) {
-  opacity: 0;
-  transform: scale(0.92) translateY(30px);
-}
-.no-sda .rv-line:not(.is-in) {
-  transform: scaleX(0);
-  transform-origin: left center;
-}
-.no-sda .rv-flap:not(.is-in) {
-  opacity: 0;
-  transform: perspective(900px) rotateX(-82deg);
-  transform-origin: 50% 0;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -1492,11 +818,6 @@
   *::after {
     animation: none !important;
     transition: none !important;
-  }
-  .no-sda :is(.rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap, .rv-tilt) {
-    opacity: 1 !important;
-    transform: none !important;
-    clip-path: none !important;
   }
   .totop {
     opacity: 1;

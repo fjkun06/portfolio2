@@ -3,8 +3,11 @@
  *
  * How it's drawn:
  * - The unlit dots are one repeating SVG <pattern> filling a rectangle (cheap, one element).
- * - The lit dots are one <circle> each, grouped per column. With `animate`, each column fades in
- *   a few milliseconds after the previous one, so the text "switches on" from left to right.
+ * - The lit dots are drawn as a single <path>: each dot is a zero-length line with a round cap,
+ *   which renders as a circle. A long headline is then one element instead of hundreds of
+ *   <circle>s, which keeps pages light (the home page went from ~13,000 SVG nodes to ~1,000).
+ *   With `animate`, there is one path per column, and each column switches on a few
+ *   milliseconds after the previous one, so the text lights up from left to right.
  * - Colours are CSS variables, so the same SVG follows dark and light mode with no re-render.
  *
  * It has no state and no hooks, so it works in both server and client components.
@@ -13,8 +16,6 @@
  * <Led text="NEXT DEPARTURE:" pitch={12} tone="white" />
  * <Led text="LIVE" pitch={4} label="Status: live" />
  */
-import { Fragment } from "react";
-
 import { layoutLed } from "@/lib/led";
 
 /**
@@ -70,6 +71,23 @@ function hash(input: string): string {
   return (h >>> 0).toString(36);
 }
 
+/** Rounds a coordinate to 2 decimals and drops trailing zeros, to keep paths short. */
+const num = (n: number) => String(Math.round(n * 100) / 100);
+
+/**
+ * Path data for a set of dots: "M x y h0" per dot. Drawn with a round line cap as wide as the dot,
+ * each zero-length segment shows as one filled circle.
+ *
+ * @example
+ * dotsPath([{ x: 0, rows: [0, 1] }], 10) // "M5 5h0M5 15h0"
+ */
+export function dotsPath(columns: { x: number; rows: number[] }[], pitch: number): string {
+  let d = "";
+  for (const { x, rows } of columns)
+    for (const row of rows) d += `M${num(x * pitch + pitch / 2)} ${num(row * pitch + pitch / 2)}h0`;
+  return d;
+}
+
 /** Text drawn in LED dots, as an SVG. See the file header for how it works. */
 export function Led({
   text,
@@ -115,19 +133,24 @@ export function Led({
           <rect width={w} height={h} fill={`url(#${patternId})`} />
         </>
       )}
-      <g style={{ fill: FILL[tone], filter }}>
-        {columns.map(({ x, rows }) => {
-          const dots = rows.map((row) => (
-            <circle key={row} cx={x * pitch + pitch / 2} cy={row * pitch + pitch / 2} r={r} />
-          ));
-          return animate ? (
-            <g key={x} className="led-col" style={{ animationDelay: `${delay + x * step}ms` }}>
-              {dots}
-            </g>
-          ) : (
-            <Fragment key={x}>{dots}</Fragment>
-          );
-        })}
+      <g
+        fill="none"
+        strokeLinecap="round"
+        strokeWidth={num(r * 2)}
+        style={{ stroke: FILL[tone], filter }}
+      >
+        {animate ? (
+          columns.map((column) => (
+            <path
+              key={column.x}
+              className="led-col"
+              d={dotsPath([column], pitch)}
+              style={{ animationDelay: `${delay + column.x * step}ms` }}
+            />
+          ))
+        ) : (
+          <path d={dotsPath(columns, pitch)} />
+        )}
       </g>
     </svg>
   );

@@ -49,8 +49,9 @@ const markStyle: React.CSSProperties = {
  *   for a 3D feel), with the stops around it and a big stop number in the middle.
  * - Below 1280 px: the plane flies straight down a dotted line past the stops.
  *
- * All motion is CSS (see "Flight plan" in globals.css); `data-scroll-progress` lets the Firefox
- * fallback drive the same animation.
+ * MotionEffects flies the plane with Motion as `.orbit` / `.vtrack` scroll through the screen
+ * and writes their progress to --p; the stops light up from it in CSS ("Flight plan" in
+ * globals.css).
  */
 export function FlightPlan({ text, processHref }: FlightPlanProps) {
   return (
@@ -67,10 +68,7 @@ export function FlightPlan({ text, processHref }: FlightPlanProps) {
       </Link>
 
       {/* Desktop orbit */}
-      <div
-        data-scroll-progress
-        className="orbit rv-scale relative mt-10 hidden h-[600px] w-[1200px] xl:block"
-      >
+      <div className="orbit rv-scale relative mt-10 hidden h-[600px] w-[1200px] xl:block">
         <svg
           aria-hidden="true"
           viewBox="0 0 1200 600"
@@ -141,7 +139,7 @@ export function FlightPlan({ text, processHref }: FlightPlanProps) {
       </div>
 
       {/* Phones, tablets and small laptops: straight down */}
-      <div data-scroll-progress className="vtrack relative mt-9 h-[720px] xl:hidden">
+      <div className="vtrack relative mt-9 h-[720px] xl:hidden">
         <span
           aria-hidden="true"
           className="absolute top-3.5 left-[11px] h-[560px] w-[3px]"

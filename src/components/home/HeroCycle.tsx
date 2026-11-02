@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { inView } from "motion";
+import { useEffect, useRef, useState } from "react";
 
 import type { Locale } from "@/i18n/config";
 
@@ -28,9 +29,10 @@ type HeroCycleProps = {
  * The hero's language rotation. Every 7 seconds the headline switches to the next language,
  * and the matching word on the board (DEPARTURES / DÉPARTS / ABFLUG) lights up.
  *
- * - The three headlines are rendered once on the server; this component only shows one at a
- *   time with the `hidden` attribute. Showing an element again restarts its CSS animation,
- *   so each headline "switches on" column by column every time it appears.
+ * - The three headlines are rendered once on the server, stacked in one grid cell; this
+ *   component only marks one as active. Becoming active restarts its LED animation, so each
+ *   headline "switches on" column by column every time it appears.
+ * - The rotation pauses while the hero is scrolled out of view (Motion's `inView`).
  * - Visitors who prefer reduced motion get no rotation: the page's own language stays.
  * - The rotating headlines are hidden from screen readers; the page has the headline as real
  *   text in its own language (in Hero).
@@ -43,13 +45,21 @@ export function HeroCycle({ variants, start, aside }: HeroCycleProps) {
     ),
   );
 
+  const board = useRef<HTMLDivElement>(null);
+
+  // Cycle only while the hero is on screen: switching headlines relights hundreds of LED
+  // columns, which is wasted work (and scroll jank) when nobody can see it.
   useEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setInterval(
-      () => setIndex((current) => (current + 1) % variants.length),
-      CYCLE_MS,
-    );
-    return () => window.clearInterval(timer);
+    const start = () => {
+      const timer = window.setInterval(
+        () => setIndex((current) => (current + 1) % variants.length),
+        CYCLE_MS,
+      );
+      return () => window.clearInterval(timer);
+    };
+    if (typeof IntersectionObserver === "undefined" || !board.current) return start();
+    return inView(board.current, () => start());
   }, [variants.length]);
 
   return (
@@ -69,9 +79,17 @@ export function HeroCycle({ variants, start, aside }: HeroCycleProps) {
         </p>
         {aside}
       </div>
-      <div aria-hidden="true" className="mt-10 lg:mt-16">
+      {/* All headlines sit in the same grid cell, so the hero keeps the height of the tallest
+          and nothing below it moves when the language changes. Only the active one is visible;
+          showing it restarts its LED columns (see .hero-variant in globals.css). */}
+      <div ref={board} aria-hidden="true" className="mt-10 grid lg:mt-16">
         {variants.map((v, i) => (
-          <div key={v.lang} lang={v.lang} hidden={i !== index}>
+          <div
+            key={v.lang}
+            lang={v.lang}
+            data-active={i === index}
+            className={`hero-variant [grid-area:1/1] ${i === index ? "" : "invisible"}`}
+          >
             {v.headline}
           </div>
         ))}

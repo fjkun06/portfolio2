@@ -23,7 +23,7 @@ type HeaderProps = {
 
 /**
  * Dotted line under the header that fills up in the accent colour as you scroll down the page.
- * The fill is driven by CSS (`.runway-fill` in globals.css), or by ScrollEffects in Firefox.
+ * The fill grows with the page's scroll (`.runway-fill`, animated by MotionEffects).
  */
 export function Runway() {
   return (

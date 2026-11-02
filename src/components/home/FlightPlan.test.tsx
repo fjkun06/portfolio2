@@ -12,9 +12,8 @@ describe("<FlightPlan>", () => {
       expect(screen.getAllByRole("heading", { name: stop.name, level: 3 })).toHaveLength(2);
   });
 
-  it("marks both layouts for the scroll progress fallback", () => {
+  it("marks both layouts for the scroll animations", () => {
     const { container } = render(<FlightPlan text={en.home.plan} processHref="/en/process" />);
-    expect(container.querySelectorAll("[data-scroll-progress]")).toHaveLength(2);
     expect(container.querySelector(".orbit")).not.toBeNull();
     expect(container.querySelector(".vtrack")).not.toBeNull();
   });

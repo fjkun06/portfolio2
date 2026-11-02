@@ -28,8 +28,8 @@ export function framePoints(size: number, inset = 5, step = 6.2): [number, numbe
  * - It fades in once you've scrolled about 10 % of the page.
  * - Its frame of dots lights up one dot at a time as you get closer to the end of the page.
  *   Each dot gets its own share of the scroll: dot i lights up at i / total of the way down.
- *   Chrome, Edge and Safari do this in CSS (`animation-range` per dot); Firefox uses the
- *   `--t` value of each dot together with `--scroll` from ScrollEffects.
+ *   MotionEffects writes the page progress to `--scroll` on the button; CSS compares it with
+ *   each dot's `--t`.
  * - It links to `#top` (the <body>), and smooth scrolling is set globally in globals.css.
  */
 export function BackToTop({ label }: { label: string }) {
@@ -58,12 +58,7 @@ export function BackToTop({ label }: { label: string }) {
               cx={x.toFixed(1)}
               cy={y.toFixed(1)}
               r={1.5}
-              style={
-                {
-                  "--t": t.toFixed(4),
-                  animationRange: `${(t * 100).toFixed(2)}% ${(t * 100 + 0.5).toFixed(2)}%`,
-                } as React.CSSProperties
-              }
+              style={{ "--t": t.toFixed(4) } as React.CSSProperties}
             />
           );
         })}

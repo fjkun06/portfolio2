@@ -3,8 +3,7 @@ import type { ReactNode } from "react";
 
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
-import { InlineScript } from "@/components/site/InlineScript";
-import { ScrollEffects } from "@/components/site/ScrollEffects";
+import { MotionEffects } from "@/components/site/MotionEffects";
 import type { Locale } from "@/i18n/config";
 import { routes } from "@/i18n/routes";
 import type { Dictionary } from "@/locales/en";
@@ -30,13 +29,14 @@ const body = localFont({
 
 /**
  * Runs before the first paint: picks dark or light mode (saved choice, else the device setting)
- * and flags browsers that need the JavaScript fallback for scroll animations.
+ * and adds .motion to <html> unless the visitor prefers reduced motion (CSS that only makes
+ * sense with animations, like the grey start of .read-on, hangs off it).
  */
-export const BOOT = `(function(){var d=document.documentElement;try{var m=localStorage.getItem("mode");if(m!=="light"&&m!=="dark"){m=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}d.dataset.mode=m}catch(e){}if(!(window.CSS&&CSS.supports("animation-timeline: view()")))d.classList.add("no-sda")})()`;
+export const BOOT = `(function(){var d=document.documentElement;try{var m=localStorage.getItem("mode");if(m!=="light"&&m!=="dark"){m=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}d.dataset.mode=m}catch(e){}try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("motion")}catch(e){}})()`;
 
 /**
  * The whole HTML document around a page: fonts, the dark/light boot script, skip link,
- * header, main content, footer and the scroll effects.
+ * header, main content, footer and the scroll animations (MotionEffects).
  * Shared by the language layout (every normal page) and the global 404 page, which Next.js
  * renders without any layout.
  */
@@ -54,13 +54,16 @@ export function SiteDocument({
     <html
       lang={lang}
       data-mode="dark"
+      // Lets Next.js switch smooth scrolling off while it changes pages, so a new page starts
+      // at the top instantly instead of gliding (smooth scrolling is on for in-page links).
+      data-scroll-behavior="smooth"
       className={`${stencil.variable} ${body.variable}`}
       suppressHydrationWarning
     >
       {/* App Router document, not a Pages Router page: a plain <head> is right here. */}
       {/* eslint-disable-next-line @next/next/no-head-element */}
       <head>
-        <InlineScript html={BOOT} />
+        <script dangerouslySetInnerHTML={{ __html: BOOT }} />
       </head>
       <body id="top">
         <a
@@ -72,7 +75,7 @@ export function SiteDocument({
         <Header lang={lang} nav={dict.nav} menu={dict.menu} to={to} />
         <main id="main">{children}</main>
         <Footer lang={lang} text={dict.footer} nav={dict.nav} to={to} />
-        <ScrollEffects />
+        <MotionEffects />
       </body>
     </html>
   );

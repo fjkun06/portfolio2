@@ -20,7 +20,7 @@ const visible = () =>
         .getByText(
           `${v.lang === "en" ? "English" : v.lang === "fr" ? "French" : "German"} headline`,
         )
-        .closest("[hidden]"),
+        .closest('[data-active="false"]'),
   );
 
 describe("<HeroCycle>", () => {
