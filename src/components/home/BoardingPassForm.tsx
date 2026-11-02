@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 
 import { Led } from "@/components/Led";
 import { CheckLed } from "@/components/ui/icons";
@@ -14,6 +14,7 @@ import {
   type FieldError,
   type SendState,
 } from "@/lib/contact/boarding-pass";
+import { clearDraft, readDraft, restoreDraft, saveDraft } from "@/lib/contact/draft";
 import { sendBoardingPass } from "@/lib/contact/send-boarding-pass";
 import { fill } from "@/i18n/fill";
 import type { Locale } from "@/i18n/config";
@@ -94,6 +95,9 @@ function Chip({
  *
  * Spam protection without a captcha: a hidden "company" field only bots fill in, and the time
  * since the first keystroke (people take more than 3 seconds).
+ *
+ * What the visitor fills in is kept as a draft (lib/contact/draft.ts): it comes back after a
+ * refresh, a language switch, or moving between the home and Contact pages, until it's sent.
  */
 export function BoardingPassForm({
   lang,
@@ -105,9 +109,37 @@ export function BoardingPassForm({
   const [state, send] = useActionState(sendBoardingPass, { status: "idle" } as SendState);
   const [pending, startTransition] = useTransition();
   const [errors, setErrors] = useState<FieldError[]>([]);
-  const [startedAt, setStartedAt] = useState(0);
+  // When the visitor first typed, for the spam check. Written straight into the hidden field
+  // (no state), so restoring it from a draft doesn't need a re-render.
+  const startedAt = useRef(0);
+  const timer = useRef<HTMLInputElement>(null);
+  const setStarted = (time: number) => {
+    startedAt.current = time;
+    if (timer.current) timer.current.value = String(time);
+  };
   const [dismissed, setDismissed] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Bring back what the visitor had filled in, once the form is on the page (its fields are
+  // uncontrolled, so this only sets their values). The start time comes back too, so the
+  // spam check still knows when they began typing.
+  useEffect(() => {
+    const form = formRef.current;
+    const draft = readDraft();
+    if (!form || !draft) return;
+    restoreDraft(form, draft);
+    if (draft.startedAt) setStarted(draft.startedAt);
+  }, []);
+
+  // Sent: nothing left to remember.
+  useEffect(() => {
+    if (state.status === "sent") clearDraft();
+  }, [state.status]);
+
+  function onInput(event: React.FormEvent<HTMLFormElement>) {
+    if (!startedAt.current) setStarted(Date.now());
+    saveDraft(event.currentTarget, startedAt.current);
+  }
 
   const serverErrors = state.status === "invalid" ? state.errors : [];
   const shown = errors.length ? errors : serverErrors;
@@ -130,8 +162,9 @@ export function BoardingPassForm({
 
   function again() {
     formRef.current?.reset();
+    clearDraft();
     setErrors([]);
-    setStartedAt(0);
+    setStarted(0);
     setDismissed(true);
   }
 
@@ -161,11 +194,11 @@ export function BoardingPassForm({
       ref={formRef}
       noValidate
       onSubmit={onSubmit}
-      onInput={() => startedAt === 0 && setStartedAt(Date.now())}
+      onInput={onInput}
       className="rv-scale relative flex flex-col rounded-[14px] bg-paper text-ink shadow-[0_1px_0_var(--rule),0_40px_70px_-50px_rgba(0,0,0,0.45)] lg:flex-row lg:flex-wrap"
     >
       <input type="hidden" name="lang" value={lang} />
-      <input type="hidden" name="startedAt" value={startedAt} />
+      <input type="hidden" name="startedAt" defaultValue={0} ref={timer} />
       {/* Honeypot: invisible to people and screen readers; bots fill it in. */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
         <label>

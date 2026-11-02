@@ -13,4 +13,5 @@ afterEach(() => {
   document.documentElement.removeAttribute("style");
   document.body.removeAttribute("style");
   localStorage.clear();
+  sessionStorage.clear();
 });

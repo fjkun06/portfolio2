@@ -44,6 +44,8 @@ const de: Dictionary = {
     legal: "Rechtliches",
     imprint: "Impressum",
     privacy: "Datenschutz",
+    motionPause: "Animationen pausieren",
+    motionPlay: "Animationen abspielen",
     backToTop: "Nach oben",
   },
   status: {

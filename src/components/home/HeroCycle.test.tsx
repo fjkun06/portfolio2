@@ -54,6 +54,17 @@ describe("<HeroCycle>", () => {
     expect(visible().map((v) => v.lang)).toEqual(["en"]);
   });
 
+  it("stays put while animations are paused, and moves on again after", () => {
+    prefersReducedMotion(false);
+    document.documentElement.dataset.motion = "paused";
+    render(<HeroCycle variants={variants} start="en" />);
+    act(() => vi.advanceTimersByTime(CYCLE_MS * 2));
+    expect(visible().map((v) => v.lang)).toEqual(["en"]);
+    delete document.documentElement.dataset.motion;
+    act(() => vi.advanceTimersByTime(CYCLE_MS));
+    expect(visible().map((v) => v.lang)).toEqual(["fr"]);
+  });
+
   it("shows the aside next to the board words", () => {
     prefersReducedMotion(false);
     render(<HeroCycle variants={variants} start="en" aside={<span>Route CM DE</span>} />);

@@ -76,6 +76,8 @@ describe("sendBoardingPassEmail", () => {
         to: env.MAIL_TO,
         replyTo: { name: "Ada", address: "ada@example.com" },
         subject: "Boarding pass: Ada",
+        text: expect.stringContaining("Passenger: Ada"),
+        html: expect.stringContaining("<!DOCTYPE html>"),
       }),
     );
   });

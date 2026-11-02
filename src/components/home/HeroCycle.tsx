@@ -4,6 +4,7 @@ import { inView } from "motion";
 import { useEffect, useRef, useState } from "react";
 
 import type { Locale } from "@/i18n/config";
+import { isPaused } from "@/lib/motion/pause";
 
 /** How long each language's headline stays on screen. */
 export const CYCLE_MS = 7000;
@@ -33,7 +34,8 @@ type HeroCycleProps = {
  *   component only marks one as active. Becoming active restarts its LED animation, so each
  *   headline "switches on" column by column every time it appears.
  * - The rotation pauses while the hero is scrolled out of view (Motion's `inView`).
- * - Visitors who prefer reduced motion get no rotation: the page's own language stays.
+ * - Visitors who prefer reduced motion get no rotation: the page's own language stays. Nor
+ *   does it turn while animations are paused (the footer's "Pause animations").
  * - The rotating headlines are hidden from screen readers; the page has the headline as real
  *   text in its own language (in Hero).
  */
@@ -53,7 +55,7 @@ export function HeroCycle({ variants, start, aside }: HeroCycleProps) {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     const start = () => {
       const timer = window.setInterval(
-        () => setIndex((current) => (current + 1) % variants.length),
+        () => setIndex((current) => (isPaused() ? current : (current + 1) % variants.length)),
         CYCLE_MS,
       );
       return () => window.clearInterval(timer);

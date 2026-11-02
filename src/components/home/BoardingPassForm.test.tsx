@@ -2,7 +2,9 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { DRAFT_KEY } from "@/lib/contact/draft";
 import en from "@/locales/en";
+import fr from "@/locales/fr";
 
 import { BoardingPassForm } from "./BoardingPassForm";
 
@@ -129,5 +131,57 @@ describe("<BoardingPassForm>", () => {
     const trap = container.querySelector('input[name="company"]')!;
     expect(trap).toHaveAttribute("tabindex", "-1");
     expect(trap.closest('[aria-hidden="true"]')).not.toBeNull();
+  });
+
+  describe("draft", () => {
+    function renderForm(lang: "en" | "fr" = "en", extended = false) {
+      return render(
+        <BoardingPassForm
+          lang={lang}
+          text={lang === "en" ? en.form : fr.form}
+          privacyHref={`/${lang}/legal#privacy`}
+          email="hello@frankjordan.dev"
+          extended={extended}
+        />,
+      );
+    }
+
+    it("keeps what was filled in through a refresh or a language switch", async () => {
+      const first = renderForm("en");
+      await fillIn();
+      await userEvent.click(screen.getByRole("checkbox", { name: "German" }));
+      first.unmount();
+
+      renderForm("fr"); // the French page, or the same page after a refresh
+      expect(screen.getByLabelText(fr.form.name.toUpperCase())).toHaveValue("Ada");
+      expect(screen.getByLabelText(fr.form.email.toUpperCase())).toHaveValue("ada@example.com");
+      expect(screen.getByLabelText(fr.form.message.toUpperCase())).toHaveValue(
+        "A site in three languages.",
+      );
+      expect(screen.getByRole("checkbox", { name: fr.form.languageNames.DE })).toBeChecked();
+      expect(screen.getByRole("checkbox", { name: /J’accepte|accepte/ })).toBeChecked();
+    });
+
+    it("brings back when typing started, so a restored pass isn't taken for a bot", async () => {
+      const first = renderForm();
+      await fillIn();
+      const started = Number(
+        (document.querySelector('[name="startedAt"]') as HTMLInputElement).value,
+      );
+      expect(started).toBeGreaterThan(0);
+      first.unmount();
+
+      const { container } = renderForm();
+      expect(container.querySelector('[name="startedAt"]')).toHaveValue(String(started));
+    });
+
+    it("forgets the draft once the pass is sent", async () => {
+      send.mockResolvedValue({ status: "sent" });
+      const { submit } = setup();
+      await fillIn();
+      expect(sessionStorage.getItem(DRAFT_KEY)).not.toBeNull();
+      await submit();
+      await waitFor(() => expect(sessionStorage.getItem(DRAFT_KEY)).toBeNull());
+    });
   });
 });

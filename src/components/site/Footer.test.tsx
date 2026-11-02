@@ -46,7 +46,9 @@ describe("<Footer>", () => {
     // The second line's first letter turns right after the first line's last one.
     const firstLine = lines[0].querySelectorAll<SVGPathElement>(".led-flip");
     const last = parseInt(firstLine[firstLine.length - 1].style.animationDelay);
-    const next = parseInt(lines[1].querySelector<SVGPathElement>(".led-flip")!.style.animationDelay);
+    const next = parseInt(
+      lines[1].querySelector<SVGPathElement>(".led-flip")!.style.animationDelay,
+    );
     expect(next - last).toBe(FLIP_STEP);
   });
 
@@ -64,6 +66,11 @@ describe("<Footer>", () => {
     expect(github).toHaveAttribute("href", siteConfig.github);
     expect(github).toHaveAttribute("target", "_blank");
     expect(github).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("offers to pause the animations", () => {
+    setup();
+    expect(screen.getByRole("button", { name: en.footer.motionPause })).toBeInTheDocument();
   });
 
   it("links to the Impressum and the privacy policy", () => {

@@ -4,6 +4,7 @@ import { flipDelays, Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
 import { BackToTop } from "@/components/site/BackToTop";
 import { LangSwitch } from "@/components/site/LangSwitch";
+import { MotionToggle } from "@/components/site/MotionToggle";
 import { Logo } from "@/components/site/Logo";
 import { Year } from "@/components/site/Year";
 import type { Locale } from "@/i18n/config";
@@ -74,7 +75,8 @@ export function connectionsFor(text: Dictionary["footer"]) {
  *    with the "Book your project" button.
  * 2. "Connections": email, WhatsApp, LinkedIn, GitHub as departure-board rows.
  *    External links open in a new tab.
- * 3. Bottom bar: logo and copyright, Impressum and privacy links, language switch.
+ * 3. Bottom bar: logo and copyright, Impressum and privacy links, "Pause animations",
+ *    language switch.
  * 4. The floating back-to-top button.
  */
 export function Footer({ lang, text, nav, to }: FooterProps) {
@@ -139,6 +141,7 @@ export function Footer({ lang, text, nav, to }: FooterProps) {
             <Link href={to.privacy} className="no-underline">
               {text.privacy}
             </Link>
+            <MotionToggle pause={text.motionPause} play={text.motionPlay} />
           </nav>
           <LangSwitch current={lang} label={nav.language} />
         </div>
