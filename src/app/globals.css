@@ -23,6 +23,14 @@
   --stencil: var(--font-stencil-face), "Big Shoulders Stencil Display", Impact, sans-serif;
   --sans: var(--font-body-face), "Familjen Grotesk", ui-sans-serif, system-ui, sans-serif;
 }
+/* The phone header (64 px) shows below 1090 px, the `nav` breakpoint (see Header): the mobile
+   menu opens right under it, and anchors scroll clear of it. Kept next to :root, outside any
+   @layer: a layered rule would always lose to the unlayered :root above. */
+@media (width < 68.125rem) {
+  :root {
+    --header-h: 64px;
+  }
+}
 
 [data-mode="dark"] {
   --page: #ecede8;
@@ -129,9 +137,6 @@
     outline-offset: 3px;
   }
   @media (max-width: 1023px) {
-    :root {
-      --header-h: 64px;
-    }
     body {
       font-size: 17px;
     }
