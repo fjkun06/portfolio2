@@ -47,8 +47,17 @@ describe("boardingPassHtml", () => {
   });
 
   it("offers a button that answers the visitor, by first name", () => {
-    expect(html).toContain(`href="mailto:ada%40example.com?subject=Re%3A%20Boarding%20pass%3A`);
+    // A plain @: Outlook writes to "ada%40example.com" otherwise.
+    expect(html).toContain(`href="mailto:ada@example.com?subject=Re%3A%20Boarding%20pass%3A`);
+    expect(html).not.toContain("%40");
     expect(html).toContain("Reply to Ada &rarr;");
+  });
+
+  it("keeps plus addresses intact and encodes anything that could break the link", () => {
+    const plus = boardingPassHtml({ ...pass, email: "ada+site@example.com" });
+    expect(plus).toContain(`href="mailto:ada+site@example.com?`);
+    const odd = boardingPassHtml({ ...pass, email: `a"b?c@example.com` });
+    expect(odd).toContain(`href="mailto:a%22b%3Fc@example.com?`);
   });
 
   it("styles everything inline, as email apps require", () => {

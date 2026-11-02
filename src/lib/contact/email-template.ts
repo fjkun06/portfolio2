@@ -68,7 +68,13 @@ export function boardingPassHtml(pass: BoardingPass): string {
   // would wrap the button on a phone.
   const firstName = escapeHtml(pass.name.split(/\s+/)[0] || pass.name);
   const email = escapeHtml(pass.email);
-  const reply = `mailto:${encodeURIComponent(pass.email)}?subject=${encodeURIComponent(`Re: Boarding pass: ${pass.name}`)}`;
+  // The usual address characters stay as they are: some mail apps (Outlook) take "%40" or
+  // "%2B" literally and write to a wrong address. Anything unusual is still encoded, so it
+  // can't break the link.
+  const replyTo = pass.email.replace(/[^A-Za-z0-9@._+-]/g, (c) => encodeURIComponent(c));
+  const reply = escapeHtml(
+    `mailto:${replyTo}?subject=${encodeURIComponent(`Re: Boarding pass: ${pass.name}`)}`,
+  );
   const languages = pass.languages.length
     ? pass.languages.map((l) => chip(l, form.languageNames[l])).join("")
     : dash;
