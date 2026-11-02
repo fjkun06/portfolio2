@@ -183,6 +183,9 @@ const en = {
     inProgress: "In progress: new site under construction",
     shot: "Homepage of {name}",
     shotMissing: "Screenshot: {name}",
+    shotWip: "{name}: work in progress",
+    viewProject: "View the project",
+    followBuild: "Follow the build",
   },
   report: {
     allDepartures: "All departures",
@@ -209,6 +212,21 @@ const en = {
     quote: "Client quote",
     next: "Next departure, {code}",
     board: "Board now",
+  },
+  project: {
+    tag: "FLIGHT",
+    started: "Started",
+    noRoute: "None",
+    statusTitle: "FLIGHT STATUS",
+    live: "Finished and online since {year}.",
+    liveSite: "Take a look at the live site.",
+    boarding:
+      "Boarding: the new site is being built right now. This page fills in once it takes off.",
+    onHold: "On hold: the project is paused for now and will pick up again later.",
+    stagesLabel: "Progress",
+    stages: ["CHECK-IN", "BOARDING", "DEPARTED"],
+    wip: "Work in progress",
+    book: "Book your project",
   },
   form: {
     airline: "FRANK JORDAN AIR",

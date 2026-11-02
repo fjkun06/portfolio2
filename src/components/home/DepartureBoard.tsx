@@ -4,7 +4,7 @@ import { Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
 import { container } from "@/components/ui/layout";
 import { StatusLed } from "@/components/ui/StatusLed";
-import type { Project } from "@/content/projects";
+import { projectHref, type Project } from "@/content/projects";
 import type { Locale } from "@/i18n/config";
 import type { Routes } from "@/i18n/routes";
 import type { Dictionary } from "@/locales/en";
@@ -16,11 +16,6 @@ type DepartureBoardProps = {
   status: Dictionary["status"];
   to: Routes;
 };
-
-/** Where a row leads: the project's flight report if it has one, its card on the Work page otherwise. */
-export function projectHref(project: Project, to: Routes): string {
-  return project.report ? `${to.work}/${project.slug}` : `${to.work}#${project.slug}`;
-}
 
 /**
  * The departures board: recent projects as rows of an airport board, on the same dark panel as
@@ -57,7 +52,7 @@ export function DepartureBoard({ lang, projects, text, status, to }: DepartureBo
           {projects.map((p) => (
             <li key={p.slug} className="rv-flap">
               <Link
-                href={projectHref(p, to)}
+                href={projectHref(p, to.work)}
                 className={`row-board block border-t border-rule-board px-3 py-4 no-underline lg:min-h-[82px] lg:px-5 lg:py-0 ${grid}`}
               >
                 <span className="flex items-center justify-between gap-3 lg:block">

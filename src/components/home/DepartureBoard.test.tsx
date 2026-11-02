@@ -5,16 +5,9 @@ import { projects } from "@/content/projects";
 import { routes } from "@/i18n/routes";
 import fr from "@/locales/fr";
 
-import { DepartureBoard, projectHref } from "./DepartureBoard";
+import { DepartureBoard } from "./DepartureBoard";
 
 const to = routes("fr");
-
-describe("projectHref", () => {
-  it("opens Herzog's flight report and points other projects to the Work page", () => {
-    expect(projectHref(projects[0], to)).toBe("/fr/work/herzog");
-    expect(projectHref(projects[1], to)).toBe("/fr/work#translatpro");
-  });
-});
 
 describe("<DepartureBoard>", () => {
   it("lists one row per project with its translated client type", () => {

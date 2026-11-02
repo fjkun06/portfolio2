@@ -377,6 +377,23 @@
   .shot:hover {
     transform: translateY(-6px);
   }
+  /* Projects still in progress (boarding, on hold): the picture waits greyed out under a status
+     band (<WipBand>), and warm up a little when you point at them. */
+  .wip-media {
+    filter: grayscale(0.85) brightness(0.72);
+    transition: filter 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .shot:hover .wip-media,
+  .shot:focus-visible .wip-media {
+    filter: grayscale(0.35) brightness(0.9);
+  }
+  .wip-band::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -3px;
+    height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--led) 0 3px, transparent 3px 8px);
+  }
   /* LED band that scrolls sideways forever. The content is doubled, so moving it by half loops. */
   .marquee {
     display: flex;

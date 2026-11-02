@@ -35,7 +35,7 @@ export default function WorkPage({ params }: PageProps<"/[lang]/work">) {
 async function Work({ params }: { params: PageProps<"/[lang]/work">["params"] }) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
-  const { work, status } = await getDictionary(lang);
+  const { work, status, project } = await getDictionary(lang);
   const to = routes(lang);
 
   return (
@@ -78,7 +78,14 @@ async function Work({ params }: { params: PageProps<"/[lang]/work">["params"] })
           </div>
         </div>
       </section>
-      <Gallery lang={lang} projects={projects} text={work} status={status} to={to} />
+      <Gallery
+        lang={lang}
+        projects={projects}
+        text={work}
+        status={status}
+        wipLabel={project.wip}
+        to={to}
+      />
     </>
   );
 }

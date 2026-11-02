@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { locales } from "@/i18n/config";
 import { missingGlyphs } from "@/lib/led";
 
-import { featured, findProject, nextDeparture, projects } from "./projects";
-import { reports } from "./reports/herzog";
+import { featured, findProject, isLive, nextDeparture, projectHref, projects } from "./projects";
+import { journeyShots, reports } from "./reports/herzog";
 
 describe("projects", () => {
   it("have unique addresses and flight numbers", () => {
@@ -29,6 +29,31 @@ describe("projects", () => {
   it("feature Herzog trad' with its website", () => {
     expect(featured.slug).toBe("herzog");
     expect(featured.website).toBe("herzog-translations.com");
+  });
+});
+
+describe("pictures", () => {
+  it("give every project a picture, so no card shows a placeholder", () => {
+    for (const p of projects) expect(p.image, p.slug).not.toBeNull();
+  });
+
+  it("give every journey step of a report its phone screen", () => {
+    for (const [slug, report] of Object.entries(reports))
+      expect(journeyShots[slug]).toHaveLength(report.en.journey.length);
+  });
+});
+
+describe("projectHref", () => {
+  it("gives every project its own page", () => {
+    for (const p of projects) expect(projectHref(p, "/fr/work")).toBe(`/fr/work/${p.slug}`);
+  });
+});
+
+describe("isLive", () => {
+  it("tells finished projects from ones still boarding or on hold", () => {
+    expect(isLive(findProject("herzog")!)).toBe(true);
+    expect(isLive(findProject("translatpro")!)).toBe(false);
+    expect(isLive(findProject("brytzone")!)).toBe(false);
   });
 });
 

@@ -11,7 +11,14 @@ vi.mock("next/image", () => import("@/test/next-image-mock"));
 
 function setup() {
   return render(
-    <Gallery lang="en" projects={projects} text={en.work} status={en.status} to={routes("en")} />,
+    <Gallery
+      lang="en"
+      projects={projects}
+      text={en.work}
+      status={en.status}
+      wipLabel={en.project.wip}
+      to={routes("en")}
+    />,
   );
 }
 
@@ -21,15 +28,34 @@ describe("<Gallery>", () => {
     for (const p of projects) expect(container.querySelector(`#${p.slug}`)).not.toBeNull();
   });
 
-  it("describes screenshots and marks missing ones as placeholders", () => {
+  it("shows a picture for every project, no placeholders", () => {
     setup();
     expect(screen.getByRole("img", { name: "Homepage of DIGTAL" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("img", { name: `Placeholder: ${en.work.inProgress}` }),
-    ).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /^Placeholder/ })).toBeNull();
   });
 
-  it("links to the flight report where there is one", () => {
+  it("opens every project's own page, from the picture and from the link", () => {
+    const { container } = setup();
+    for (const p of projects) {
+      const card = container.querySelector(`#${p.slug}`)!;
+      const hrefs = [...card.querySelectorAll("a")].map((a) => a.getAttribute("href"));
+      expect(hrefs).toEqual([`/en/work/${p.slug}`, `/en/work/${p.slug}`]);
+    }
+  });
+
+  it("greys out projects in progress under a status band, and invites you to follow them", () => {
+    const { container } = setup();
+    const live = container.querySelector("#digtal")!;
+    const boarding = container.querySelector("#translatpro")!;
+    expect(live.querySelector(".wip-media, .wip-band")).toBeNull();
+    expect(live).toHaveTextContent(en.work.viewProject);
+    expect(boarding.querySelector("img")).toHaveClass("wip-media");
+    expect(boarding.querySelector(".wip-band")).toHaveTextContent(en.project.wip);
+    expect(boarding).toHaveTextContent(en.work.followBuild);
+    expect(screen.getByRole("img", { name: "TRANSLATPRO: work in progress" })).toBeInTheDocument();
+  });
+
+  it("calls Herzog's link a flight report", () => {
     setup();
     expect(screen.getByRole("link", { name: en.work.readReport })).toHaveAttribute(
       "href",

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { FlightStatus, ProjectHero } from "@/components/project/ProjectSections";
 import { ReportHero } from "@/components/report/ReportHero";
 import {
   Brief,
@@ -11,16 +12,25 @@ import {
   NextDeparture,
   Quote,
 } from "@/components/report/ReportSections";
-import { findProject, nextDeparture, projects } from "@/content/projects";
-import { reports } from "@/content/reports/herzog";
-import { hasLocale } from "@/i18n/config";
+import { WipBand } from "@/components/ui/WipBand";
+import {
+  findProject,
+  isLive,
+  nextDeparture,
+  projectHref,
+  projects,
+  type Project,
+} from "@/content/projects";
+import { journeyShots, reports } from "@/content/reports/herzog";
+import { fill } from "@/i18n/fill";
+import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { routes } from "@/i18n/routes";
 import { pageMetadata } from "@/lib/seo/metadata";
 
-/** Only projects with a report get a page; every language is built for each. */
+/** Every project gets a page, in every language. */
 export function generateStaticParams() {
-  return projects.filter((p) => p.report && reports[p.slug]).map((p) => ({ slug: p.slug }));
+  return projects.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
@@ -28,21 +38,26 @@ export async function generateMetadata({
 }: PageProps<"/[lang]/work/[slug]">): Promise<Metadata> {
   const { lang, slug } = await params;
   const project = findProject(slug);
+  if (!hasLocale(lang) || !project) return {};
   const report = reports[slug];
-  if (!hasLocale(lang) || !project || !report) return {};
   const { report: text, meta } = await getDictionary(lang);
   return pageMetadata({
     lang,
     path: `/work/${slug}`,
-    title: `${project.name} · ${text.tag.toLowerCase()} · Frank Jordan`,
-    description: report[lang].intro,
+    title: report
+      ? `${project.name} · ${text.tag.toLowerCase()} · Frank Jordan`
+      : `${project.name} · Frank Jordan`,
+    description: report ? report[lang].intro : project.summary[lang],
     imageAlt: meta.ogAlt,
   });
 }
 
 /**
- * A flight report (case study): hero with route map and facts, the homepage screenshot,
- * the brief, the customer journey, what was built, the client's words, and the next project.
+ * A project's own page.
+ * - With a flight report (case study): hero with route map and facts, the homepage screenshot,
+ *   the brief, the customer journey, what was built, the client's words, and the next project.
+ * - Without one: hero with the facts, the screenshot, the flight status (live, or still in
+ *   progress with the picture greyed out under a status band), and the next project.
  */
 export default function ReportPage({ params }: PageProps<"/[lang]/work/[slug]">) {
   return (
@@ -55,7 +70,8 @@ export default function ReportPage({ params }: PageProps<"/[lang]/work/[slug]">)
 async function ReportContent({ params }: { params: PageProps<"/[lang]/work/[slug]">["params"] }) {
   const { lang, slug } = await params;
   const project = findProject(slug);
-  if (!hasLocale(lang) || !project || !reports[slug]) notFound();
+  if (!hasLocale(lang) || !project) notFound();
+  if (!reports[slug]) return <ProjectContent lang={lang} project={project} />;
   const report = reports[slug][lang];
   const { report: text, status, work } = await getDictionary(lang);
   const to = routes(lang);
@@ -74,14 +90,50 @@ async function ReportContent({ params }: { params: PageProps<"/[lang]/work/[slug
       />
       <HomepageShot project={project} text={text} />
       <Brief report={report} text={text} />
-      <Journey report={report} text={text} />
+      <Journey report={report} shots={journeyShots[slug]} text={text} />
       <Manifest report={report} text={text} />
       <Quote report={report} text={text} />
-      <NextDeparture
-        project={next}
-        href={next.report ? `${to.work}/${next.slug}` : `${to.work}#${next.slug}`}
+      <NextDeparture project={next} href={projectHref(next, to.work)} text={text} />
+    </>
+  );
+}
+
+/** The page of a project without a flight report. */
+async function ProjectContent({ lang, project }: { lang: Locale; project: Project }) {
+  const { project: text, report, status, work } = await getDictionary(lang);
+  const to = routes(lang);
+  const next = nextDeparture(project);
+  const live = isLive(project);
+
+  return (
+    <>
+      <ProjectHero
+        lang={lang}
+        project={project}
         text={text}
+        facts={report.facts}
+        status={status}
+        crumbs={{
+          home: work.home,
+          homeHref: to.home,
+          all: report.allDepartures,
+          workHref: to.work,
+        }}
       />
+      <HomepageShot
+        project={project}
+        text={report}
+        wip={
+          live
+            ? undefined
+            : {
+                alt: fill(work.shotWip, { name: project.name }),
+                band: <WipBand status={project.status} label={text.wip} text={status} />,
+              }
+        }
+      />
+      <FlightStatus project={project} text={text} status={status} contactHref={to.contact} />
+      <NextDeparture project={next} href={projectHref(next, to.work)} text={report} />
     </>
   );
 }

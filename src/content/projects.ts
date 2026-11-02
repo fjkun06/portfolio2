@@ -7,6 +7,7 @@ import digtal from "../../public/work/digtal.webp";
 import flippbidd from "../../public/work/flippbidd.webp";
 import herzogPhone from "../../public/work/herzog-phone.webp";
 import herzog from "../../public/work/herzog.webp";
+import translatpro from "../../public/work/translatpro.webp";
 import trucks from "../../public/work/trucks.webp";
 
 /**
@@ -37,11 +38,14 @@ export type Project = {
   onHome: boolean;
   /** One or two sentences about the project, per language. */
   summary: Record<Locale, string>;
-  /** Screenshot of the homepage, or null while there's none (a placeholder is shown). */
+  /**
+   * Screenshot of the homepage (or, while a site is still being built, a board-style cover),
+   * or null while there's none (a placeholder is shown).
+   */
   image: StaticImageData | null;
   /** Phone screenshot (9 : 18), for the featured project on the home page. */
   imagePhone?: StaticImageData;
-  /** Has its own flight report page at /work/<slug>. */
+  /** Has a full flight report (case study). Every project has a page at /work/<slug>. */
   report: boolean;
 };
 
@@ -87,7 +91,7 @@ export const projects: Project[] = [
       fr: "Une agence de traduction et d’interprétation à Yaoundé, qui passe de WordPress à un site plus rapide sans perdre son référencement Google.",
       de: "Eine Übersetzungs- und Dolmetschagentur in Yaoundé, die von WordPress auf eine schnellere Website umzieht, ohne ihre Google-Rankings zu verlieren.",
     },
-    image: null,
+    image: translatpro,
     report: false,
   },
   {
@@ -167,6 +171,16 @@ export const projects: Project[] = [
     report: false,
   },
 ];
+
+/** Live projects are finished and online; the others (boarding, on hold) are still in progress. */
+export function isLive(project: Project): boolean {
+  return project.status === "LIVE";
+}
+
+/** A project's own page: its flight report, or its project page. */
+export function projectHref(project: Project, workHref: string): string {
+  return `${workHref}/${project.slug}`;
+}
 
 /** Finds a project by its address, or undefined. */
 export function findProject(slug: string): Project | undefined {

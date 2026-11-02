@@ -1,4 +1,11 @@
+import type { StaticImageData } from "next/image";
+
 import type { Locale } from "@/i18n/config";
+
+import choose from "../../../public/work/herzog-choose.webp";
+import confirm from "../../../public/work/herzog-confirm.webp";
+import pay from "../../../public/work/herzog-pay.webp";
+import upload from "../../../public/work/herzog-upload.webp";
 
 /**
  * The flight report (case study) of Herzog trad', in three languages.
@@ -239,4 +246,12 @@ export const herzogReport: Record<Locale, Report> = {
 /** Reports by project address. Only projects with `report: true` need one. */
 export const reports: Record<string, Record<Locale, Report>> = {
   herzog: herzogReport,
+};
+
+/**
+ * Phone screens of each report's journey, in step order (the same in every language).
+ * Captured from the live site without sending an order; a missing one shows a placeholder.
+ */
+export const journeyShots: Record<string, StaticImageData[]> = {
+  herzog: [choose, upload, pay, confirm],
 };

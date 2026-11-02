@@ -186,6 +186,9 @@ const fr: Dictionary = {
     inProgress: "En cours : nouveau site en construction",
     shot: "Page d’accueil de {name}",
     shotMissing: "Capture d’écran : {name}",
+    shotWip: "{name} : en cours",
+    viewProject: "Voir le projet",
+    followBuild: "Suivre le chantier",
   },
   report: {
     allDepartures: "Tous les départs",
@@ -212,6 +215,21 @@ const fr: Dictionary = {
     quote: "Avis de la cliente",
     next: "Prochain départ, {code}",
     board: "Embarquer",
+  },
+  project: {
+    tag: "VOL",
+    started: "Commencé",
+    noRoute: "Aucune",
+    statusTitle: "ÉTAT DU VOL",
+    live: "Terminé et en ligne depuis {year}.",
+    liveSite: "Jetez un œil au site en ligne.",
+    boarding:
+      "Embarquement : le nouveau site est en cours de construction. Cette page se remplira au décollage.",
+    onHold: "En attente : le projet est en pause pour l’instant et reprendra plus tard.",
+    stagesLabel: "Avancement",
+    stages: ["ENREGISTREMENT", "EMBARQUEMENT", "DÉCOLLÉ"],
+    wip: "En cours",
+    book: "Réservez votre projet",
   },
   form: {
     airline: "FRANK JORDAN AIR",

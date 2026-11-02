@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 
 import { Led } from "@/components/Led";
@@ -12,8 +12,23 @@ import type { Dictionary } from "@/locales/en";
 
 type Text = Dictionary["report"];
 
-/** The homepage screenshot in a browser frame, tilted up as it arrives and overlapping the board. */
-export function HomepageShot({ project, text }: { project: Project; text: Text }) {
+/**
+ * The homepage screenshot in a browser frame, tilted up as it arrives and overlapping the board.
+ * The address bar shows the website (with an "Open site" link), or the project's name when it
+ * has none. For a project still in progress, pass `wip`: the picture is greyed out under a status
+ * band and described as work in progress.
+ */
+export function HomepageShot({
+  project,
+  text,
+  wip,
+}: {
+  project: Project;
+  text: Text;
+  wip?: { band: React.ReactNode; alt: string };
+}) {
+  const address = project.website || project.name;
+  const alt = wip ? wip.alt : fill(text.shotHome, { site: address });
   return (
     <section
       aria-label={text.homepage}
@@ -28,38 +43,39 @@ export function HomepageShot({ project, text }: { project: Project; text: Text }
           </span>
           <span className="mx-auto">
             <Led
-              text={project.website.toUpperCase()}
+              text={address.toUpperCase()}
               pitch={2.4}
               tone="grey"
               glow={false}
-              label={project.website}
+              label={address}
             />
           </span>
-          <a
-            href={`https://${project.website}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden text-[13px] text-muted-board lg:inline"
-          >
-            {text.openSite}
-          </a>
+          {project.website && (
+            <a
+              href={`https://${project.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden text-[13px] text-muted-board lg:inline"
+            >
+              {text.openSite}
+            </a>
+          )}
         </div>
-        {project.image ? (
-          <Image
-            src={project.image}
-            alt={fill(text.shotHome, { site: project.website })}
-            sizes="(min-width: 1280px) 1200px, 100vw"
-            placeholder="blur"
-            loading="eager"
-            className="block aspect-[16/8.5] w-full object-cover object-top"
-          />
-        ) : (
-          <Placeholder
-            label={fill(text.shotHome, { site: project.website })}
-            ratio="16 / 8.5"
-            className="w-full"
-          />
-        )}
+        <div className="relative">
+          {project.image ? (
+            <Image
+              src={project.image}
+              alt={alt}
+              sizes="(min-width: 1280px) 1200px, 100vw"
+              placeholder="blur"
+              loading="eager"
+              className={`block aspect-[16/8.5] w-full object-cover object-top ${wip ? "wip-media" : ""}`}
+            />
+          ) : (
+            <Placeholder label={alt} ratio="16 / 8.5" className="w-full" />
+          )}
+          {wip?.band}
+        </div>
       </div>
     </section>
   );
@@ -97,7 +113,16 @@ export function Brief({ report, text }: { report: Report; text: Text }) {
  * Desktop: four phones in a row, drifting up and down at different speeds as you scroll.
  * Phones: a horizontal strip you swipe through, one phone at a time (scroll snapping).
  */
-export function Journey({ report, text }: { report: Report; text: Text }) {
+export function Journey({
+  report,
+  shots = [],
+  text,
+}: {
+  report: Report;
+  /** Phone screen per step, in order; a missing one shows a placeholder. */
+  shots?: StaticImageData[];
+  text: Text;
+}) {
   return (
     <section aria-labelledby="journey-title" className="pt-20 lg:pt-36">
       <div className={`${container} flex flex-wrap items-end justify-between gap-5`}>
@@ -116,11 +141,21 @@ export function Journey({ report, text }: { report: Report; text: Text }) {
                 className={`board card-edge rounded-[24px] p-2 shadow-[0_30px_40px_-30px_rgba(0,0,0,0.45)] lg:rounded-[28px] lg:p-2.5 ${i % 2 === 0 ? "px-up" : "px-down"}`}
               >
                 <div className="overflow-hidden rounded-[17px] lg:rounded-[20px]">
-                  <Placeholder
-                    label={fill(text.shotScreen, { step: s.step.toLowerCase() })}
-                    ratio="9 / 17"
-                    className="w-full text-xs lg:text-[15px]"
-                  />
+                  {shots[i] ? (
+                    <Image
+                      src={shots[i]}
+                      alt={fill(text.shotScreen, { step: s.step.toLowerCase() })}
+                      sizes="(min-width: 1024px) 260px, 194px"
+                      placeholder="blur"
+                      className="block aspect-[9/17] w-full object-cover object-top"
+                    />
+                  ) : (
+                    <Placeholder
+                      label={fill(text.shotScreen, { step: s.step.toLowerCase() })}
+                      ratio="9 / 17"
+                      className="w-full text-xs lg:text-[15px]"
+                    />
+                  )}
                 </div>
               </div>
               <p className="board chip-line m-0 mt-3.5 inline-flex rounded px-1.5 py-1 lg:mt-5 lg:px-[7px] lg:py-[5px]">
