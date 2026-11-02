@@ -43,12 +43,160 @@ const fr: Dictionary = {
     privacy: "Confidentialité",
     backToTop: "Retour en haut",
   },
-  preview: {
-    note: "Aperçu de la base : en-tête, pied de page, lettres LED et animations au défilement. La vraie page d’accueil arrive ensuite.",
-    headline: ["DES SITES QUI", "PARLENT LA LANGUE", "DE VOS CLIENTS."],
-    headlineShort: ["DES SITES", "QUI PARLENT", "LA LANGUE", "DE VOS", "CLIENTS."],
-    headlineText: "Des sites qui parlent la langue de vos clients.",
-    sections: ["Apparition : montée", "Apparition : glissement", "Apparition : balayage"],
+  status: {
+    label: "Statut",
+    LIVE: "en ligne",
+    BOARDING: "embarquement, en cours",
+    "ON HOLD": "en pause",
+  },
+  home: {
+    hero: {
+      headline: ["DES SITES QUI", "PARLENT LA LANGUE", "DE VOS CLIENTS."],
+      headlineShort: ["DES SITES", "QUI PARLENT", "LA LANGUE", "DE VOS", "CLIENTS."],
+      headlineText: "Des sites qui parlent la langue de vos clients.",
+      intro:
+        "Je suis Frank, développeur frontend en Allemagne. Je conçois et développe des sites rapides en français, anglais et allemand pour les entreprises dont les clients ne parlent pas tous la même langue.",
+      route: "Route",
+      routeLabel: "Cameroun ⇄ Allemagne",
+      book: "Réservez votre projet",
+      departures: "Voir les départs",
+    },
+    board: {
+      title: "Départs : projets récents",
+      columns: ["Année", "Projet", "Client", "Route", "Langues", "Statut"],
+      all: "Tous les départs",
+    },
+    featured: {
+      tag: "VOL À LA UNE FJ 001",
+      intro:
+        "Traductrice assermentée français-allemand. Installée en Allemagne, avec la plupart de ses clients au Cameroun.",
+      lead: "Ses clients au Cameroun commandent des traductions certifiées depuis l’Allemagne en quelques minutes : sans appel, sans coursier, sans déplacement.",
+      body: "Ils choisissent le document, envoient un scan depuis leur téléphone, voient le prix selon le nombre de pages et paient comme ils en ont l’habitude. La traductrice reçoit la commande complète dans sa boîte mail, fichiers joints.",
+      details: { route: "Route", languages: "Langues", payment: "Paiement", status: "Statut" },
+      payment: "SEPA + ORANGE MONEY",
+      highlights: [
+        {
+          title: "Prix à la page",
+          text: "Calculé en direct pendant que le client remplit le formulaire.",
+        },
+        { title: "Envois légers", text: "Les photos du téléphone sont allégées avant l’envoi." },
+        { title: "Deux monnaies", text: "Chaque montant en euros et en francs CFA." },
+      ],
+      report: "Lire le rapport de vol",
+      visit: "Visiter {site}",
+      shotDesktop: "Capture d’écran : herzog-translations.com, page d’accueil",
+      shotPhone: "Formulaire de commande, téléphone",
+      reportLabel: "Herzog trad’, lire le rapport de vol",
+    },
+    marquee: "Prochain départ : votre projet. Réservez-le.",
+    routes: {
+      title: ["MES", "ROUTES"],
+      titleText: "Mes routes",
+      intro:
+        "Pas de modèles tout faits. Chaque site est pensé pour votre activité et pour ceux qui l’utilisent.",
+      more: "Tous les services en détail",
+      items: [
+        {
+          from: "UNE LANGUE",
+          to: "TROIS LANGUES",
+          title: "Sites d’entreprise multilingues",
+          text: "Un site dans chaque langue que parlent vos clients, avec de vraies traductions et des pages que Google comprend dans chacune.",
+        },
+        {
+          from: "DES APPELS",
+          to: "DES COMMANDES EN LIGNE",
+          title: "Formulaires de commande et de demande",
+          text: "Vos clients envoient leurs documents, choisissent leurs options et paient. Chaque demande arrive proprement dans votre boîte mail.",
+        },
+        {
+          from: "UNE IDÉE",
+          to: "UNE PAGE DE LANCEMENT",
+          title: "Pages de lancement",
+          text: "Une page rapide pour un produit, un événement ou une campagne, pensée pour que le visiteur sache quoi faire ensuite.",
+        },
+        {
+          from: "VIEUX WORDPRESS",
+          to: "RAPIDE ET VISIBLE",
+          title: "Refontes sans perdre Google",
+          text: "Passer d’un site ancien ou d’un modèle à un site plus rapide, en gardant le référencement que vous avez déjà.",
+        },
+      ],
+    },
+    plan: {
+      title: "VOTRE PLAN DE VOL",
+      intro:
+        "Quatre escales du premier message à la mise en ligne. Faites défiler pour suivre la route.",
+      stop: "Escale",
+      more: "Le plan de vol complet",
+      stops: [
+        {
+          name: "ENREGISTREMENT",
+          text: "On échange sur WhatsApp, par e-mail ou en visio sur votre activité et ses langues.",
+        },
+        {
+          name: "EMBARQUEMENT",
+          text: "Vous donnez votre avis sur une maquette des pages clés avant la moindre ligne de code.",
+        },
+        {
+          name: "EN VOL",
+          text: "Je développe le site. Vous suivez l’avancement sur un lien d’aperçu privé.",
+        },
+        {
+          name: "ATTERRISSAGE",
+          text: "Domaine, e-mail et Google configurés, et je reste disponible pour les changements.",
+        },
+      ],
+    },
+    captain: {
+      title: "VOTRE COMMANDANT",
+      onDuty: "EN SERVICE DEPUIS 2021",
+      more: "En savoir plus sur moi",
+      photo: "Portrait de Frank Jordan",
+      caption: "Développeur frontend, Allemagne",
+      lead: "J’ai grandi au Cameroun, étudié le génie informatique à Buea et j’étudie aujourd’hui l’Ingenieurinformatik à la THGA de Bochum. Je parle les trois langues de vos clients, rien ne se perd entre elles.",
+      body: "Depuis 2021, je développe des interfaces web avec React, Next.js et TypeScript, dernièrement au sein d’une équipe internationale chez Accenture. Sur mes propres projets, je m’occupe de tout : design, code, hébergement, e-mail et référencement sur Google.",
+      log: "Carnet de vol",
+      logColumns: ["Année", "Poste", "Où"],
+      entries: [
+        { year: "AUJ.", role: "INGENIEURINFORMATIK", where: "THGA Bochum" },
+        { year: "2023-25", role: "DÉVELOPPEUR FRONTEND", where: "Accenture GmbH" },
+        { year: "2023", role: "DÉVELOPPEUR FRONTEND", where: "WandaPrep" },
+        { year: "2023", role: "B.SC. GÉNIE INFORMATIQUE", where: "Université de Buea" },
+        { year: "2021", role: "DÉV. FRONTEND BÉNÉVOLE", where: "Positive Impact Events" },
+      ],
+    },
+    ticket: {
+      title: "VOTRE CARTE D’EMBARQUEMENT",
+      intro: "Remplissez-la et je vous réponds sous un jour ouvré, depuis l’Allemagne.",
+    },
+  },
+  form: {
+    airline: "FRANK JORDAN AIR",
+    name: "Passager",
+    namePlaceholder: "Votre nom",
+    email: "E-mail",
+    emailPlaceholder: "vous@entreprise.com",
+    from: "Départ",
+    fromPlaceholder: "Votre entreprise, et où elle se trouve",
+    languages: "Destination : quelles langues ?",
+    languageNames: { EN: "Anglais", FR: "Français", DE: "Allemand" },
+    message: "Bagages : de quoi avez-vous besoin ?",
+    messagePlaceholder: "Quelques lignes sur le site que vous imaginez",
+    consent:
+      "J’accepte que mes données soient utilisées pour répondre à mon message. Voir la {privacy}.",
+    privacy: "politique de confidentialité",
+    stub: { gate: "Porte", seat: "Siège", reply: "Réponse", zone: "Zone" },
+    send: "Envoyer la carte",
+    sending: "Envoi…",
+    sent: "Merci ! Votre carte d’embarquement est partie. Je vous réponds sous un jour ouvré.",
+    again: "En envoyer une autre",
+    errors: {
+      name: "Indiquez votre nom, s’il vous plaît.",
+      email: "Indiquez une adresse e-mail valide.",
+      message: "Écrivez quelques mots (au moins 10 caractères).",
+      consent: "Merci d’accepter pour que je puisse vous répondre.",
+      server: "Désolé, le message n’a pas pu être envoyé. Écrivez-moi plutôt à {email}.",
+    },
   },
 };
 

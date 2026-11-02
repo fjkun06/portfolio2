@@ -327,6 +327,481 @@
   }
 }
 
+/* ---------- Home page ---------- */
+@layer components {
+  /* Rows of the departures board and other light lists */
+  .row-light {
+    transition: background-color 0.15s;
+  }
+  .row-light:hover {
+    background-color: rgba(20, 21, 23, 0.05);
+  }
+  .row-light:hover .row-go {
+    transform: translateX(4px);
+  }
+  /* Screenshots lift slightly on hover */
+  .shot {
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .shot:hover {
+    transform: translateY(-6px);
+  }
+  /* LED band that scrolls sideways forever. The content is doubled, so moving it by half loops. */
+  .marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 34s linear infinite;
+  }
+  .marquee-band:hover .marquee,
+  .marquee-band:focus-visible .marquee {
+    animation-play-state: paused;
+  }
+  /* Placeholder for screenshots that haven't been supplied yet */
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    text-align: center;
+    background-color: #ecede8;
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 16px,
+      rgba(20, 21, 23, 0.035) 16px 32px
+    );
+    color: var(--label);
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- Form controls: custom checkboxes and language chips with an LED tick ---------- */
+@layer components {
+  .cb-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+  }
+  .cb-box {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    box-sizing: border-box;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  .cb-box svg {
+    opacity: 0;
+    transform: scale(0.4);
+    transition:
+      opacity 0.2s,
+      transform 0.25s cubic-bezier(0.2, 1.5, 0.4, 1);
+  }
+  .cb-input:checked + .cb-box {
+    background: var(--ink);
+  }
+  .cb-input:checked + .cb-box svg {
+    opacity: 1;
+    transform: none;
+  }
+  .cb:hover .cb-input:not(:checked) + .cb-box {
+    background: rgba(20, 21, 23, 0.08);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    color: var(--ink);
+    font-family: var(--stencil);
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .chip svg {
+    width: 0;
+    margin-right: 0;
+    opacity: 0;
+    transition:
+      width 0.25s,
+      margin 0.25s,
+      opacity 0.2s;
+  }
+  .chip:hover {
+    background: rgba(20, 21, 23, 0.08);
+  }
+  .cb-input:checked + .chip {
+    background: var(--ink);
+    color: #ecede8;
+  }
+  .cb-input:checked + .chip svg {
+    width: 15px;
+    margin-right: 9px;
+    opacity: 1;
+  }
+  .cb-input:focus-visible + .cb-box,
+  .cb-input:focus-visible + .chip {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .ticket-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2px 0 6px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--stencil);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    outline: none;
+  }
+  .ticket-input::placeholder,
+  .ticket-textarea::placeholder {
+    color: #a3a7ad;
+  }
+  .ticket-input:focus,
+  .ticket-textarea:focus {
+    border-bottom-color: var(--accent-ink);
+  }
+  .ticket-input[aria-invalid="true"],
+  .ticket-textarea[aria-invalid="true"] {
+    border-bottom-color: var(--danger);
+  }
+  .ticket-textarea {
+    padding: 4px 0 8px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 19px;
+    resize: vertical;
+    outline: none;
+  }
+  @media (max-width: 1023px) {
+    .ticket-input {
+      font-size: 26px;
+    }
+    .ticket-textarea {
+      font-size: 17px;
+    }
+    .chip {
+      min-height: 44px;
+      padding: 0 12px;
+      font-size: 19px;
+    }
+  }
+}
+
+/* ---------- Flight plan: the plane flies the route as you scroll ----------
+ * Desktop (.orbit): around an ellipse. Phones and tablets (.vtrack): straight down.
+ * Stop markers and numbers light up as the plane passes them (28.3 %, 56.7 % and 85 % of the way).
+ * Default state (no animation support, reduced motion): every stop lit, plane at the start.
+ */
+.orbit-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-path: path("M 220 300 A 380 140 0 1 1 980 300 A 380 140 0 1 1 220 300");
+  offset-rotate: auto;
+  offset-distance: 0%;
+}
+.stop-num {
+  grid-area: 1 / 1;
+}
+.stop-num.n1,
+.stop-num.n2,
+.stop-num.n3 {
+  opacity: 0;
+}
+.vplane {
+  position: absolute;
+  top: 0;
+  left: -4px;
+}
+@supports (animation-timeline: view()) {
+  .orbit {
+    view-timeline-name: --plan;
+  }
+  .vtrack {
+    view-timeline-name: --planm;
+  }
+  .orbit-plane,
+  .stop-mark,
+  .stop-lit,
+  .stop-num {
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --plan;
+    animation-range: cover 18% cover 72%;
+  }
+  .vtrack .stop-mark,
+  .vtrack .stop-lit,
+  .vplane {
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --planm;
+    animation-range: cover 25% cover 75%;
+  }
+  .orbit-plane {
+    animation-name: orbit-fly;
+  }
+  .vplane {
+    animation-name: vertical-fly;
+  }
+  .stop-mark.s1 {
+    animation-name: mark1;
+  }
+  .stop-mark.s2 {
+    animation-name: mark2;
+  }
+  .stop-mark.s3 {
+    animation-name: mark3;
+  }
+  .stop-lit.s1 {
+    animation-name: lit1;
+  }
+  .stop-lit.s2 {
+    animation-name: lit2;
+  }
+  .stop-lit.s3 {
+    animation-name: lit3;
+  }
+  .stop-num.n0 {
+    animation-name: num0;
+  }
+  .stop-num.n1 {
+    animation-name: num1;
+  }
+  .stop-num.n2 {
+    animation-name: num2;
+  }
+  .stop-num.n3 {
+    animation-name: num3;
+  }
+}
+@keyframes orbit-fly {
+  0% {
+    offset-distance: 0%;
+    transform: scale(1);
+  }
+  28.3% {
+    offset-distance: 25%;
+    transform: scale(0.62);
+  }
+  56.7% {
+    offset-distance: 50%;
+    transform: scale(1);
+  }
+  85%,
+  100% {
+    offset-distance: 75%;
+    transform: scale(1.45);
+  }
+}
+@keyframes vertical-fly {
+  0% {
+    top: 0;
+  }
+  28.3% {
+    top: 180px;
+  }
+  56.7% {
+    top: 360px;
+  }
+  85%,
+  100% {
+    top: 540px;
+  }
+}
+@keyframes mark1 {
+  0%,
+  28.2% {
+    background: var(--page);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  28.3%,
+  100% {
+    background: var(--led);
+    box-shadow: 0 0 0 6px var(--led-glow);
+    transform: scale(1.25);
+  }
+}
+@keyframes mark2 {
+  0%,
+  56.6% {
+    background: var(--page);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  56.7%,
+  100% {
+    background: var(--led);
+    box-shadow: 0 0 0 6px var(--led-glow);
+    transform: scale(1.25);
+  }
+}
+@keyframes mark3 {
+  0%,
+  84.9% {
+    background: var(--page);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  85%,
+  100% {
+    background: var(--led);
+    box-shadow: 0 0 0 6px var(--led-glow);
+    transform: scale(1.25);
+  }
+}
+@keyframes lit1 {
+  0%,
+  28.2% {
+    opacity: 0;
+  }
+  28.3%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes lit2 {
+  0%,
+  56.6% {
+    opacity: 0;
+  }
+  56.7%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes lit3 {
+  0%,
+  84.9% {
+    opacity: 0;
+  }
+  85%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes num0 {
+  0%,
+  28.2% {
+    opacity: 1;
+  }
+  28.3%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes num1 {
+  0%,
+  28.2% {
+    opacity: 0;
+  }
+  28.3%,
+  56.6% {
+    opacity: 1;
+  }
+  56.7%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes num2 {
+  0%,
+  56.6% {
+    opacity: 0;
+  }
+  56.7%,
+  84.9% {
+    opacity: 1;
+  }
+  85%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes num3 {
+  0%,
+  84.9% {
+    opacity: 0;
+  }
+  85%,
+  100% {
+    opacity: 1;
+  }
+}
+/* Fallback (Firefox): ScrollEffects writes the section's scroll progress to --p (0 to 1). */
+.no-sda .orbit {
+  --k: clamp(0, calc((var(--p, 0) - 0.18) / 0.54), 1);
+}
+.no-sda .vtrack {
+  --k: clamp(0, calc((var(--p, 0) - 0.25) / 0.5), 1);
+}
+.no-sda :is(.orbit, .vtrack) {
+  --on1: clamp(0, calc((var(--k) - 0.283) * 1000), 1);
+  --on2: clamp(0, calc((var(--k) - 0.567) * 1000), 1);
+  --on3: clamp(0, calc((var(--k) - 0.85) * 1000), 1);
+}
+.no-sda .orbit-plane {
+  offset-distance: calc(var(--k) * 75%);
+}
+.no-sda .vplane {
+  top: calc(var(--k) * 540px);
+}
+.no-sda .stop-mark.s1 {
+  background: color-mix(in srgb, var(--led) calc(var(--on1) * 100%), var(--page)) !important;
+}
+.no-sda .stop-mark.s2 {
+  background: color-mix(in srgb, var(--led) calc(var(--on2) * 100%), var(--page)) !important;
+}
+.no-sda .stop-mark.s3 {
+  background: color-mix(in srgb, var(--led) calc(var(--on3) * 100%), var(--page)) !important;
+}
+.no-sda .stop-lit.s1 {
+  opacity: var(--on1);
+}
+.no-sda .stop-lit.s2 {
+  opacity: var(--on2);
+}
+.no-sda .stop-lit.s3 {
+  opacity: var(--on3);
+}
+.no-sda .stop-num.n0 {
+  opacity: calc(1 - var(--on1));
+}
+.no-sda .stop-num.n1 {
+  opacity: calc(var(--on1) - var(--on2));
+}
+.no-sda .stop-num.n2 {
+  opacity: calc(var(--on2) - var(--on3));
+}
+.no-sda .stop-num.n3 {
+  opacity: var(--on3);
+}
+
 /* ---------- Scroll progress: the runway under the header and the back-to-top frame ----------
  * Browsers with scroll-driven animations do it in CSS. Others (Firefox today) get --scroll
  * from a small script, 0 at the top of the page and 1 at the bottom.
@@ -557,5 +1032,11 @@
   .totop {
     opacity: 1;
     visibility: visible;
+  }
+  .stop-num.n0 {
+    opacity: 1 !important;
+  }
+  .stop-num:not(.n0) {
+    opacity: 0 !important;
   }
 }

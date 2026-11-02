@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ScrollEffects } from "./ScrollEffects";
+import { ScrollEffects, sectionProgress } from "./ScrollEffects";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/en" }));
 
@@ -72,5 +72,26 @@ describe("<ScrollEffects>", () => {
     window.dispatchEvent(new Event("scroll"));
     await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
     expect(root.style.getPropertyValue("--scroll")).toBe("1.0000");
+  });
+});
+
+describe("sectionProgress", () => {
+  function element(top: number, height: number) {
+    const el = document.createElement("div");
+    el.getBoundingClientRect = () => ({ top, height }) as DOMRect;
+    return el;
+  }
+
+  it("goes from 0 (just entering at the bottom) to 1 (just left at the top)", () => {
+    vi.stubGlobal("innerHeight", 800);
+    expect(sectionProgress(element(800, 400))).toBe("0.0000");
+    expect(sectionProgress(element(200, 400))).toBe("0.5000");
+    expect(sectionProgress(element(-400, 400))).toBe("1.0000");
+  });
+
+  it("stays between 0 and 1 outside the screen", () => {
+    vi.stubGlobal("innerHeight", 800);
+    expect(sectionProgress(element(2000, 400))).toBe("0.0000");
+    expect(sectionProgress(element(-2000, 400))).toBe("1.0000");
   });
 });

@@ -14,13 +14,16 @@ function shape(value: unknown, path = ""): string[] {
   return [path];
 }
 
-/** All strings under keys whose name ends in "Led" or that hold LED headlines. */
+/** Every text the site draws in LED dots. Add new LED texts here so they get checked. */
 function ledLines(dict: typeof en): string[] {
   return [
     ...dict.footer.nextLed,
     ...dict.footer.nextLedShort,
-    ...dict.preview.headline,
-    ...dict.preview.headlineShort,
+    ...dict.home.hero.headline,
+    ...dict.home.hero.headlineShort,
+    dict.home.featured.tag,
+    dict.home.captain.onDuty,
+    ...dict.home.captain.entries.map((entry) => entry.year),
   ];
 }
 
