@@ -89,7 +89,7 @@ export function ReportHero({
           <div className="rv-scale hidden lg:block">
             <RouteMap size="desktop" label={text.routeLabel} />
           </div>
-          <div className="rv-scale lg:hidden">
+          <div className="rv-scale w-full max-w-[560px] lg:hidden">
             <RouteMap size="mobile" label={text.routeLabel} />
           </div>
         </div>

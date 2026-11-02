@@ -22,19 +22,14 @@ const SIZES = {
 } as const;
 
 /**
- * A small dotted map of the route, CM → DE. The plane flies along the curve as you read the
- * page: at the top it's leaving Cameroon, at the bottom it has landed in Germany
- * (`.route-plane`, moved by MotionEffects with the page's scroll position).
+ * A small dotted map of the route, CM ⇄ DE. The plane shuttles along the curve on a slow loop:
+ * Cameroon to Germany, turns around, flies back, turns again (`.route-plane` in globals.css).
+ * The phone size fills the width it's given (`.route-fluid`); the desktop size is fixed.
  */
 export function RouteMap({ size, label }: { size: keyof typeof SIZES; label: string }) {
   const { w, h, path, from, to, pitch } = SIZES[size];
-  return (
-    <div
-      role="img"
-      aria-label={label}
-      className="relative max-w-full"
-      style={{ width: w, height: h }}
-    >
+  const map = (
+    <>
       <svg
         aria-hidden="true"
         viewBox={`0 0 ${w} ${h}`}
@@ -88,6 +83,32 @@ export function RouteMap({ size, label }: { size: keyof typeof SIZES; label: str
       <span aria-hidden="true" className="route-plane" style={{ offsetPath: `path("${path}")` }}>
         <PlaneIcon size={size === "desktop" ? 28 : 24} />
       </span>
+    </>
+  );
+
+  // Phones: the map fills the width it's given, everything in it scaled together.
+  if (size === "mobile")
+    return (
+      <div
+        role="img"
+        aria-label={label}
+        className="route-fluid relative w-full"
+        style={{ aspectRatio: `${w} / ${h}`, "--map-w": `${w}px` } as React.CSSProperties}
+      >
+        <div className="route-scale absolute top-0 left-0" style={{ width: w, height: h }}>
+          {map}
+        </div>
+      </div>
+    );
+
+  return (
+    <div
+      role="img"
+      aria-label={label}
+      className="relative max-w-full"
+      style={{ width: w, height: h }}
+    >
+      {map}
     </div>
   );
 }

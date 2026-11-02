@@ -78,6 +78,11 @@
   color-scheme: light;
 }
 
+/* `nav:` (1090 px): where the header switches from the menu button to the full navigation.
+   Any narrower and the links, language switch and button don't fit on one line. */
+@theme {
+  --breakpoint-nav: 68.125rem;
+}
 @theme inline {
   --color-page: var(--page);
   --color-board: var(--board);
@@ -687,8 +692,8 @@
  * .rv-tilt: cards tip up from a slight 3D angle as they arrive.
  * .px-media / .px-up / .px-down: parallax; images drift slower or faster than the page.
  * .read-on: a big sentence fills in from grey to black as you read down.
- * .route-plane: the plane on the report's route map flies from CM to DE over the whole page.
- * All are driven by Motion in MotionEffects; with reduced motion everything simply shows.
+ * .route-plane: the plane on the report's route map shuttles between CM and DE (CSS loop below).
+ * The others are driven by Motion in MotionEffects; with reduced motion everything simply shows.
  */
 .route-plane {
   position: absolute;
@@ -698,6 +703,43 @@
   offset-distance: 0%;
   color: var(--led);
   filter: drop-shadow(0 0 6px var(--led-glow));
+  animation: route-shuttle 15s ease-in-out infinite;
+}
+/* The phone map fills its width: the box measures itself (container query) and the fixed-size
+   map inside is scaled by width ÷ map width. tan(atan2(a, b)) is how CSS divides two lengths
+   into a plain number; where that isn't supported, the map just keeps its own size. */
+.route-fluid {
+  container-type: inline-size;
+}
+.route-scale {
+  transform-origin: 0 0;
+  transform: scale(tan(atan2(100cqw, var(--map-w))));
+}
+/* One round trip in 15 s: waits at CM (0.6 s), flies to DE (6 s), turns around on the spot
+   (1.2 s), flies back facing the way it goes (6 s), and turns again at CM (1.2 s). The turns animate
+   offset-rotate from "auto" (nose along the route) to "auto 180deg" (nose back the other way). */
+@keyframes route-shuttle {
+  0%,
+  4% {
+    offset-distance: 0%;
+    offset-rotate: auto;
+  }
+  44% {
+    offset-distance: 100%;
+    offset-rotate: auto;
+  }
+  52% {
+    offset-distance: 100%;
+    offset-rotate: auto 180deg;
+  }
+  92% {
+    offset-distance: 0%;
+    offset-rotate: auto 180deg;
+  }
+  100% {
+    offset-distance: 0%;
+    offset-rotate: auto;
+  }
 }
 /* The sentence starts grey and Motion moves the ink in (only when animations are on: the boot
    script adds .motion to <html>). */

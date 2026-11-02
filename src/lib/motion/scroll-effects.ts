@@ -40,8 +40,6 @@ const SCROLL_EFFECTS: ScrollEffect[] = [
     },
     essential: true,
   },
-  // Report: the plane on the route map flies from CM to DE over the whole page.
-  { selector: ".route-plane", keyframes: { offsetDistance: ["0%", "100%"] } },
   // Parallax: the screenshot drifts inside its frame. Enlarged just enough (8 %) to cover the
   // ±3.5 % drift, so it stays sharp and loses as little of its edges as possible.
   {
