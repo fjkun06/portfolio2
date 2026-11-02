@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { Led } from "@/components/Led";
-import { CheckLed, PlaneIcon } from "@/components/ui/icons";
+import { FlightLine } from "@/components/ui/FlightLine";
+import { CheckLed } from "@/components/ui/icons";
 import type { Service, ServicesContent } from "@/content/services";
 import { fill } from "@/i18n/fill";
 
@@ -13,23 +14,6 @@ type ServiceBlockProps = {
   /** Where the example link goes and the name it shows, if this service has one. */
   example: { href: string; name: string } | null;
 };
-
-/** Dotted flight line with a plane in the middle, drawn from left to right as it scrolls in. */
-function FlightLine({ className = "" }: { className?: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`rv-line relative block h-[3px] ${className}`}
-      style={{
-        backgroundImage: "repeating-linear-gradient(90deg, var(--ink) 0 3px, transparent 3px 10px)",
-      }}
-    >
-      <span className="absolute top-[-13px] left-1/2 -ml-[14px] text-ink">
-        <PlaneIcon size={28} />
-      </span>
-    </span>
-  );
-}
 
 /**
  * One service on the Services page:
@@ -57,7 +41,7 @@ export function ServiceBlock({ service: s, index, total, text, example }: Servic
         <span className="rv-left font-stencil text-[40px] leading-[0.9] font-black lg:flex-none lg:text-[76px]">
           {s.from}
         </span>
-        <FlightLine className="lg:min-w-20 lg:flex-1" />
+        <FlightLine index={index} className="lg:min-w-20 lg:flex-1" />
         <span className="rv font-stencil text-[40px] leading-[0.9] font-black text-accent-ink lg:flex-none lg:text-[76px]">
           {s.to}
         </span>

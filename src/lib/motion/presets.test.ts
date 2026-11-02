@@ -7,7 +7,8 @@ import {
   REVEALS,
   revealOf,
   staggerDelay,
-  withinRange,
+  within,
+  along,
 } from "./presets";
 
 describe("REVEALS", () => {
@@ -50,16 +51,20 @@ describe("staggerDelay", () => {
   });
 });
 
-describe("withinRange", () => {
-  it("holds the first and last frames outside the range", () => {
-    expect(withinRange(["0%", "75%"], [0, 1], 0.18, 0.72)).toEqual({
-      values: ["0%", "0%", "75%", "75%"],
-      times: [0, 0.18, 0.72, 1],
-    });
+describe("within", () => {
+  it("measures progress through part of the range, held at 0 before and 1 after", () => {
+    expect(within(0.5, 0.1, 0.9)).toBe(0.5);
+    expect(within(0.05, 0.1, 0.9)).toBe(0);
+    expect(within(0.95, 0.1, 0.9)).toBe(1);
   });
+});
 
-  it("spreads inner keyframes across the range", () => {
-    expect(withinRange([0, 1, 2], [0, 0.5, 1], 0.2, 0.6).times).toEqual([0, 0.2, 0.4, 0.6, 1]);
+describe("along", () => {
+  it("follows straight lines between keyframes and holds the ends", () => {
+    expect(along(0.5, [0, 1], [0, 100])).toBe(50);
+    expect(along(0.75, [0, 0.5, 1], [0, 10, 30])).toBe(20);
+    expect(along(-1, [0, 1], [5, 9])).toBe(5);
+    expect(along(2, [0, 1], [5, 9])).toBe(9);
   });
 });
 

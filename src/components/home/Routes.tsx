@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Arrow } from "@/components/site/Arrow";
-import { PlaneIcon } from "@/components/ui/icons";
+import { FlightLine } from "@/components/ui/FlightLine";
 import { container, sectionTitle } from "@/components/ui/layout";
 import type { Dictionary } from "@/locales/en";
 
@@ -10,23 +10,6 @@ type RoutesProps = {
   /** Address of the Services page. */
   servicesHref: string;
 };
-
-/** A dotted flight line with a plane in the middle; it draws itself from left to right on scroll. */
-function FlightLine({ className = "" }: { className?: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`rv-line relative block h-[3px] ${className}`}
-      style={{
-        backgroundImage: "repeating-linear-gradient(90deg, var(--ink) 0 3px, transparent 3px 10px)",
-      }}
-    >
-      <span className="absolute top-[-13px] left-1/2 -ml-[14px] text-ink">
-        <PlaneIcon size={28} />
-      </span>
-    </span>
-  );
-}
 
 /**
  * "Routes I fly": the four services, each told as a trip from where the client is now
@@ -57,7 +40,7 @@ export function Routes({ text, servicesHref }: RoutesProps) {
       </div>
 
       <ul className="mt-10 mb-0 list-none border-b-[1.5px] border-ink p-0 lg:mt-14">
-        {text.items.map((r) => (
+        {text.items.map((r, i) => (
           <li
             key={r.title}
             className="rv border-t-[1.5px] border-ink pt-6.5 pb-7 lg:pt-8.5 lg:pb-9.5"
@@ -66,7 +49,7 @@ export function Routes({ text, servicesHref }: RoutesProps) {
               <span className="font-stencil text-[42px] leading-[0.92] font-black tracking-[0.01em] lg:flex-none lg:text-[64px] lg:leading-[0.9]">
                 {r.from}
               </span>
-              <FlightLine className="lg:min-w-20 lg:flex-1" />
+              <FlightLine index={i} className="lg:min-w-20 lg:flex-1" />
               <span className="font-stencil text-[42px] leading-[0.92] font-black tracking-[0.01em] text-accent-ink lg:flex-none lg:text-[64px] lg:leading-[0.9]">
                 {r.to}
               </span>

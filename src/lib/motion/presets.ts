@@ -117,26 +117,34 @@ export function staggerDelay(index: number, step = 0.07, max = 0.35): number {
 }
 
 /**
- * Places keyframes inside part of a scroll range: the animation holds its first frame before
- * `start` and its last frame after `end` (both 0 to 1).
- * Motion's `times` say where each keyframe falls in the whole range.
+ * How far `p` (0 to 1) is through the part of the range from `start` to `end`: 0 before it,
+ * 1 after it.
  *
  * @example
- * // Fly between 18 % and 72 % of the section's way through the screen:
- * withinRange(["0%", "75%"], [0, 1], 0.18, 0.72)
- * // { values: ["0%", "0%", "75%", "75%"], times: [0, 0.18, 0.72, 1] }
+ * within(0.5, 0.1, 0.9) // 0.5
+ * within(0.05, 0.1, 0.9) // 0
  */
-export function withinRange<T>(
-  values: T[],
-  times: number[],
-  start: number,
-  end: number,
-): { values: T[]; times: number[] } {
-  const span = end - start;
-  return {
-    values: [values[0], ...values, values[values.length - 1]],
-    times: [0, ...times.map((t) => Math.round((start + t * span) * 10000) / 10000), 1],
-  };
+export function within(p: number, start: number, end: number): number {
+  return Math.min(Math.max((p - start) / (end - start), 0), 1);
+}
+
+/**
+ * The value at progress `k` (0 to 1) of keyframes placed at `times`, in straight lines between
+ * them. The flight plans move their planes with it from the very scroll progress their CSS
+ * reads (--p), so the stops light up exactly as the plane reaches them.
+ *
+ * @example
+ * along(0.5, [0, 1], [0, 100]) // 50
+ * along(0.75, [0, 0.5, 1], [0, 10, 30]) // 20
+ */
+export function along(k: number, times: number[], values: number[]): number {
+  if (k <= times[0]) return values[0];
+  for (let i = 1; i < times.length; i++)
+    if (k <= times[i]) {
+      const t = (k - times[i - 1]) / (times[i] - times[i - 1]);
+      return values[i - 1] + t * (values[i] - values[i - 1]);
+    }
+  return values[values.length - 1];
 }
 
 /** True when the element hasn't been on screen yet: it sits below the bottom of the viewport. */

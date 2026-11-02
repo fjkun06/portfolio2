@@ -181,13 +181,13 @@
      letter is edge-on, like a real flap.
      - flip="once" (headlines): one turn, 0.8 s over, 1.2 s backwards, 0.8 s back, then it rests.
      - flip="loop" (the footer sign): 2.7 s normal, 0.8 s turn, 2.7 s backwards, 0.8 s back,
-       2.7 s normal; only while the sign is on screen (MotionEffects sets data-flipping), three
+       2.7 s normal; only while the sign is on screen (MotionEffects sets data-on-screen), three
        loops at most, starting over each time it comes back into view. */
   .led-flip {
     transform-box: fill-box;
     transform-origin: center;
   }
-  .flip-sign[data-flipping] .led-flip:not(.once) {
+  .on-screen[data-on-screen] .led-flip:not(.once) {
     animation: led-flip 9.7s cubic-bezier(0.65, 0, 0.35, 1) 3;
   }
   .led-flip.once {
@@ -638,8 +638,14 @@
   top: 0;
   left: -4px;
 }
+/* The orbit (600 px) stays pinned mid-screen, under the header, for the rest of its 2000 px
+   track, so the plane flies the lap while the whole orbit is in view. */
+.orbit-track {
+  height: 2000px;
+}
 .orbit {
-  --k: clamp(0, calc((var(--p, 0) - 0.18) / 0.54), 1);
+  top: max(80px, calc(50vh - 260px));
+  --k: clamp(0, calc((var(--p, 0) - 0.1) / 0.8), 1);
 }
 .vtrack {
   --k: clamp(0, calc((var(--p, 0) - 0.25) / 0.5), 1);
@@ -704,6 +710,35 @@
   color: var(--led);
   filter: drop-shadow(0 0 6px var(--led-glow));
   animation: route-shuttle 15s ease-in-out infinite;
+}
+/* <FlightLine>: the plane flies the dotted line, start to end, fading in at take-off and out at
+   landing, every 6.5 s; only while the line is on screen (MotionEffects sets data-on-screen).
+   Lines further down a page are a step further into the loop (negative animation-delay), so
+   their planes don't fly in step. At rest, and with reduced motion, the plane waits mid-line. */
+.flight-plane {
+  left: calc(50% - 14px);
+}
+.on-screen[data-on-screen] > .flight-plane {
+  animation: flight-cross 6.5s infinite;
+}
+@keyframes flight-cross {
+  0% {
+    left: 0;
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+  }
+  10% {
+    opacity: 1;
+  }
+  78% {
+    left: calc(100% - 28px);
+    opacity: 1;
+  }
+  86%,
+  100% {
+    left: calc(100% - 28px);
+    opacity: 0;
+  }
 }
 /* The phone map fills its width: the box measures itself (container query) and the fixed-size
    map inside is scaled by width ÷ map width. tan(atan2(a, b)) is how CSS divides two lengths
