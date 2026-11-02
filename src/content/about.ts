@@ -49,7 +49,7 @@ export const TOOLS = ["NEXT.JS", "REACT", "TYPESCRIPT", "NODE.JS", "VERCEL", "GI
 export const aboutContent: Record<Locale, AboutContent> = {
   en: {
     meta: {
-      title: "About · Frank Jordan",
+      title: "About Frank Jordan, frontend developer in Essen",
       description:
         "Frank Jordan, frontend developer in Essen: multilingual websites in English, French and German, designed and built by one person.",
     },
@@ -128,7 +128,7 @@ export const aboutContent: Record<Locale, AboutContent> = {
 
   fr: {
     meta: {
-      title: "À propos · Frank Jordan",
+      title: "À propos de Frank Jordan, développeur frontend à Essen",
       description:
         "Frank Jordan, développeur frontend à Essen : des sites multilingues en français, anglais et allemand, conçus et développés par une seule personne.",
     },
@@ -210,7 +210,7 @@ export const aboutContent: Record<Locale, AboutContent> = {
 
   de: {
     meta: {
-      title: "Über mich · Frank Jordan",
+      title: "Über Frank Jordan, Frontend-Entwickler in Essen",
       description:
         "Frank Jordan, Frontend-Entwickler in Essen: mehrsprachige Websites auf Deutsch, Englisch und Französisch, gestaltet und gebaut von einer Person.",
     },

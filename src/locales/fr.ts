@@ -2,9 +2,9 @@ import type { Dictionary } from "./en";
 
 const fr: Dictionary = {
   meta: {
-    title: "Frank Jordan · Des sites qui parlent la langue de vos clients",
+    title: "Frank Jordan · Des sites multilingues, faits à Essen",
     description:
-      "Développeur frontend en Allemagne. Je conçois et développe des sites rapides en français, anglais et allemand.",
+      "Développeur frontend à Essen, en Allemagne. Je conçois et développe des sites rapides en français, anglais et allemand.",
     jobTitle: "Développeur frontend",
     ogAlt:
       "Tableau des départs : des sites qui parlent la langue de vos clients. Frank Jordan, développeur frontend.",
@@ -171,7 +171,7 @@ const fr: Dictionary = {
   },
   work: {
     meta: {
-      title: "Projets · Frank Jordan",
+      title: "Projets : les sites que j’ai réalisés · Frank Jordan",
       description:
         "Les sites que j’ai réalisés pour des traducteurs, des agences et des entreprises en Allemagne et au Cameroun, en français, anglais et allemand.",
     },

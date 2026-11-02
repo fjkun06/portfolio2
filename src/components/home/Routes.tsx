@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Arrow } from "@/components/site/Arrow";
 import { FlightLine } from "@/components/ui/FlightLine";
 import { container, sectionTitle } from "@/components/ui/layout";
+import { SplitTitle } from "@/components/ui/SplitTitle";
 import type { Dictionary } from "@/locales/en";
 
 type RoutesProps = {
@@ -21,12 +22,7 @@ export function Routes({ text, servicesHref }: RoutesProps) {
     <section id="routes" aria-labelledby="routes-title" className={`${container} pt-20 lg:pt-36`}>
       <div className="flex flex-wrap items-end justify-between gap-6">
         <h2 id="routes-title" className={`rv-wipe ${sectionTitle}`}>
-          <span className="sr-only">{text.titleText}</span>
-          <span aria-hidden="true">
-            {text.title[0]}
-            <br />
-            {text.title[1]}
-          </span>
+          <SplitTitle text={text.titleText} lines={text.title} />
         </h2>
         <div className="max-w-[380px]">
           <p className="rv m-0 text-muted">{text.intro}</p>

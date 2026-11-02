@@ -31,7 +31,8 @@ import { fill } from "@/i18n/fill";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { routes } from "@/i18n/routes";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { breadcrumbJsonLd, jsonLdScript } from "@/lib/seo/json-ld";
+import { pageMetadata, projectOgImage } from "@/lib/seo/metadata";
 
 /**
  * The whole page is built ahead of time. For an address that isn't a project (/work/nope),
@@ -54,7 +55,7 @@ export async function generateMetadata({
   // Not a project: this address becomes the 404 page, so it gets the 404 title, not the site's.
   if (!project) return { title: notFoundContent[lang].title };
   const report = reports[slug];
-  const { report: text, meta } = await getDictionary(lang);
+  const { report: text, work } = await getDictionary(lang);
   return pageMetadata({
     lang,
     path: `/work/${slug}`,
@@ -62,7 +63,9 @@ export async function generateMetadata({
       ? `${project.name} · ${text.tag.toLowerCase()} · Frank Jordan`
       : `${project.name} · Frank Jordan`,
     description: report ? report[lang].intro : project.summary[lang],
-    imageAlt: meta.ogAlt
+    // Shared links show the project's own screenshot (made by scripts/og-work.mjs).
+    image: projectOgImage(project),
+    imageAlt: fill(work.shot, { name: project.name })
   });
 }
 
@@ -92,14 +95,37 @@ async function ReportContent({
   const { lang, slug } = await params;
   const project = findProject(slug);
   if (!hasLocale(lang) || !project) notFound();
-  if (!reports[slug]) return <ProjectContent lang={lang} project={project} />;
-  const report = reports[slug][lang];
   const { report: text, status, work } = await getDictionary(lang);
   const to = routes(lang);
+  // The page's place in the site for search results, same steps as the visible breadcrumb.
+  const trail = (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: jsonLdScript(
+          breadcrumbJsonLd([
+            { name: work.home, path: to.home },
+            { name: text.allDepartures, path: to.work },
+            { name: project.name, path: projectHref(project, to.work) }
+          ])
+        )
+      }}
+    />
+  );
+  if (!reports[slug]) {
+    return (
+      <>
+        {trail}
+        <ProjectContent lang={lang} project={project} />
+      </>
+    );
+  }
+  const report = reports[slug][lang];
   const next = nextDeparture(project);
 
   return (
     <>
+      {trail}
       <ReportHero
         project={project}
         report={report}

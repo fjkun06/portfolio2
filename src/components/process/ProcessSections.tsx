@@ -4,6 +4,7 @@ import { Led } from "@/components/Led";
 import { Cockpit, CockpitStrip } from "@/components/process/Cockpit";
 import { CheckLed } from "@/components/ui/icons";
 import { container, sectionTitle } from "@/components/ui/layout";
+import { SplitTitle } from "@/components/ui/SplitTitle";
 import type { ProcessContent, Stop } from "@/content/process";
 
 /** "YOU" or "ME" box: what each side does at a stop. Mine is dark, the client's is outlined. */
@@ -101,16 +102,11 @@ export function Stops({ text }: { text: ProcessContent }) {
   );
 }
 
-/** Two-line section heading: real text for screen readers, a line break for the eye. */
+/** Two-line section heading, its words written once (see SplitTitle). */
 function TwoLineTitle({ id, lines, text }: { id: string; lines: [string, string]; text: string }) {
   return (
     <h2 id={id} className={`rv-wipe ${sectionTitle}`}>
-      <span className="sr-only">{text}</span>
-      <span aria-hidden="true">
-        {lines[0]}
-        <br />
-        {lines[1]}
-      </span>
+      <SplitTitle text={text} lines={lines} />
     </h2>
   );
 }
