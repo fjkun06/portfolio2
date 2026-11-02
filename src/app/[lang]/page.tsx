@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -14,6 +15,15 @@ import { featured, projects } from "@/content/projects";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { routes } from "@/i18n/routes";
+import { homeJsonLd, jsonLdScript } from "@/lib/seo/json-ld";
+import { pageMetadata } from "@/lib/seo/metadata";
+
+export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!hasLocale(lang)) return {};
+  const { meta } = await getDictionary(lang);
+  return pageMetadata({ lang, path: "", ...meta, imageAlt: meta.ogAlt });
+}
 
 /**
  * The home page, top to bottom:
@@ -40,11 +50,22 @@ async function Home({ params }: { params: PageProps<"/[lang]">["params"] }) {
     getDictionary("fr"),
     getDictionary("de"),
   ]);
-  const { home, status, form } = dict;
+  const { home, status, form, meta } = dict;
   const to = routes(lang);
+  const jsonLd = homeJsonLd({
+    lang,
+    description: meta.description,
+    jobTitle: meta.jobTitle,
+    image: "/about/frank.webp",
+  });
 
   return (
     <>
+      {/* Structured data for search engines: who Frank is and what this site is. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
+      />
       <Hero lang={lang} heroes={{ en: en.home.hero, fr: fr.home.hero, de: de.home.hero }} to={to} />
       <DepartureBoard
         lang={lang}

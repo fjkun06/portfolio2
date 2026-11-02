@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
+import { InlineScript } from "@/components/site/InlineScript";
 import { ScrollEffects } from "@/components/site/ScrollEffects";
 import type { Locale } from "@/i18n/config";
 import { routes } from "@/i18n/routes";
@@ -59,7 +60,7 @@ export function SiteDocument({
       {/* App Router document, not a Pages Router page: a plain <head> is right here. */}
       {/* eslint-disable-next-line @next/next/no-head-element */}
       <head>
-        <script dangerouslySetInnerHTML={{ __html: BOOT }} />
+        <InlineScript html={BOOT} />
       </head>
       <body id="top">
         <a

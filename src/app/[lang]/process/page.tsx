@@ -10,13 +10,20 @@ import { processContent } from "@/content/process";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { routes } from "@/i18n/routes";
+import { pageMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[lang]/process">): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
-  return processContent[lang].meta;
+  const { meta } = await getDictionary(lang);
+  return pageMetadata({
+    lang,
+    path: "/process",
+    ...processContent[lang].meta,
+    imageAlt: meta.ogAlt,
+  });
 }
 
 /**

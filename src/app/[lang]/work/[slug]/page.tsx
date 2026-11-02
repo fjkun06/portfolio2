@@ -16,6 +16,7 @@ import { reports } from "@/content/reports/herzog";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { routes } from "@/i18n/routes";
+import { pageMetadata } from "@/lib/seo/metadata";
 
 /** Only projects with a report get a page; every language is built for each. */
 export function generateStaticParams() {
@@ -29,11 +30,14 @@ export async function generateMetadata({
   const project = findProject(slug);
   const report = reports[slug];
   if (!hasLocale(lang) || !project || !report) return {};
-  const { report: text } = await getDictionary(lang);
-  return {
+  const { report: text, meta } = await getDictionary(lang);
+  return pageMetadata({
+    lang,
+    path: `/work/${slug}`,
     title: `${project.name} · ${text.tag.toLowerCase()} · Frank Jordan`,
     description: report[lang].intro,
-  };
+    imageAlt: meta.ogAlt,
+  });
 }
 
 /**

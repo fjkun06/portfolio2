@@ -11,12 +11,13 @@ import { projects } from "@/content/projects";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { routes } from "@/i18n/routes";
+import { pageMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/work">): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
-  const { work } = await getDictionary(lang);
-  return { title: work.meta.title, description: work.meta.description };
+  const { work, meta } = await getDictionary(lang);
+  return pageMetadata({ lang, path: "/work", ...work.meta, imageAlt: meta.ogAlt });
 }
 
 /**

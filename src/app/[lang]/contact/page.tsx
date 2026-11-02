@@ -12,13 +12,20 @@ import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { routes } from "@/i18n/routes";
 import { siteConfig } from "@/utils/site";
+import { pageMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[lang]/contact">): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
-  return contactContent[lang].meta;
+  const { meta } = await getDictionary(lang);
+  return pageMetadata({
+    lang,
+    path: "/contact",
+    ...contactContent[lang].meta,
+    imageAlt: meta.ogAlt,
+  });
 }
 
 /**

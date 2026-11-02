@@ -7,6 +7,9 @@ const en = {
     title: "Frank Jordan · Websites that speak your clients’ language",
     description:
       "Frontend developer in Germany. I design and build fast websites in English, French and German.",
+    jobTitle: "Frontend developer",
+    ogAlt:
+      "Departures board: websites that speak your clients’ language. Frank Jordan, frontend developer.",
   },
   nav: {
     skip: "Skip to content",

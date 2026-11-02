@@ -5,6 +5,9 @@ const de: Dictionary = {
     title: "Frank Jordan · Websites, die die Sprache Ihrer Kunden sprechen",
     description:
       "Frontend-Entwickler in Deutschland. Ich gestalte und entwickle schnelle Websites auf Deutsch, Englisch und Französisch.",
+    jobTitle: "Frontend-Entwickler",
+    ogAlt:
+      "Abflugtafel: Websites, die die Sprache Ihrer Kunden sprechen. Frank Jordan, Frontend-Entwickler.",
   },
   nav: {
     skip: "Zum Inhalt springen",
