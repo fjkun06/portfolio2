@@ -8,6 +8,7 @@
 import nodemailer from "nodemailer";
 
 import type { BoardingPass } from "./boarding-pass";
+import { boardingPassHtml } from "./email-template";
 
 /** The SMTP settings, or null when any is missing (the form then shows an error). */
 export function mailSettings(env: Record<string, string | undefined> = process.env) {
@@ -26,7 +27,11 @@ export function mailSettings(env: Record<string, string | undefined> = process.e
   };
 }
 
-/** The email's subject and plain-text body. Replying to the email answers the visitor. */
+/**
+ * The email's subject, its plain-text body and the HTML version in the site's look
+ * (email-template.ts). Mail apps show the HTML; the text is the fallback.
+ * Replying to the email answers the visitor.
+ */
 export function composeEmail(pass: BoardingPass) {
   const lines = [
     `Passenger: ${pass.name}`,
@@ -39,19 +44,24 @@ export function composeEmail(pass: BoardingPass) {
     "",
     pass.message,
   ];
-  return { subject: `Boarding pass: ${pass.name}`, text: lines.join("\n") };
+  return {
+    subject: `Boarding pass: ${pass.name}`,
+    text: lines.join("\n"),
+    html: boardingPassHtml(pass),
+  };
 }
 
 /** Sends the email. Throws when the settings are missing or the server refuses. */
 export async function sendBoardingPassEmail(pass: BoardingPass): Promise<void> {
   const settings = mailSettings();
   if (!settings) throw new Error("Mail settings missing: see .env.example");
-  const { subject, text } = composeEmail(pass);
+  const { subject, text, html } = composeEmail(pass);
   await nodemailer.createTransport(settings.transport).sendMail({
     from: settings.from,
     to: settings.to,
     replyTo: { name: pass.name, address: pass.email },
     subject,
     text,
+    html,
   });
 }
