@@ -1,123 +1,85 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-import { Led } from "@/components/Led";
+import { Captain } from "@/components/home/Captain";
+import { DepartureBoard } from "@/components/home/DepartureBoard";
+import { Featured } from "@/components/home/Featured";
+import { FlightPlan } from "@/components/home/FlightPlan";
+import { Hero } from "@/components/home/Hero";
+import { Marquee } from "@/components/home/Marquee";
+import { Routes } from "@/components/home/Routes";
+import { Ticket } from "@/components/home/Ticket";
+import { aboutContent } from "@/content/about";
+import { featured, projects } from "@/content/projects";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { routes } from "@/i18n/routes";
+import { homeJsonLd, jsonLdScript } from "@/lib/seo/json-ld";
+import { pageMetadata } from "@/lib/seo/metadata";
+
+export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!hasLocale(lang)) return {};
+  const { meta } = await getDictionary(lang);
+  return pageMetadata({ lang, path: "", ...meta, imageAlt: meta.ogAlt });
+}
 
 /**
- * Temporary page to check the foundation: header, footer, LED lettering, modes and scroll reveals.
- * The real home page replaces it in the next step.
+ * The home page, top to bottom:
+ * hero and departures board · featured project (Herzog trad') · LED band · services ("Routes I
+ * fly") · process ("Your flight plan") · about ("Your captain") · contact form ("Your boarding pass").
  */
-export default async function Page({ params }: PageProps<"/[lang]">) {
+export default function HomePage({ params }: PageProps<"/[lang]">) {
+  // Reading the URL (params) happens inside <Suspense>, as Next.js requires for instant navigations.
+  // Every language is prerendered, so visitors still get the full page as static HTML.
+  return (
+    <Suspense>
+      <Home params={params} />
+    </Suspense>
+  );
+}
+
+async function Home({ params }: { params: PageProps<"/[lang]">["params"] }) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
-  const { preview, nav } = await getDictionary(lang);
+  // The hero rotates through all three languages, so it needs every dictionary.
+  const [dict, en, fr, de] = await Promise.all([
+    getDictionary(lang),
+    getDictionary("en"),
+    getDictionary("fr"),
+    getDictionary("de"),
+  ]);
+  const { home, status, form, meta } = dict;
   const to = routes(lang);
-
-  const words = [
-    { lang: "en", word: "DEPARTURES" },
-    { lang: "fr", word: "DÉPARTS" },
-    { lang: "de", word: "ABFLUG" },
-  ];
+  const jsonLd = homeJsonLd({
+    lang,
+    description: meta.description,
+    jobTitle: meta.jobTitle,
+    image: "/about/frank.webp",
+  });
 
   return (
     <>
-      <section aria-labelledby="hero-title" className="board">
-        <div className="mx-auto max-w-[1280px] px-4 pt-7 pb-12 lg:px-10 lg:pt-11 lg:pb-16">
-          <p className="m-0 flex gap-5 border-b border-rule-board pb-6 font-stencil text-2xl leading-none font-black tracking-[0.05em] lg:gap-7 lg:text-[34px]">
-            {words.map((w) => (
-              <span
-                key={w.lang}
-                lang={w.lang}
-                style={{ color: w.lang === lang ? "var(--led)" : "var(--text-off)" }}
-              >
-                {w.word}
-              </span>
-            ))}
-          </p>
-
-          <h1 id="hero-title" className="mt-10 mb-0 lg:mt-16">
-            <span className="sr-only">{preview.headlineText}</span>
-            <span aria-hidden="true" className="hidden flex-col gap-5 lg:flex">
-              {preview.headline.map((line, i) => (
-                <Led
-                  key={line}
-                  text={line}
-                  pitch={10}
-                  step={7}
-                  delay={i * 260}
-                  animate
-                  tone={i === 2 ? "accent" : "white"}
-                />
-              ))}
-            </span>
-            <span aria-hidden="true" className="flex flex-col gap-[9px] lg:hidden">
-              {preview.headlineShort.map((line, i, all) => (
-                <Led
-                  key={line}
-                  text={line}
-                  pitch={4.6}
-                  step={6}
-                  delay={i * 180}
-                  animate
-                  tone={i >= all.length - 2 ? "accent" : "white"}
-                />
-              ))}
-            </span>
-          </h1>
-
-          <p className="mt-10 max-w-[31em] text-lg text-on-board-2 lg:text-[22px] lg:leading-[1.45]">
-            {preview.note}
-          </p>
-          <div className="mt-7 flex flex-col gap-3.5 sm:flex-row">
-            <Link href={to.contact} className="btn btn-accent min-h-[58px] px-7 text-2xl">
-              {nav.book.toUpperCase()}
-            </Link>
-            <Link href={to.work} className="btn btn-ghost min-h-[58px] px-6 text-2xl">
-              {nav.work.toUpperCase()}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1280px] px-4 py-20 lg:px-10 lg:py-36">
-        {preview.sections.map((title, i) => (
-          <div key={title} className="border-t-[1.5px] border-ink py-12">
-            <span className="board chip-line inline-flex rounded px-2 py-1.5">
-              <Led text={`0${i + 1}`} pitch={3} />
-            </span>
-            <h2
-              className={`${["rv", "rv-left", "rv-wipe"][i]} mt-6 mb-0 font-stencil text-[52px] leading-[0.9] font-black lg:text-[104px]`}
-            >
-              {title.toUpperCase()}
-            </h2>
-          </div>
-        ))}
-      </section>
-
-      <section className="board">
-        <ul className="mx-auto max-w-[1280px] list-none px-4 py-14 lg:px-10">
-          {["HERZOG TRAD'", "TRANSLATPRO", "FIRST TRUCKS SARL", "DIGTAL"].map((name, i) => (
-            <li
-              key={name}
-              className="rv-flap flex min-h-[78px] items-center justify-between border-t border-rule-board"
-            >
-              <span className="font-stencil text-[30px] font-extrabold tracking-[0.03em] lg:text-[34px]">
-                {name}
-              </span>
-              <Led
-                text={i === 1 ? "BOARDING" : "LIVE"}
-                pitch={4}
-                tone={i === 1 ? "white" : "accent"}
-                className={i === 1 ? "blink" : ""}
-              />
-            </li>
-          ))}
-        </ul>
-      </section>
-      <div className="h-[60vh]" />
+      {/* Structured data for search engines: who Frank is and what this site is. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
+      />
+      <Hero lang={lang} heroes={{ en: en.home.hero, fr: fr.home.hero, de: de.home.hero }} to={to} />
+      <DepartureBoard
+        lang={lang}
+        projects={projects.filter((p) => p.onHome)}
+        text={home.board}
+        status={status}
+        to={to}
+      />
+      <Featured project={featured} text={home.featured} status={status} to={to} />
+      <Marquee href={to.contact} label={home.marquee} />
+      <Routes text={home.routes} servicesHref={to.services} />
+      <FlightPlan text={home.plan} processHref={to.process} />
+      <Captain text={home.captain} entries={aboutContent[lang].log.entries} aboutHref={to.about} />
+      <Ticket lang={lang} text={home.ticket} form={form} to={to} />
     </>
   );
 }

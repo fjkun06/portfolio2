@@ -2,23 +2,30 @@ import Link from "next/link";
 
 import { LangSwitch } from "@/components/site/LangSwitch";
 import { Logo } from "@/components/site/Logo";
-import { MobileMenu } from "@/components/site/MobileMenu";
+import { MobileMenu, type Gate } from "@/components/site/MobileMenu";
 import { ModeSwitch } from "@/components/site/ModeSwitch";
 import { NavLinks } from "@/components/site/NavLinks";
 import type { Locale } from "@/i18n/config";
 import type { Routes } from "@/i18n/routes";
 import type { Dictionary } from "@/locales/en";
 
-type Props = {
+type HeaderProps = {
   lang: Locale;
+  /** Navigation texts in the current language. */
   nav: Dictionary["nav"];
+  /** Mobile menu texts in the current language. */
   menu: Dictionary["menu"];
+  /** All page addresses in the current language, from `routes(lang)`. */
   to: Routes;
+  /** Show the dotted reading-progress line under the header. On by default. */
   progress?: boolean;
 };
 
-/** Dotted line under the header that fills up as you read the page. */
-function Runway() {
+/**
+ * Dotted line under the header that fills up in the accent colour as you scroll down the page.
+ * The fill grows with the page's scroll (`.runway-fill`, animated by MotionEffects).
+ */
+export function Runway() {
   return (
     <div
       aria-hidden="true"
@@ -38,7 +45,16 @@ function Runway() {
   );
 }
 
-export function Header({ lang, nav, menu, to, progress = true }: Props) {
+/**
+ * The site header, sticky at the top of every page. It renders two layouts and CSS shows one:
+ *
+ * - From 1024 px (`lg`): logo · navigation · language, mode switch and "Book a project".
+ * - Below 1024 px: logo · mode switch and menu button (the menu holds navigation and language).
+ *
+ * It's a server component; only the interactive parts inside it (navigation highlight,
+ * language switch, mode switch, mobile menu) run in the browser.
+ */
+export function Header({ lang, nav, menu, to, progress = true }: HeaderProps) {
   const items = [
     { href: to.work, label: nav.work },
     { href: to.services, label: nav.services },
@@ -46,7 +62,8 @@ export function Header({ lang, nav, menu, to, progress = true }: Props) {
     { href: to.about, label: nav.about },
     { href: to.contact, label: nav.contact },
   ];
-  const gates = [
+  // Same pages for the mobile menu, with the three-letter codes of the departures board.
+  const gates: Gate[] = [
     { code: "WRK", label: nav.work, href: to.work },
     { code: "SRV", label: nav.services, href: to.services },
     { code: "PLN", label: nav.process, href: to.process },

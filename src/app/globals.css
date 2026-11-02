@@ -33,6 +33,7 @@
   --rule-board: #2a2c30;
   --row-hover: #1c1d20;
   --line-strong: #3a3d42;
+  --line-mid: #63676e;
   --dot-dim: #2b2d31;
   --text-off: #4a4d53;
   --knob: #2a2c30;
@@ -59,6 +60,7 @@
   --rule-board: #bfc1ba;
   --row-hover: #f4f5f2;
   --line-strong: #979a94;
+  --line-mid: #8d908a;
   --dot-dim: #e2e3de;
   --text-off: #868a91;
   --knob: #e6e7e2;
@@ -167,6 +169,10 @@
     to {
       opacity: 1;
     }
+  }
+  /* Hero headlines: the hidden languages don't animate; the one that becomes active relights. */
+  .hero-variant[data-active="false"] .led-col {
+    animation: none;
   }
   .blink {
     animation: blink 1.4s steps(2, jump-none) infinite;
@@ -327,18 +333,461 @@
   }
 }
 
+/* ---------- Home page ---------- */
+@layer components {
+  /* Rows of the departures board and other light lists */
+  .row-light {
+    transition: background-color 0.15s;
+  }
+  .row-light:hover {
+    background-color: rgba(20, 21, 23, 0.05);
+  }
+  .row-light:hover .row-go {
+    transform: translateX(4px);
+  }
+  /* Screenshots lift slightly on hover */
+  .shot {
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .shot:hover {
+    transform: translateY(-6px);
+  }
+  /* LED band that scrolls sideways forever. The content is doubled, so moving it by half loops. */
+  .marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 34s linear infinite;
+  }
+  .marquee-band:hover .marquee,
+  .marquee-band:focus-visible .marquee {
+    animation-play-state: paused;
+  }
+  /* Placeholder for screenshots that haven't been supplied yet */
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    text-align: center;
+    background-color: #ecede8;
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 16px,
+      rgba(20, 21, 23, 0.035) 16px 32px
+    );
+    color: var(--label);
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- Form controls: custom checkboxes and language chips with an LED tick ---------- */
+@layer components {
+  .cb-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+  }
+  .cb-box {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    box-sizing: border-box;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  .cb-box svg {
+    opacity: 0;
+    transform: scale(0.4);
+    transition:
+      opacity 0.2s,
+      transform 0.25s cubic-bezier(0.2, 1.5, 0.4, 1);
+  }
+  .cb-input:checked + .cb-box {
+    background: var(--ink);
+  }
+  .cb-input:checked + .cb-box svg {
+    opacity: 1;
+    transform: none;
+  }
+  .cb:hover .cb-input:not(:checked) + .cb-box {
+    background: rgba(20, 21, 23, 0.08);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    color: var(--ink);
+    font-family: var(--stencil);
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .chip svg {
+    width: 0;
+    margin-right: 0;
+    opacity: 0;
+    transition:
+      width 0.25s,
+      margin 0.25s,
+      opacity 0.2s;
+  }
+  .chip:hover {
+    background: rgba(20, 21, 23, 0.08);
+  }
+  .cb-input:checked + .chip {
+    background: var(--ink);
+    color: #ecede8;
+  }
+  .cb-input:checked + .chip svg {
+    width: 15px;
+    margin-right: 9px;
+    opacity: 1;
+  }
+  .cb-input:focus-visible + .cb-box,
+  .cb-input:focus-visible + .chip {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .ticket-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2px 0 6px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--stencil);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    outline: none;
+  }
+  .ticket-input::placeholder,
+  .ticket-textarea::placeholder {
+    color: #a3a7ad;
+  }
+  .ticket-input:focus,
+  .ticket-textarea:focus {
+    border-bottom-color: var(--accent-ink);
+  }
+  .ticket-input[aria-invalid="true"],
+  .ticket-textarea[aria-invalid="true"] {
+    border-bottom-color: var(--danger);
+  }
+  .ticket-textarea {
+    padding: 4px 0 8px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 19px;
+    resize: vertical;
+    outline: none;
+  }
+  @media (max-width: 1023px) {
+    .ticket-input {
+      font-size: 26px;
+    }
+    .ticket-textarea {
+      font-size: 17px;
+    }
+    .chip {
+      min-height: 44px;
+      padding: 0 12px;
+      font-size: 19px;
+    }
+  }
+}
+
+/* ---------- Flight plan: the plane flies the route as you scroll ----------
+ * Desktop (.orbit): around an ellipse. Phones and tablets (.vtrack): straight down.
+ * MotionEffects moves the plane with Motion and writes the section's scroll progress to --p
+ * (0 to 1). Everything else here follows from --p: stop markers and numbers light up as the
+ * plane passes them (28.3 %, 56.7 % and 85 % of the way).
+ * Without JavaScript, or with reduced motion: plane at the start, first stop shown.
+ */
+.orbit-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-path: path("M 220 300 A 380 140 0 1 1 980 300 A 380 140 0 1 1 220 300");
+  offset-rotate: auto;
+  offset-distance: 0%;
+}
+.stop-num {
+  grid-area: 1 / 1;
+}
+.stop-num.n1,
+.stop-num.n2,
+.stop-num.n3 {
+  opacity: 0;
+}
+.vplane {
+  position: absolute;
+  top: 0;
+  left: -4px;
+}
+.orbit {
+  --k: clamp(0, calc((var(--p, 0) - 0.18) / 0.54), 1);
+}
+.vtrack {
+  --k: clamp(0, calc((var(--p, 0) - 0.25) / 0.5), 1);
+}
+:is(.orbit, .vtrack) {
+  --on1: clamp(0, calc((var(--k) - 0.283) * 1000), 1);
+  --on2: clamp(0, calc((var(--k) - 0.567) * 1000), 1);
+  --on3: clamp(0, calc((var(--k) - 0.85) * 1000), 1);
+}
+.stop-mark.s1 {
+  --on: var(--on1);
+}
+.stop-mark.s2 {
+  --on: var(--on2);
+}
+.stop-mark.s3 {
+  --on: var(--on3);
+}
+.stop-mark:is(.s1, .s2, .s3) {
+  background: color-mix(in srgb, var(--led) calc(var(--on) * 100%), var(--page)) !important;
+  box-shadow: 0 0 0 calc(var(--on) * 6px) var(--led-glow);
+  transform: scale(calc(1 + var(--on) * 0.25));
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.3s;
+}
+.stop-lit.s1 {
+  opacity: var(--on1);
+}
+.stop-lit.s2 {
+  opacity: var(--on2);
+}
+.stop-lit.s3 {
+  opacity: var(--on3);
+}
+.stop-num.n0 {
+  opacity: calc(1 - var(--on1));
+}
+.stop-num.n1 {
+  opacity: calc(var(--on1) - var(--on2));
+}
+.stop-num.n2 {
+  opacity: calc(var(--on2) - var(--on3));
+}
+.stop-num.n3 {
+  opacity: var(--on3);
+}
+
+/* ---------- Work and project pages ----------
+ * .rv-tilt: cards tip up from a slight 3D angle as they arrive.
+ * .px-media / .px-up / .px-down: parallax; images drift slower or faster than the page.
+ * .read-on: a big sentence fills in from grey to black as you read down.
+ * .route-plane: the plane on the report's route map flies from CM to DE over the whole page.
+ * All are driven by Motion in MotionEffects; with reduced motion everything simply shows.
+ */
+.route-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-rotate: auto;
+  offset-distance: 0%;
+  color: var(--led);
+  filter: drop-shadow(0 0 6px var(--led-glow));
+}
+/* The sentence starts grey and Motion moves the ink in (only when animations are on: the boot
+   script adds .motion to <html>). */
+.motion .read-on {
+  background: linear-gradient(90deg, var(--ink) 50%, #b9bcb6 50%) 100% 0 / 200% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- Services page ---------- */
+/* Planes looping along the hero's route map, each on its own curve (offset-path set inline). */
+.net-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-rotate: auto;
+  color: var(--led);
+  filter: drop-shadow(0 0 6px var(--led-glow));
+  animation: net-fly 6.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes net-fly {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+@layer components {
+  .route-chip {
+    transition:
+      border-color 0.2s,
+      background-color 0.2s;
+  }
+  .route-chip:hover {
+    border-color: var(--led);
+    background: var(--row-hover);
+  }
+  /* FAQ: native <details>, with an LED "+" that turns into "×" when open */
+  .faq summary {
+    list-style: none;
+  }
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq summary:hover {
+    color: var(--accent-ink);
+  }
+  .faq-x {
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .faq[open] .faq-x {
+    transform: rotate(45deg);
+  }
+  .faq[open] .faq-answer {
+    animation: faq-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+@keyframes faq-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Process page: the cockpit follows you through the four stops ----------
+ * Desktop: a sticky panel with the stop number, the stop name and a vertical track the plane
+ * flies down. Phones: a sticky strip under the header. Both are driven by how far you've
+ * scrolled through the stops: MotionEffects writes it to --p on .proc and moves the plane and
+ * the fill lines; stops switch at 22 %, 48 % and 74 %.
+ */
+.pq {
+  grid-area: 1 / 1;
+}
+.pq.q1,
+.pq.q2,
+.pq.q3 {
+  opacity: 0;
+}
+.pfill {
+  transform: scaleY(0);
+  transform-origin: top;
+}
+.pfillx {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.pplane {
+  position: absolute;
+  top: 0;
+}
+.pdot {
+  background: var(--board);
+  border-color: var(--line-mid);
+}
+.plab {
+  color: var(--text-off);
+}
+.pdot.d0 {
+  background: var(--led);
+  border-color: var(--led);
+}
+.plab.d0 {
+  color: var(--on-board);
+}
+.proc {
+  --k: var(--p, 0);
+  --on1: clamp(0, calc((var(--k) - 0.22) * 1000), 1);
+  --on2: clamp(0, calc((var(--k) - 0.48) * 1000), 1);
+  --on3: clamp(0, calc((var(--k) - 0.74) * 1000), 1);
+}
+.pq.q0 {
+  opacity: calc(1 - var(--on1));
+}
+.pq.q1 {
+  opacity: calc(var(--on1) - var(--on2));
+}
+.pq.q2 {
+  opacity: calc(var(--on2) - var(--on3));
+}
+.pq.q3 {
+  opacity: var(--on3);
+}
+.pdot.d1 {
+  background: color-mix(in srgb, var(--led) calc(var(--on1) * 100%), var(--board));
+}
+.pdot.d2 {
+  background: color-mix(in srgb, var(--led) calc(var(--on2) * 100%), var(--board));
+}
+.pdot.d3 {
+  background: color-mix(in srgb, var(--led) calc(var(--on3) * 100%), var(--board));
+}
+.pdot:is(.d1, .d2, .d3) {
+  border-color: color-mix(in srgb, var(--led) calc(var(--lit, 0) * 100%), var(--line-mid));
+}
+.pdot.d1,
+.plab.d1 {
+  --lit: var(--on1);
+}
+.pdot.d2,
+.plab.d2 {
+  --lit: var(--on2);
+}
+.pdot.d3,
+.plab.d3 {
+  --lit: var(--on3);
+}
+.plab:is(.d1, .d2, .d3) {
+  color: color-mix(in srgb, var(--on-board) calc(var(--lit) * 100%), var(--text-off));
+}
+
 /* ---------- Scroll progress: the runway under the header and the back-to-top frame ----------
- * Browsers with scroll-driven animations do it in CSS. Others (Firefox today) get --scroll
- * from a small script, 0 at the top of the page and 1 at the bottom.
+ * MotionEffects grows the runway with the page's scroll (Motion, on the compositor where the
+ * browser supports scroll timelines) and writes the page progress to --scroll on .totop
+ * (0 at the top, 1 at the bottom). The dots of the frame light up from it.
  */
 .runway-fill {
-  transform: scaleX(var(--scroll, 0));
+  transform: scaleX(0);
   transform-origin: left;
 }
 .totop {
   opacity: clamp(0, calc((var(--scroll, 0) - 0.07) * 20), 1);
-  visibility: visible;
   transition: transform 0.25s;
+}
+.totop:not([data-shown]) {
+  pointer-events: none;
 }
 .totop-dot {
   fill: color-mix(
@@ -355,190 +804,11 @@
   transform: translate(-50%, -62%);
 }
 
-@supports (animation-timeline: scroll()) {
-  .runway-fill {
-    transform: scaleX(0);
-    animation: grow-x linear both;
-    animation-timeline: scroll(root block);
-  }
-  .totop {
-    opacity: 1;
-    animation: totop-in linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0% 12%;
-  }
-  .totop-dot {
-    fill: var(--line-strong);
-    animation: dot-on linear both;
-    animation-timeline: scroll(root block);
-  }
-}
-@keyframes grow-x {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-@keyframes totop-in {
-  0%,
-  60% {
-    opacity: 0;
-    transform: translateY(18px);
-    visibility: hidden;
-  }
-  100% {
-    opacity: 1;
-    transform: none;
-    visibility: visible;
-  }
-}
-@keyframes dot-on {
-  from {
-    fill: var(--line-strong);
-  }
-  to {
-    fill: var(--led);
-  }
-}
-
 /* ---------- Scroll reveals ----------
- * Each animation finishes once the element is fully on screen, so content at the very end of a page
- * is never left half-revealed.
- * Modern browsers: driven by the element's position in the viewport, pure CSS.
- * Others: <ScrollEffects> adds .no-sda to <html> and toggles .is-in when the element appears.
- * Without JavaScript, nothing is hidden.
+ * .rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap and .rv-tilt are only markers: Motion
+ * animates them in once, when they scroll into view (see src/lib/motion/presets.ts).
+ * Without JavaScript, or with reduced motion, nothing is hidden.
  */
-@supports (animation-timeline: view()) {
-  .rv,
-  .rv-left,
-  .rv-wipe,
-  .rv-scale,
-  .rv-line,
-  .rv-flap {
-    animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
-    animation-fill-mode: both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 90%;
-  }
-  .rv {
-    animation-name: rv-up;
-  }
-  .rv-left {
-    animation-name: rv-left;
-  }
-  .rv-wipe {
-    animation-name: rv-wipe;
-    animation-range: entry 10% entry 100%;
-  }
-  .rv-scale {
-    animation-name: rv-scale;
-    animation-range: entry 0% entry 100%;
-  }
-  .rv-line {
-    animation-name: rv-line;
-    transform-origin: left center;
-    animation-range: entry 20% entry 100%;
-  }
-  .rv-flap {
-    animation-name: rv-flap;
-    transform-origin: 50% 0;
-    animation-range: entry 0% entry 80%;
-  }
-}
-@keyframes rv-up {
-  from {
-    opacity: 0;
-    transform: translateY(48px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes rv-left {
-  from {
-    opacity: 0;
-    transform: translateX(-40px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes rv-wipe {
-  from {
-    clip-path: inset(0 100% 0 0);
-    opacity: 0.2;
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-  }
-}
-@keyframes rv-scale {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes rv-line {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-@keyframes rv-flap {
-  from {
-    opacity: 0;
-    transform: perspective(900px) rotateX(-82deg);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* Fallback: same moves as transitions, triggered once by IntersectionObserver. */
-.no-sda :is(.rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap) {
-  transition:
-    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
-    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
-    clip-path 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.no-sda .rv:not(.is-in) {
-  opacity: 0;
-  transform: translateY(48px);
-}
-.no-sda .rv-left:not(.is-in) {
-  opacity: 0;
-  transform: translateX(-40px);
-}
-.no-sda .rv-wipe:not(.is-in) {
-  clip-path: inset(0 100% 0 0);
-  opacity: 0.2;
-}
-.no-sda .rv-scale:not(.is-in) {
-  opacity: 0;
-  transform: scale(0.92) translateY(30px);
-}
-.no-sda .rv-line:not(.is-in) {
-  transform: scaleX(0);
-  transform-origin: left center;
-}
-.no-sda .rv-flap:not(.is-in) {
-  opacity: 0;
-  transform: perspective(900px) rotateX(-82deg);
-  transform-origin: 50% 0;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -549,13 +819,25 @@
     animation: none !important;
     transition: none !important;
   }
-  .no-sda :is(.rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap) {
-    opacity: 1 !important;
-    transform: none !important;
-    clip-path: none !important;
-  }
   .totop {
     opacity: 1;
     visibility: visible;
+  }
+  .route-plane {
+    offset-distance: 100% !important;
+  }
+  .read-on {
+    background: none !important;
+    color: inherit !important;
+  }
+  .stop-num.n0,
+  .pq.q0 {
+    opacity: 1 !important;
+  }
+  .pq:not(.q0) {
+    opacity: 0 !important;
+  }
+  .stop-num:not(.n0) {
+    opacity: 0 !important;
   }
 }

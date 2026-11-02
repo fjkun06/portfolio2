@@ -1,6 +1,12 @@
 import type { Locale } from "./config";
 
-/** Every page's address in one language. Pages that don't exist yet still get their final address. */
+/**
+ * Every page's address in one language, so no component writes `/${lang}/…` by hand.
+ * Pages that don't exist yet already get their final address.
+ *
+ * @example
+ * routes("fr").contact // "/fr/contact"
+ */
 export function routes(lang: Locale) {
   return {
     home: `/${lang}`,
@@ -14,4 +20,5 @@ export function routes(lang: Locale) {
   };
 }
 
+/** The object `routes()` returns, for typing props. */
 export type Routes = ReturnType<typeof routes>;
