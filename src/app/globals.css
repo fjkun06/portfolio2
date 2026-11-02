@@ -194,8 +194,9 @@
       transform: scaleX(1);
     }
   }
-  /* Hero headlines: the hidden languages don't animate; the one that becomes active relights. */
-  .hero-variant[data-active="false"] .led-col {
+  /* Hero headlines: the hidden languages don't animate; the one that becomes active relights
+     and starts its flip loop again from the beginning. */
+  .hero-variant[data-active="false"] :is(.led-col, .led-flip) {
     animation: none;
   }
   .blink {

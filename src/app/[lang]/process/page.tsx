@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { Led } from "@/components/Led";
+import { flipDelays, Led } from "@/components/Led";
 import { AfterLanding, CarryOn, Stops } from "@/components/process/ProcessSections";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { container } from "@/components/ui/layout";
@@ -53,12 +53,28 @@ async function ProcessContentView({ params }: { params: PageProps<"/[lang]/proce
           <h1 id="process-title" className="m-0 mt-7.5 lg:mt-12">
             <span className="sr-only">{text.titleText}</span>
             <span aria-hidden="true" className="hidden flex-col gap-6 lg:flex">
-              <Led text={text.titleLed[0]} pitch={12} step={10} animate tone="white" />
-              <Led text={text.titleLed[1]} pitch={12} step={10} delay={160} animate />
+              <Led text={text.titleLed[0]} pitch={12} step={10} animate flip tone="white" />
+              <Led
+                text={text.titleLed[1]}
+                pitch={12}
+                step={10}
+                delay={160}
+                animate
+                flip
+                flipDelay={flipDelays(text.titleLed)[1]}
+              />
             </span>
             <span aria-hidden="true" className="flex flex-col gap-3 lg:hidden">
-              <Led text={text.titleLed[0]} pitch={6} step={10} animate tone="white" />
-              <Led text={text.titleLed[1]} pitch={6} step={10} delay={160} animate />
+              <Led text={text.titleLed[0]} pitch={6} step={10} animate flip tone="white" />
+              <Led
+                text={text.titleLed[1]}
+                pitch={6}
+                step={10}
+                delay={160}
+                animate
+                flip
+                flipDelay={flipDelays(text.titleLed)[1]}
+              />
             </span>
           </h1>
           <div className="mt-6.5 flex flex-wrap items-end justify-between gap-7.5 lg:mt-11">

@@ -31,13 +31,15 @@ export function Runway() {
       aria-hidden="true"
       className="absolute inset-x-0 -bottom-px h-[3px]"
       style={{
-        backgroundImage: "repeating-linear-gradient(90deg, var(--dot-dim) 0 3px, transparent 3px 6px)",
+        backgroundImage:
+          "repeating-linear-gradient(90deg, var(--dot-dim) 0 3px, transparent 3px 6px)",
       }}
     >
       <div
         className="runway-fill h-full"
         style={{
-          backgroundImage: "repeating-linear-gradient(90deg, var(--led) 0 3px, transparent 3px 6px)",
+          backgroundImage:
+            "repeating-linear-gradient(90deg, var(--led) 0 3px, transparent 3px 6px)",
           filter: "drop-shadow(0 0 3px var(--led-glow))",
         }}
       />

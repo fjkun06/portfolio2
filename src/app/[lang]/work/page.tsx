@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { Led } from "@/components/Led";
+import { flipDelays, Led } from "@/components/Led";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { container } from "@/components/ui/layout";
 import { Gallery } from "@/components/work/Gallery";
@@ -47,12 +47,28 @@ async function Work({ params }: { params: PageProps<"/[lang]/work">["params"] })
             <h1 id="work-title" className="m-0">
               <span className="sr-only">{work.titleText}</span>
               <span aria-hidden="true" className="hidden flex-col gap-5 lg:flex">
-                <Led text={work.titleLed[0]} pitch={12} step={10} animate tone="white" />
-                <Led text={work.titleLed[1]} pitch={12} step={10} delay={150} animate />
+                <Led text={work.titleLed[0]} pitch={12} step={10} animate flip tone="white" />
+                <Led
+                  text={work.titleLed[1]}
+                  pitch={12}
+                  step={10}
+                  delay={150}
+                  animate
+                  flip
+                  flipDelay={flipDelays(work.titleLed)[1]}
+                />
               </span>
               <span aria-hidden="true" className="flex flex-col gap-3 lg:hidden">
-                <Led text={work.titleLed[0]} pitch={6} step={12} animate tone="white" />
-                <Led text={work.titleLed[1]} pitch={5.6} step={10} delay={120} animate />
+                <Led text={work.titleLed[0]} pitch={6} step={12} animate flip tone="white" />
+                <Led
+                  text={work.titleLed[1]}
+                  pitch={5.6}
+                  step={10}
+                  delay={120}
+                  animate
+                  flip
+                  flipDelay={flipDelays(work.titleLed)[1]}
+                />
               </span>
             </h1>
             <p className="rv m-0 max-w-[380px] text-on-board-2 lg:text-lg">{work.intro}</p>
