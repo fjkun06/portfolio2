@@ -16,12 +16,12 @@ export const siteConfig = {
    */
   owner: {
     /** Full legal name, as in your ID. */
-    name: "",
+    name: "Frank Jordan Zone Nguemfouo",
     /** Street and house number. */
-    street: "",
+    street: "Kronprinzenstraße 13",
     /** Postcode and city, e.g. "45127 Essen". */
-    city: ""
-  }
+    city: "45128 Essen",
+  },
 } as const;
 
 /**

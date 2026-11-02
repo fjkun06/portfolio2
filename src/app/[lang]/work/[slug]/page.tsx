@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { FlightStatus, ProjectHero, ProjectStory } from "@/components/project/ProjectSections";
+import {
+  FlightStatus,
+  ProjectHero,
+  ProjectStory
+} from "@/components/project/ProjectSections";
 import { ReportHero } from "@/components/report/ReportHero";
 import {
   Brief,
@@ -10,7 +14,7 @@ import {
   Journey,
   Manifest,
   NextDeparture,
-  Quote,
+  Quote
 } from "@/components/report/ReportSections";
 import { WipBand } from "@/components/ui/WipBand";
 import {
@@ -19,8 +23,9 @@ import {
   nextDeparture,
   projectHref,
   projects,
-  type Project,
+  type Project
 } from "@/content/projects";
+import { notFoundContent } from "@/content/not-found";
 import { journeyShots, reports } from "@/content/reports/herzog";
 import { fill } from "@/i18n/fill";
 import { hasLocale, type Locale } from "@/i18n/config";
@@ -41,11 +46,13 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({
-  params,
+  params
 }: PageProps<"/[lang]/work/[slug]">): Promise<Metadata> {
   const { lang, slug } = await params;
   const project = findProject(slug);
-  if (!hasLocale(lang) || !project) return {};
+  if (!hasLocale(lang)) return {};
+  // Not a project: this address becomes the 404 page, so it gets the 404 title, not the site's.
+  if (!project) return { title: notFoundContent[lang].title };
   const report = reports[slug];
   const { report: text, meta } = await getDictionary(lang);
   return pageMetadata({
@@ -55,7 +62,7 @@ export async function generateMetadata({
       ? `${project.name} · ${text.tag.toLowerCase()} · Frank Jordan`
       : `${project.name} · Frank Jordan`,
     description: report ? report[lang].intro : project.summary[lang],
-    imageAlt: meta.ogAlt,
+    imageAlt: meta.ogAlt
   });
 }
 
@@ -67,7 +74,9 @@ export async function generateMetadata({
  *   with (with links to the demo and the code), the flight status (live, or still in progress
  *   with the picture greyed out under a status band), and the next project.
  */
-export default function ReportPage({ params }: PageProps<"/[lang]/work/[slug]">) {
+export default function ReportPage({
+  params
+}: PageProps<"/[lang]/work/[slug]">) {
   return (
     <Suspense>
       <ReportContent params={params} />
@@ -75,7 +84,11 @@ export default function ReportPage({ params }: PageProps<"/[lang]/work/[slug]">)
   );
 }
 
-async function ReportContent({ params }: { params: PageProps<"/[lang]/work/[slug]">["params"] }) {
+async function ReportContent({
+  params
+}: {
+  params: PageProps<"/[lang]/work/[slug]">["params"];
+}) {
   const { lang, slug } = await params;
   const project = findProject(slug);
   if (!hasLocale(lang) || !project) notFound();
@@ -101,13 +114,23 @@ async function ReportContent({ params }: { params: PageProps<"/[lang]/work/[slug
       <Journey report={report} shots={journeyShots[slug]} text={text} />
       <Manifest report={report} stack={project.stack} text={text} />
       <Quote report={report} text={text} />
-      <NextDeparture project={next} href={projectHref(next, to.work)} text={text} />
+      <NextDeparture
+        project={next}
+        href={projectHref(next, to.work)}
+        text={text}
+      />
     </>
   );
 }
 
 /** The page of a project without a flight report. */
-async function ProjectContent({ lang, project }: { lang: Locale; project: Project }) {
+async function ProjectContent({
+  lang,
+  project
+}: {
+  lang: Locale;
+  project: Project;
+}) {
   const { project: text, report, status, work } = await getDictionary(lang);
   const to = routes(lang);
   const next = nextDeparture(project);
@@ -125,7 +148,7 @@ async function ProjectContent({ lang, project }: { lang: Locale; project: Projec
           home: work.home,
           homeHref: to.home,
           all: report.allDepartures,
-          workHref: to.work,
+          workHref: to.work
         }}
       />
       <HomepageShot
@@ -136,13 +159,33 @@ async function ProjectContent({ lang, project }: { lang: Locale; project: Projec
             ? undefined
             : {
                 alt: fill(work.shotWip, { name: project.name }),
-                band: <WipBand status={project.status} label={text.wip} text={status} />,
+                band: (
+                  <WipBand
+                    status={project.status}
+                    label={text.wip}
+                    text={status}
+                  />
+                )
               }
         }
       />
-      <ProjectStory lang={lang} project={project} text={text} builtWith={report.builtWith} />
-      <FlightStatus project={project} text={text} status={status} contactHref={to.contact} />
-      <NextDeparture project={next} href={projectHref(next, to.work)} text={report} />
+      <ProjectStory
+        lang={lang}
+        project={project}
+        text={text}
+        builtWith={report.builtWith}
+      />
+      <FlightStatus
+        project={project}
+        text={text}
+        status={status}
+        contactHref={to.contact}
+      />
+      <NextDeparture
+        project={next}
+        href={projectHref(next, to.work)}
+        text={report}
+      />
     </>
   );
 }
