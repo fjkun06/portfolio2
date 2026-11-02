@@ -1,26 +1,843 @@
 @import "tailwindcss";
 
+/*
+ * Departures design tokens.
+ * Every colour that changes between dark and light mode is a variable on <html data-mode>.
+ * Components use the Tailwind names below (bg-board, text-on-board…) and never raw hex values.
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Accent: the LED colour. "ink" is a darker shade for text on light backgrounds. */
+  --accent: #bfe6ff;
+  --accent-ink: #1d5a86;
+  --accent-glow: rgba(191, 230, 255, 0.55);
+
+  --ink: #141517;
+  --paper: #f7f7f3;
+  --muted: #52565d;
+  --label: #5e636b;
+  --rule: #c8cac3;
+  --danger: #b42318;
+
+  --header-h: 78px;
+  --stencil: var(--font-stencil-face), "Big Shoulders Stencil Display", Impact, sans-serif;
+  --sans: var(--font-body-face), "Familjen Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+[data-mode="dark"] {
+  --page: #ecede8;
+  --board: #141517;
+  --on-board: #ecede8;
+  --on-board-2: #c9cdd3;
+  --muted-board: #9ca1a9;
+  --rule-board: #2a2c30;
+  --row-hover: #1c1d20;
+  --line-strong: #3a3d42;
+  --line-mid: #63676e;
+  --dot-dim: #2b2d31;
+  --text-off: #4a4d53;
+  --knob: #2a2c30;
+  --led: var(--accent);
+  --led-glow: var(--accent-glow);
+  --led-white: #eef0f2;
+  --led-grey: #b9bec6;
+  --led-dim: #5a5e66;
+  --led-off: #26282b;
+  --soft-glow: rgba(238, 240, 242, 0.5);
+  --fill-accent: #ffffff;
+  --fill-accent-text: #141517;
+  --chip-line: transparent;
+  --outline-card: transparent;
+  color-scheme: dark;
+}
+
+[data-mode="light"] {
+  --page: #ffffff;
+  --board: #ffffff;
+  --on-board: #141517;
+  --on-board-2: #3a3e44;
+  --muted-board: #4b5057;
+  --rule-board: #bfc1ba;
+  --row-hover: #f4f5f2;
+  --line-strong: #979a94;
+  --line-mid: #8d908a;
+  --dot-dim: #e2e3de;
+  --text-off: #868a91;
+  --knob: #e6e7e2;
+  --led: var(--accent-ink);
+  --led-glow: transparent;
+  --led-white: #141517;
+  --led-grey: #535860;
+  --led-dim: #8e929a;
+  --led-off: #edeeea;
+  --soft-glow: transparent;
+  --fill-accent: #141517;
+  --fill-accent-text: #ecede8;
+  --chip-line: #bcbeb7;
+  --outline-card: #bfc1ba;
+  color-scheme: light;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-page: var(--page);
+  --color-board: var(--board);
+  --color-on-board: var(--on-board);
+  --color-on-board-2: var(--on-board-2);
+  --color-muted-board: var(--muted-board);
+  --color-rule-board: var(--rule-board);
+  --color-row-hover: var(--row-hover);
+  --color-line-strong: var(--line-strong);
+  --color-knob: var(--knob);
+  --color-led: var(--led);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-muted: var(--muted);
+  --color-label: var(--label);
+  --color-rule: var(--rule);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--sans);
+  --font-stencil: var(--stencil);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--header-h) + 16px);
+  }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 18px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a {
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--led);
+    outline-offset: 3px;
+  }
+  @media (max-width: 1023px) {
+    :root {
+      --header-h: 64px;
+    }
+    body {
+      font-size: 17px;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Component styles sit in a layer so Tailwind utilities (hidden, lg:flex…) can still override them. */
+@layer components {
+  /* ---------- Boards: the dark (or white) panels ---------- */
+  .board {
+    background: var(--board);
+    color: var(--on-board);
+  }
+  .board a:hover {
+    color: var(--led);
+  }
+  /* In light mode, rounded cards get a thin edge so they don't vanish into the white page. */
+  .card-edge {
+    outline: 1px solid var(--outline-card);
+    outline-offset: -1px;
+  }
+  .chip-line {
+    box-shadow: inset 0 0 0 1px var(--chip-line);
+  }
+
+  /* ---------- LED lettering ---------- */
+  .led-text {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .led-col {
+    animation: led-on 0.18s steps(1, end) both;
+  }
+  @keyframes led-on {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  /* Hero headlines: the hidden languages don't animate; the one that becomes active relights. */
+  .hero-variant[data-active="false"] .led-col {
+    animation: none;
+  }
+  .blink {
+    animation: blink 1.4s steps(2, jump-none) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.2;
+    }
+  }
+
+  /* ---------- Buttons: colour fills up from the bottom on hover ---------- */
+  .btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-family: var(--stencil);
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    transition:
+      color 0.35s cubic-bezier(0.65, 0, 0.35, 1),
+      border-color 0.35s;
+  }
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--fill);
+    transform: scaleY(0);
+    transform-origin: 50% 100%;
+    transition: transform 0.38s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .btn:hover::before,
+  .btn:focus-visible::before {
+    transform: scaleY(1);
+  }
+  .btn:hover,
+  .btn:focus-visible {
+    color: var(--fill-text) !important;
+    border-color: var(--fill) !important;
+  }
+  .btn-accent {
+    background: var(--accent);
+    color: var(--ink);
+    --fill: var(--fill-accent);
+    --fill-text: var(--fill-accent-text);
+  }
+  .btn-ink {
+    background: var(--ink);
+    color: var(--accent);
+    --fill: var(--accent);
+    --fill-text: var(--ink);
+  }
+  .btn-ghost {
+    border: 2px solid var(--line-strong);
+    color: var(--on-board);
+    font-weight: 800;
+    --fill: var(--on-board);
+    --fill-text: var(--board);
+  }
+  .btn-outline {
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    font-weight: 800;
+    --fill: var(--ink);
+    --fill-text: #ecede8;
+  }
+
+  /* ---------- Navigation ---------- */
+  .nav-item {
+    position: relative;
+    text-decoration: none;
+  }
+  .nav-item::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    background: var(--led);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s;
+  }
+  .nav-item:hover::after,
+  .nav-item[aria-current="page"]::after {
+    transform: scaleX(1);
+  }
+  .lang-off {
+    opacity: 0.45;
+    transition: opacity 0.2s;
+  }
+  .lang-off:hover {
+    opacity: 1;
+  }
+  .row-board {
+    transition: background-color 0.15s;
+  }
+  .row-board:hover {
+    background-color: var(--row-hover);
+  }
+  .row-go {
+    transition:
+      transform 0.2s,
+      color 0.2s;
+  }
+  .row-board:hover .row-go {
+    color: var(--led);
+    transform: translateX(4px);
+  }
+
+  /* Mode switch: the knob slides under the moon or the sun. */
+  .mode-switch {
+    transition: border-color 0.2s;
+  }
+  .mode-switch:hover {
+    border-color: var(--led);
+  }
+  .mode-knob {
+    transition: transform 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  [data-mode="light"] .mode-knob {
+    transform: translateX(36px);
+  }
+  .mode-moon {
+    fill: var(--led);
+  }
+  .mode-sun {
+    fill: var(--led-dim);
+  }
+  [data-mode="light"] .mode-moon {
+    fill: var(--led-dim);
+  }
+  [data-mode="light"] .mode-sun {
+    fill: var(--led);
+  }
+
+  .menu-row {
+    animation: menu-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* ---------- Home page ---------- */
+@layer components {
+  /* Rows of the departures board and other light lists */
+  .row-light {
+    transition: background-color 0.15s;
+  }
+  .row-light:hover {
+    background-color: rgba(20, 21, 23, 0.05);
+  }
+  .row-light:hover .row-go {
+    transform: translateX(4px);
+  }
+  /* Screenshots lift slightly on hover */
+  .shot {
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .shot:hover {
+    transform: translateY(-6px);
+  }
+  /* LED band that scrolls sideways forever. The content is doubled, so moving it by half loops. */
+  .marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 34s linear infinite;
+  }
+  .marquee-band:hover .marquee,
+  .marquee-band:focus-visible .marquee {
+    animation-play-state: paused;
+  }
+  /* Placeholder for screenshots that haven't been supplied yet */
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    text-align: center;
+    background-color: #ecede8;
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 16px,
+      rgba(20, 21, 23, 0.035) 16px 32px
+    );
+    color: var(--label);
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- Form controls: custom checkboxes and language chips with an LED tick ---------- */
+@layer components {
+  .cb-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+  }
+  .cb-box {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    box-sizing: border-box;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  .cb-box svg {
+    opacity: 0;
+    transform: scale(0.4);
+    transition:
+      opacity 0.2s,
+      transform 0.25s cubic-bezier(0.2, 1.5, 0.4, 1);
+  }
+  .cb-input:checked + .cb-box {
+    background: var(--ink);
+  }
+  .cb-input:checked + .cb-box svg {
+    opacity: 1;
+    transform: none;
+  }
+  .cb:hover .cb-input:not(:checked) + .cb-box {
+    background: rgba(20, 21, 23, 0.08);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    color: var(--ink);
+    font-family: var(--stencil);
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .chip svg {
+    width: 0;
+    margin-right: 0;
+    opacity: 0;
+    transition:
+      width 0.25s,
+      margin 0.25s,
+      opacity 0.2s;
+  }
+  .chip:hover {
+    background: rgba(20, 21, 23, 0.08);
+  }
+  .cb-input:checked + .chip {
+    background: var(--ink);
+    color: #ecede8;
+  }
+  .cb-input:checked + .chip svg {
+    width: 15px;
+    margin-right: 9px;
+    opacity: 1;
+  }
+  .cb-input:focus-visible + .cb-box,
+  .cb-input:focus-visible + .chip {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .ticket-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2px 0 6px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--stencil);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    outline: none;
+  }
+  .ticket-input::placeholder,
+  .ticket-textarea::placeholder {
+    color: #a3a7ad;
+  }
+  .ticket-input:focus,
+  .ticket-textarea:focus {
+    border-bottom-color: var(--accent-ink);
+  }
+  .ticket-input[aria-invalid="true"],
+  .ticket-textarea[aria-invalid="true"] {
+    border-bottom-color: var(--danger);
+  }
+  .ticket-textarea {
+    padding: 4px 0 8px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 19px;
+    resize: vertical;
+    outline: none;
+  }
+  @media (max-width: 1023px) {
+    .ticket-input {
+      font-size: 26px;
+    }
+    .ticket-textarea {
+      font-size: 17px;
+    }
+    .chip {
+      min-height: 44px;
+      padding: 0 12px;
+      font-size: 19px;
+    }
+  }
+}
+
+/* ---------- Flight plan: the plane flies the route as you scroll ----------
+ * Desktop (.orbit): around an ellipse. Phones and tablets (.vtrack): straight down.
+ * MotionEffects moves the plane with Motion and writes the section's scroll progress to --p
+ * (0 to 1). Everything else here follows from --p: stop markers and numbers light up as the
+ * plane passes them (28.3 %, 56.7 % and 85 % of the way).
+ * Without JavaScript, or with reduced motion: plane at the start, first stop shown.
+ */
+.orbit-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-path: path("M 220 300 A 380 140 0 1 1 980 300 A 380 140 0 1 1 220 300");
+  offset-rotate: auto;
+  offset-distance: 0%;
+}
+.stop-num {
+  grid-area: 1 / 1;
+}
+.stop-num.n1,
+.stop-num.n2,
+.stop-num.n3 {
+  opacity: 0;
+}
+.vplane {
+  position: absolute;
+  top: 0;
+  left: -4px;
+}
+.orbit {
+  --k: clamp(0, calc((var(--p, 0) - 0.18) / 0.54), 1);
+}
+.vtrack {
+  --k: clamp(0, calc((var(--p, 0) - 0.25) / 0.5), 1);
+}
+:is(.orbit, .vtrack) {
+  --on1: clamp(0, calc((var(--k) - 0.283) * 1000), 1);
+  --on2: clamp(0, calc((var(--k) - 0.567) * 1000), 1);
+  --on3: clamp(0, calc((var(--k) - 0.85) * 1000), 1);
+}
+.stop-mark.s1 {
+  --on: var(--on1);
+}
+.stop-mark.s2 {
+  --on: var(--on2);
+}
+.stop-mark.s3 {
+  --on: var(--on3);
+}
+.stop-mark:is(.s1, .s2, .s3) {
+  background: color-mix(in srgb, var(--led) calc(var(--on) * 100%), var(--page)) !important;
+  box-shadow: 0 0 0 calc(var(--on) * 6px) var(--led-glow);
+  transform: scale(calc(1 + var(--on) * 0.25));
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.3s;
+}
+.stop-lit.s1 {
+  opacity: var(--on1);
+}
+.stop-lit.s2 {
+  opacity: var(--on2);
+}
+.stop-lit.s3 {
+  opacity: var(--on3);
+}
+.stop-num.n0 {
+  opacity: calc(1 - var(--on1));
+}
+.stop-num.n1 {
+  opacity: calc(var(--on1) - var(--on2));
+}
+.stop-num.n2 {
+  opacity: calc(var(--on2) - var(--on3));
+}
+.stop-num.n3 {
+  opacity: var(--on3);
+}
+
+/* ---------- Work and project pages ----------
+ * .rv-tilt: cards tip up from a slight 3D angle as they arrive.
+ * .px-media / .px-up / .px-down: parallax; images drift slower or faster than the page.
+ * .read-on: a big sentence fills in from grey to black as you read down.
+ * .route-plane: the plane on the report's route map flies from CM to DE over the whole page.
+ * All are driven by Motion in MotionEffects; with reduced motion everything simply shows.
+ */
+.route-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-rotate: auto;
+  offset-distance: 0%;
+  color: var(--led);
+  filter: drop-shadow(0 0 6px var(--led-glow));
+}
+/* The sentence starts grey and Motion moves the ink in (only when animations are on: the boot
+   script adds .motion to <html>). */
+.motion .read-on {
+  background: linear-gradient(90deg, var(--ink) 50%, #b9bcb6 50%) 100% 0 / 200% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- Services page ---------- */
+/* Planes looping along the hero's route map, each on its own curve (offset-path set inline). */
+.net-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-rotate: auto;
+  color: var(--led);
+  filter: drop-shadow(0 0 6px var(--led-glow));
+  animation: net-fly 6.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes net-fly {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+@layer components {
+  .route-chip {
+    transition:
+      border-color 0.2s,
+      background-color 0.2s;
+  }
+  .route-chip:hover {
+    border-color: var(--led);
+    background: var(--row-hover);
+  }
+  /* FAQ: native <details>, with an LED "+" that turns into "×" when open */
+  .faq summary {
+    list-style: none;
+  }
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq summary:hover {
+    color: var(--accent-ink);
+  }
+  .faq-x {
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .faq[open] .faq-x {
+    transform: rotate(45deg);
+  }
+  .faq[open] .faq-answer {
+    animation: faq-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+@keyframes faq-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Process page: the cockpit follows you through the four stops ----------
+ * Desktop: a sticky panel with the stop number, the stop name and a vertical track the plane
+ * flies down. Phones: a sticky strip under the header. Both are driven by how far you've
+ * scrolled through the stops: MotionEffects writes it to --p on .proc and moves the plane and
+ * the fill lines; stops switch at 22 %, 48 % and 74 %.
+ */
+.pq {
+  grid-area: 1 / 1;
+}
+.pq.q1,
+.pq.q2,
+.pq.q3 {
+  opacity: 0;
+}
+.pfill {
+  transform: scaleY(0);
+  transform-origin: top;
+}
+.pfillx {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.pplane {
+  position: absolute;
+  top: 0;
+}
+.pdot {
+  background: var(--board);
+  border-color: var(--line-mid);
+}
+.plab {
+  color: var(--text-off);
+}
+.pdot.d0 {
+  background: var(--led);
+  border-color: var(--led);
+}
+.plab.d0 {
+  color: var(--on-board);
+}
+.proc {
+  --k: var(--p, 0);
+  --on1: clamp(0, calc((var(--k) - 0.22) * 1000), 1);
+  --on2: clamp(0, calc((var(--k) - 0.48) * 1000), 1);
+  --on3: clamp(0, calc((var(--k) - 0.74) * 1000), 1);
+}
+.pq.q0 {
+  opacity: calc(1 - var(--on1));
+}
+.pq.q1 {
+  opacity: calc(var(--on1) - var(--on2));
+}
+.pq.q2 {
+  opacity: calc(var(--on2) - var(--on3));
+}
+.pq.q3 {
+  opacity: var(--on3);
+}
+.pdot.d1 {
+  background: color-mix(in srgb, var(--led) calc(var(--on1) * 100%), var(--board));
+}
+.pdot.d2 {
+  background: color-mix(in srgb, var(--led) calc(var(--on2) * 100%), var(--board));
+}
+.pdot.d3 {
+  background: color-mix(in srgb, var(--led) calc(var(--on3) * 100%), var(--board));
+}
+.pdot:is(.d1, .d2, .d3) {
+  border-color: color-mix(in srgb, var(--led) calc(var(--lit, 0) * 100%), var(--line-mid));
+}
+.pdot.d1,
+.plab.d1 {
+  --lit: var(--on1);
+}
+.pdot.d2,
+.plab.d2 {
+  --lit: var(--on2);
+}
+.pdot.d3,
+.plab.d3 {
+  --lit: var(--on3);
+}
+.plab:is(.d1, .d2, .d3) {
+  color: color-mix(in srgb, var(--on-board) calc(var(--lit) * 100%), var(--text-off));
+}
+
+/* ---------- Scroll progress: the runway under the header and the back-to-top frame ----------
+ * MotionEffects grows the runway with the page's scroll (Motion, on the compositor where the
+ * browser supports scroll timelines) and writes the page progress to --scroll on .totop
+ * (0 at the top, 1 at the bottom). The dots of the frame light up from it.
+ */
+.runway-fill {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.totop {
+  opacity: clamp(0, calc((var(--scroll, 0) - 0.07) * 20), 1);
+  transition: transform 0.25s;
+}
+.totop:not([data-shown]) {
+  pointer-events: none;
+}
+.totop-dot {
+  fill: color-mix(
+    in srgb,
+    var(--led) calc(clamp(0, (var(--scroll, 0) - var(--t)) * 100000, 1) * 100%),
+    var(--line-strong)
+  );
+}
+.totop-arrow {
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.totop:hover .totop-arrow,
+.totop:focus-visible .totop-arrow {
+  transform: translate(-50%, -62%);
+}
+
+/* ---------- Scroll reveals ----------
+ * .rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap and .rv-tilt are only markers: Motion
+ * animates them in once, when they scroll into view (see src/lib/motion/presets.ts).
+ * Without JavaScript, or with reduced motion, nothing is hidden.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .totop {
+    opacity: 1;
+    visibility: visible;
+  }
+  .route-plane {
+    offset-distance: 100% !important;
+  }
+  .read-on {
+    background: none !important;
+    color: inherit !important;
+  }
+  .stop-num.n0,
+  .pq.q0 {
+    opacity: 1 !important;
+  }
+  .pq:not(.q0) {
+    opacity: 0 !important;
+  }
+  .stop-num:not(.n0) {
+    opacity: 0 !important;
+  }
 }
