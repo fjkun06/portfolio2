@@ -669,21 +669,9 @@
   .faq-x {
     transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .faq[open] .faq-x {
+  /* The answer slides open and shut with Motion (<Disclosure>); data-closing marks the slide shut */
+  .faq[open]:not([data-closing]) .faq-x {
     transform: rotate(45deg);
-  }
-  .faq[open] .faq-answer {
-    animation: faq-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  }
-}
-@keyframes faq-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
   }
 }
 

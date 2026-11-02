@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { servicesContent } from "@/content/services";
 import { ledWidth } from "@/lib/led";
@@ -81,6 +81,8 @@ describe("<Fares>", () => {
 
 describe("<Faq>", () => {
   it("starts closed and opens a question on click", async () => {
+    // Reduced motion: the row opens at once, like a plain <details>.
+    vi.stubGlobal("matchMedia", () => ({ matches: true }));
     const user = userEvent.setup();
     const { container } = render(<Faq text={t.faq} />);
     const rows = container.querySelectorAll("details");
@@ -91,5 +93,6 @@ describe("<Faq>", () => {
     await user.click(screen.getByText(question));
     expect(rows[0]).toHaveAttribute("open");
     expect(within(rows[0] as HTMLElement).getByText(t.faq.items[0][1])).toBeVisible();
+    vi.unstubAllGlobals();
   });
 });
