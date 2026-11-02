@@ -88,9 +88,9 @@ export function Stops({ text }: { text: ProcessContent }) {
         <div className="hidden lg:block">
           <Cockpit text={text} />
         </div>
-        <div className="lg:hidden">
-          <CockpitStrip text={text} />
-        </div>
+        {/* No wrapper: a sticky element only sticks within its parent, and this one must be
+            the whole list of stops for the strip to stay under the header. */}
+        <CockpitStrip text={text} />
         <ol className="m-0 list-none p-0 lg:border-b-[1.5px] lg:border-ink">
           {text.stops.map((s, i) => (
             <StopArticle key={s.name} stop={s} index={i} text={text} />

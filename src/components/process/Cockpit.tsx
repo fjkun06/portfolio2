@@ -52,7 +52,8 @@ export function Cockpit({ text }: { text: ProcessContent }) {
           className="pfill absolute top-0 left-[9px] -ml-px w-[3px]"
           style={{
             height: TRACK,
-            backgroundImage: "repeating-linear-gradient(180deg, var(--led) 0 3px, transparent 3px 8px)",
+            backgroundImage:
+              "repeating-linear-gradient(180deg, var(--led) 0 3px, transparent 3px 8px)",
             filter: "drop-shadow(0 0 3px var(--led-glow))",
           }}
         />
@@ -87,12 +88,16 @@ export function Cockpit({ text }: { text: ProcessContent }) {
 }
 
 /**
- * Phone version of the cockpit: a thin strip that sticks under the header, with the current
- * stop's number and name, and a dotted line filling up from left to right.
+ * Phone and tablet version of the cockpit (hidden from 1024 px): a thin strip that sticks under
+ * the header while you read the stops, with the current stop's number and name, and a dotted
+ * line filling up from left to right.
  */
 export function CockpitStrip({ text }: { text: ProcessContent }) {
   return (
-    <div aria-hidden="true" className="board sticky top-16 z-20 -mx-4 border-b border-rule-board">
+    <div
+      aria-hidden="true"
+      className="board sticky top-16 z-20 -mx-4 border-b border-rule-board lg:hidden"
+    >
       <div className="flex h-[54px] items-center gap-3 px-4">
         <span className="grid">
           {text.stops.map((_, i) => (
@@ -113,13 +118,15 @@ export function CockpitStrip({ text }: { text: ProcessContent }) {
       <div
         className="relative h-[3px]"
         style={{
-          backgroundImage: "repeating-linear-gradient(90deg, var(--dot-dim) 0 3px, transparent 3px 6px)",
+          backgroundImage:
+            "repeating-linear-gradient(90deg, var(--dot-dim) 0 3px, transparent 3px 6px)",
         }}
       >
         <div
           className="pfillx h-full"
           style={{
-            backgroundImage: "repeating-linear-gradient(90deg, var(--led) 0 3px, transparent 3px 6px)",
+            backgroundImage:
+              "repeating-linear-gradient(90deg, var(--led) 0 3px, transparent 3px 6px)",
           }}
         />
       </div>
