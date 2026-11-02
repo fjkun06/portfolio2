@@ -5,6 +5,8 @@ import type { Locale } from "@/i18n/config";
 import brytzone from "../../public/work/brytzone.webp";
 import digtal from "../../public/work/digtal.webp";
 import flippbidd from "../../public/work/flippbidd.webp";
+import herzogPhone from "../../public/work/herzog-phone.webp";
+import herzog from "../../public/work/herzog.webp";
 import trucks from "../../public/work/trucks.webp";
 
 /**
@@ -37,6 +39,8 @@ export type Project = {
   summary: Record<Locale, string>;
   /** Screenshot of the homepage, or null while there's none (a placeholder is shown). */
   image: StaticImageData | null;
+  /** Phone screenshot (9 : 18), for the featured project on the home page. */
+  imagePhone?: StaticImageData;
   /** Has its own flight report page at /work/<slug>. */
   report: boolean;
 };
@@ -63,7 +67,8 @@ export const projects: Project[] = [
       fr: "Depuis le Cameroun, les clients commandent des traductions certifiées en Allemagne : envoi des documents, prix à la page, paiement par SEPA ou Orange Money.",
       de: "Kunden in Kamerun bestellen beglaubigte Übersetzungen aus Deutschland online: Upload, Preis pro Seite, Zahlung per SEPA oder Orange Money.",
     },
-    image: null,
+    image: herzog,
+    imagePhone: herzogPhone,
     report: true,
   },
   {

@@ -1,11 +1,13 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { featured } from "@/content/projects";
 import { routes } from "@/i18n/routes";
 import en from "@/locales/en";
 
 import { Featured } from "./Featured";
+
+vi.mock("next/image", () => import("@/test/next-image-mock"));
 
 function setup() {
   render(
@@ -14,6 +16,19 @@ function setup() {
 }
 
 describe("<Featured>", () => {
+  it("shows the desktop and phone screenshots instead of placeholders", () => {
+    setup();
+    expect(screen.getByRole("img", { name: en.home.featured.shotDesktop })).toHaveAttribute(
+      "src",
+      featured.image!.src,
+    );
+    expect(screen.getByRole("img", { name: en.home.featured.shotPhone })).toHaveAttribute(
+      "src",
+      featured.imagePhone!.src,
+    );
+    expect(screen.queryByRole("img", { name: /^Placeholder/ })).toBeNull();
+  });
+
   it("names the project as the section heading", () => {
     setup();
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("HERZOG TRAD'");

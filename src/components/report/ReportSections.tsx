@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { Led } from "@/components/Led";
@@ -43,11 +44,22 @@ export function HomepageShot({ project, text }: { project: Project; text: Text }
             {text.openSite}
           </a>
         </div>
-        <Placeholder
-          label={fill(text.shotHome, { site: project.website })}
-          ratio="16 / 8.5"
-          className="w-full"
-        />
+        {project.image ? (
+          <Image
+            src={project.image}
+            alt={fill(text.shotHome, { site: project.website })}
+            sizes="(min-width: 1280px) 1200px, 100vw"
+            placeholder="blur"
+            loading="eager"
+            className="block aspect-[16/8.5] w-full object-cover object-top"
+          />
+        ) : (
+          <Placeholder
+            label={fill(text.shotHome, { site: project.website })}
+            ratio="16 / 8.5"
+            className="w-full"
+          />
+        )}
       </div>
     </section>
   );
