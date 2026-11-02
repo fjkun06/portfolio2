@@ -12,6 +12,12 @@ export const siteConfig = {
   github: "https://github.com/fjkun06",
 } as const;
 
+/**
+ * Click-to-chat link for WhatsApp.
+ *
+ * @example
+ * whatsappLink("4917612345678") // "https://wa.me/4917612345678"
+ */
 export function whatsappLink(number: string): string {
   return `https://wa.me/${number}`;
 }

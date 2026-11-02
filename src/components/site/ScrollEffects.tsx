@@ -3,11 +3,26 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-const REVEALS = ".rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap";
+/** Every class that reveals on scroll. Keep in sync with globals.css. */
+export const REVEALS = ".rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap";
 
 /**
- * Fallback for browsers without scroll-driven animations (Firefox today).
- * Chrome, Edge and Safari do everything in CSS and this does nothing there.
+ * Fallback for browsers without CSS scroll-driven animations (Firefox today).
+ * Chrome, Edge and Safari animate everything in CSS, and this component does nothing there.
+ *
+ * Two jobs, each switched on only when the browser lacks the matching CSS feature:
+ *
+ * 1. Reveals (`animation-timeline: view()` missing): the early script in layout.tsx has already
+ *    put `.no-sda` on <html>, which hides `.rv`, `.rv-left`… elements. An IntersectionObserver
+ *    adds `.is-in` to each one as it scrolls into view, and CSS transitions it in. Each element
+ *    is revealed once and then left alone.
+ *
+ * 2. Page progress (`animation-timeline: scroll()` missing): sets `--scroll` on <html>, from 0 at
+ *    the top to 1 at the bottom, at most once per frame. The header runway and the back-to-top
+ *    frame read it.
+ *
+ * Both re-run after a client-side navigation (`pathname` changes) to pick up the new page.
+ * Renders nothing.
  */
 export function ScrollEffects() {
   const pathname = usePathname();

@@ -1,6 +1,22 @@
 /**
- * FJ Matrix: the site's 5 × 7 LED lettering.
- * Each glyph is seven rows of five dots, "1" lit and "0" unlit.
+ * FJ Matrix: the site's own 5 × 7 LED lettering, as data.
+ *
+ * Every character is a grid of 7 rows × 5 columns of dots. Each glyph below is written as seven
+ * groups of five digits, top row first: "1" is a lit dot, "0" an unlit one. For example "F":
+ *
+ *   11111   ●●●●●
+ *   10000   ●
+ *   10000   ●
+ *   11110   ●●●●
+ *   10000   ●
+ *   10000   ●
+ *   10000   ●
+ *
+ * This file only does the maths (which dots are lit, how wide a text is).
+ * Drawing happens in `src/components/Led.tsx`.
+ *
+ * To support a new character, add a line here. Lowercase letters fall back to their capital,
+ * and anything without a glyph is drawn as "?" (the locale tests catch that).
  */
 export const GLYPHS: Record<string, string> = {
   A: "01110 10001 10001 11111 10001 10001 10001",
@@ -63,12 +79,24 @@ export const GLYPHS: Record<string, string> = {
   "↑": "00100 01110 10101 00100 00100 00100 00100",
 };
 
+/** A space is three dot columns wide. */
 const SPACE_COLS = 3;
-const ADVANCE = 6; // five dots plus one gap
+/** Each character takes its five columns plus one empty column before the next character. */
+const ADVANCE = 6;
 
+/** One column of lit dots: its horizontal position (in dot columns) and which rows (0–6) are lit. */
 export type LedColumn = { x: number; rows: number[] };
 
-/** Lit columns of a text, and its total width in dot columns. */
+/**
+ * Works out which dots a text lights up.
+ *
+ * @param text The text to draw. Use capitals; lowercase is drawn as capitals.
+ * @returns `columns`: only the columns that have at least one lit dot (empty columns are skipped,
+ *   which keeps the SVG small), and `width`: the total width in dot columns, without the trailing gap.
+ *
+ * @example
+ * layoutLed("FJ").width // 11: five columns for F, one gap, five for J
+ */
 export function layoutLed(text: string): { columns: LedColumn[]; width: number } {
   const columns: LedColumn[] = [];
   let x = 0;
@@ -89,7 +117,28 @@ export function layoutLed(text: string): { columns: LedColumn[]; width: number }
   return { columns, width: Math.max(x - 1, 1) };
 }
 
-/** Width in pixels of a text at a given dot pitch. */
+/**
+ * Width in pixels of a text at a given dot pitch (distance between dot centres).
+ *
+ * @example
+ * ledWidth("FJ", 6) // 66
+ */
 export function ledWidth(text: string, pitch: number): number {
   return layoutLed(text).width * pitch;
+}
+
+/**
+ * Characters in a text that have no glyph and would be drawn as "?".
+ * Spaces and lowercase letters with a capital glyph are fine.
+ *
+ * @example
+ * missingGlyphs("HELLO <3") // ["<"]
+ */
+export function missingGlyphs(text: string): string[] {
+  const missing = new Set<string>();
+  for (const char of text) {
+    if (char === " ") continue;
+    if (!(char in GLYPHS) && !(char.toUpperCase() in GLYPHS)) missing.add(char);
+  }
+  return [...missing];
 }

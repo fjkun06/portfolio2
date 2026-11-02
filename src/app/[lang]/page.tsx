@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { Led } from "@/components/Led";
@@ -10,7 +11,17 @@ import { routes } from "@/i18n/routes";
  * Temporary page to check the foundation: header, footer, LED lettering, modes and scroll reveals.
  * The real home page replaces it in the next step.
  */
-export default async function Page({ params }: PageProps<"/[lang]">) {
+export default function Page({ params }: PageProps<"/[lang]">) {
+  // Reading the URL (params) happens inside <Suspense>, as Next.js requires for instant navigations.
+  // Every language is prerendered, so visitors still get the full page as static HTML.
+  return (
+    <Suspense>
+      <Preview params={params} />
+    </Suspense>
+  );
+}
+
+async function Preview({ params }: { params: PageProps<"/[lang]">["params"] }) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const { preview, nav } = await getDictionary(lang);

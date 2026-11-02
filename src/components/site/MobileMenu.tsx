@@ -5,24 +5,25 @@ import { useEffect, useRef, useState } from "react";
 
 import { Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
+import type { Dictionary } from "@/locales/en";
 
-type Gate = { code: string; label: string; href: string };
+/** One row of the menu: a three-letter LED code (WRK, SRV…), the page name and its address. */
+export type Gate = { code: string; label: string; href: string };
 
-type Props = {
+type MobileMenuProps = {
   gates: Gate[];
+  /** Address of the contact page, for the big button. */
   bookHref: string;
-  text: {
-    open: string;
-    close: string;
-    gates: string;
-    language: string;
-    book: string;
-    reply: string;
-  };
-  /** The language switch, rendered by the server and passed in. */
+  /** Menu texts in the current language. */
+  text: Dictionary["menu"];
+  /**
+   * The language switch, passed in ready-made so this component doesn't need to know
+   * the current language itself.
+   */
   language: React.ReactNode;
 };
 
+/** Three rows of LED dots (the last one shorter): the "open menu" icon. */
 function BurgerIcon() {
   const dots: React.ReactNode[] = [];
   for (const y of [6, 12, 18]) {
@@ -43,6 +44,7 @@ function BurgerIcon() {
   );
 }
 
+/** An X in the accent colour: the "close menu" icon. */
 function CloseIcon() {
   return (
     <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
@@ -56,8 +58,17 @@ function CloseIcon() {
   );
 }
 
-/** Burger button and the full-height "Gates" menu for phones and tablets. */
-export function MobileMenu({ gates, bookHref, text, language }: Props) {
+/**
+ * Menu for phones and tablets (hidden from 1024 px up, where the desktop nav shows).
+ *
+ * Behaviour:
+ * - The button toggles a full-height "Gates" panel under the header. It's announced with
+ *   `aria-expanded` and points at the panel with `aria-controls`.
+ * - While open, the page behind can't scroll (body overflow is locked and restored after).
+ * - Escape closes it and puts focus back on the button; choosing a link closes it too.
+ * - The rows slide in one after another (`.menu-row` animation with a growing delay).
+ */
+export function MobileMenu({ gates, bookHref, text, language }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
 
@@ -106,6 +117,7 @@ export function MobileMenu({ gates, bookHref, text, language }: Props) {
                 <li key={gate.href} className="menu-row" style={{ animationDelay: `${i * 55}ms` }}>
                   <Link
                     href={gate.href}
+                    prefetch
                     onClick={close}
                     className="row-board grid min-h-[68px] grid-cols-[58px_minmax(0,1fr)_24px] items-center gap-3.5 border-t border-rule-board px-1.5 no-underline"
                   >

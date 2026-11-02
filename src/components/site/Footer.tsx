@@ -5,13 +5,26 @@ import { Arrow } from "@/components/site/Arrow";
 import { BackToTop } from "@/components/site/BackToTop";
 import { LangSwitch } from "@/components/site/LangSwitch";
 import { Logo } from "@/components/site/Logo";
+import { Year } from "@/components/site/Year";
 import type { Locale } from "@/i18n/config";
 import type { Routes } from "@/i18n/routes";
 import type { Dictionary } from "@/locales/en";
 import { siteConfig, whatsappLink } from "@/utils/site";
 
-type Props = { lang: Locale; text: Dictionary["footer"]; nav: Dictionary["nav"]; to: Routes };
+type FooterProps = {
+  lang: Locale;
+  /** Footer texts in the current language. */
+  text: Dictionary["footer"];
+  /** Navigation texts, for the logo's accessible name and the language switch label. */
+  nav: Dictionary["nav"];
+  /** All page addresses in the current language, from `routes(lang)`. */
+  to: Routes;
+};
 
+/**
+ * The big "NEXT DEPARTURE: YOUR PROJECT." sign: one LED line per entry, the last one in the
+ * accent colour. Hidden from screen readers; the same sentence sits next to it as real text.
+ */
 function LedLines({ lines, pitch }: { lines: string[]; pitch: number }) {
   return (
     <span aria-hidden="true" className="rv-wipe flex flex-col" style={{ gap: pitch * 2 }}>
@@ -27,15 +40,18 @@ function LedLines({ lines, pitch }: { lines: string[]; pitch: number }) {
   );
 }
 
-/** The current year, worked out when the page is built and cached with it. */
-async function Year() {
-  "use cache";
-  return <>{new Date().getFullYear()}</>;
-}
-
-export function Footer({ lang, text, nav, to }: Props) {
-  const connections = [
-    { code: "EML", label: text.email, value: siteConfig.email, href: `mailto:${siteConfig.email}` },
+/**
+ * Contact rows of the footer. A row whose value is empty (like WhatsApp until the number is set
+ * in src/utils/site.ts) is left out instead of showing a dead link.
+ */
+export function connectionsFor(text: Dictionary["footer"]) {
+  return [
+    {
+      code: "EML",
+      label: text.email,
+      value: siteConfig.email,
+      href: `mailto:${siteConfig.email}`,
+    },
     {
       code: "WAP",
       label: text.whatsapp,
@@ -45,6 +61,19 @@ export function Footer({ lang, text, nav, to }: Props) {
     { code: "LIN", label: text.linkedin, value: "fjkun06", href: siteConfig.linkedin },
     { code: "GIT", label: text.github, value: "fjkun06", href: siteConfig.github },
   ].filter((c) => c.value);
+}
+
+/**
+ * The site footer, the same on every page:
+ * 1. The "NEXT DEPARTURE: YOUR PROJECT." LED sign (two lines on desktop, three on phones)
+ *    with the "Book your project" button.
+ * 2. "Connections": email, WhatsApp, LinkedIn, GitHub as departure-board rows.
+ *    External links open in a new tab.
+ * 3. Bottom bar: logo and copyright, Impressum and privacy links, language switch.
+ * 4. The floating back-to-top button.
+ */
+export function Footer({ lang, text, nav, to }: FooterProps) {
+  const connections = connectionsFor(text);
 
   return (
     <footer className="board border-t border-rule-board">
