@@ -1,10 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { Led } from "@/components/Led";
 import { fill } from "@/i18n/fill";
 import { container, ledTag } from "@/components/ui/layout";
 import { Placeholder } from "@/components/ui/Placeholder";
-import type { Project } from "@/content/projects";
+import { SHOT_QUALITY, type Project } from "@/content/projects";
 import type { Routes } from "@/i18n/routes";
 import type { Dictionary } from "@/locales/en";
 
@@ -20,7 +21,8 @@ type FeaturedProps = {
  * with a phone overlapping it, the story in two paragraphs, a small dark details board
  * (route, languages, payment, status) and three highlights.
  *
- * The screenshots are placeholders until the real images are added.
+ * The screenshots come from the project (`image`, `imagePhone`); a striped placeholder stands in
+ * for any that's missing.
  */
 export function Featured({ project, text, status, to }: FeaturedProps) {
   const reportHref = `${to.work}/${project.slug}`;
@@ -75,15 +77,37 @@ export function Featured({ project, text, status, to }: FeaturedProps) {
               </span>
               <span className="mx-auto text-[13px] text-muted-board">{project.website}</span>
             </span>
-            <Placeholder label={text.shotDesktop} ratio="16 / 9.5" className="w-full" />
+            {project.image ? (
+              <Image
+                src={project.image}
+                alt={text.shotDesktop}
+                sizes="(min-width: 1280px) 700px, (min-width: 1024px) 58vw, 100vw"
+                quality={SHOT_QUALITY}
+                placeholder="blur"
+                className="block aspect-video w-full object-cover object-top"
+              />
+            ) : (
+              <Placeholder label={text.shotDesktop} ratio="16 / 9" className="w-full" />
+            )}
           </Link>
           <span className="shot board card-edge absolute right-0 bottom-0 w-[120px] rounded-[26px] p-2 shadow-[0_30px_50px_-30px_rgba(0,0,0,0.6)] lg:-right-6 lg:w-[190px]">
-            <Placeholder
-              label={text.shotPhone}
-              ratio="9 / 18"
-              radius={19}
-              className="text-[13px]"
-            />
+            {project.imagePhone ? (
+              <Image
+                src={project.imagePhone}
+                alt={text.shotPhone}
+                sizes="(min-width: 1024px) 174px, 104px"
+                quality={SHOT_QUALITY}
+                placeholder="blur"
+                className="block aspect-[9/18] w-full rounded-[19px] object-cover object-top"
+              />
+            ) : (
+              <Placeholder
+                label={text.shotPhone}
+                ratio="9 / 18"
+                radius={19}
+                className="text-[13px]"
+              />
+            )}
           </span>
         </div>
 

@@ -1,18 +1,34 @@
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 
 import { Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
 import { container, sectionTitle } from "@/components/ui/layout";
 import { Placeholder } from "@/components/ui/Placeholder";
-import type { Project } from "@/content/projects";
+import { SHOT_QUALITY, type Project } from "@/content/projects";
 import type { Report } from "@/content/reports/herzog";
 import { fill } from "@/i18n/fill";
 import type { Dictionary } from "@/locales/en";
 
 type Text = Dictionary["report"];
 
-/** The homepage screenshot in a browser frame, tilted up as it arrives and overlapping the board. */
-export function HomepageShot({ project, text }: { project: Project; text: Text }) {
+/**
+ * The homepage screenshot in a browser frame, tilted up as it arrives and overlapping the board.
+ * The address bar shows the website (with an "Open site" link), or the project's name when it
+ * has none. For a project still in progress, pass `wip`: the picture is greyed out under a status
+ * band and described as work in progress.
+ */
+export function HomepageShot({
+  project,
+  text,
+  wip,
+}: {
+  project: Project;
+  text: Text;
+  wip?: { band: React.ReactNode; alt: string };
+}) {
+  const address = project.website || project.name;
+  const alt = wip ? wip.alt : fill(text.shotHome, { site: address });
   return (
     <section
       aria-label={text.homepage}
@@ -27,27 +43,40 @@ export function HomepageShot({ project, text }: { project: Project; text: Text }
           </span>
           <span className="mx-auto">
             <Led
-              text={project.website.toUpperCase()}
+              text={address.toUpperCase()}
               pitch={2.4}
               tone="grey"
               glow={false}
-              label={project.website}
+              label={address}
             />
           </span>
-          <a
-            href={`https://${project.website}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden text-[13px] text-muted-board lg:inline"
-          >
-            {text.openSite}
-          </a>
+          {project.website && (
+            <a
+              href={`https://${project.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden text-[13px] text-muted-board lg:inline"
+            >
+              {text.openSite}
+            </a>
+          )}
         </div>
-        <Placeholder
-          label={fill(text.shotHome, { site: project.website })}
-          ratio="16 / 8.5"
-          className="w-full"
-        />
+        <div className="relative">
+          {project.image ? (
+            <Image
+              src={project.image}
+              alt={alt}
+              sizes="(min-width: 1280px) 1200px, 100vw"
+              quality={SHOT_QUALITY}
+              placeholder="blur"
+              loading="eager"
+              className={`block aspect-video w-full object-cover object-top ${wip ? "wip-media" : ""}`}
+            />
+          ) : (
+            <Placeholder label={alt} ratio="16 / 9" className="w-full" />
+          )}
+          {wip?.band}
+        </div>
       </div>
     </section>
   );
@@ -85,7 +114,16 @@ export function Brief({ report, text }: { report: Report; text: Text }) {
  * Desktop: four phones in a row, drifting up and down at different speeds as you scroll.
  * Phones: a horizontal strip you swipe through, one phone at a time (scroll snapping).
  */
-export function Journey({ report, text }: { report: Report; text: Text }) {
+export function Journey({
+  report,
+  shots = [],
+  text,
+}: {
+  report: Report;
+  /** Phone screen per step, in order; a missing one shows a placeholder. */
+  shots?: StaticImageData[];
+  text: Text;
+}) {
   return (
     <section aria-labelledby="journey-title" className="pt-20 lg:pt-36">
       <div className={`${container} flex flex-wrap items-end justify-between gap-5`}>
@@ -104,11 +142,22 @@ export function Journey({ report, text }: { report: Report; text: Text }) {
                 className={`board card-edge rounded-[24px] p-2 shadow-[0_30px_40px_-30px_rgba(0,0,0,0.45)] lg:rounded-[28px] lg:p-2.5 ${i % 2 === 0 ? "px-up" : "px-down"}`}
               >
                 <div className="overflow-hidden rounded-[17px] lg:rounded-[20px]">
-                  <Placeholder
-                    label={fill(text.shotScreen, { step: s.step.toLowerCase() })}
-                    ratio="9 / 17"
-                    className="w-full text-xs lg:text-[15px]"
-                  />
+                  {shots[i] ? (
+                    <Image
+                      src={shots[i]}
+                      alt={fill(text.shotScreen, { step: s.step.toLowerCase() })}
+                      sizes="(min-width: 1024px) 260px, 194px"
+                      quality={SHOT_QUALITY}
+                      placeholder="blur"
+                      className="block aspect-[9/17] w-full object-cover object-top"
+                    />
+                  ) : (
+                    <Placeholder
+                      label={fill(text.shotScreen, { step: s.step.toLowerCase() })}
+                      ratio="9 / 17"
+                      className="w-full text-xs lg:text-[15px]"
+                    />
+                  )}
                 </div>
               </div>
               <p className="board chip-line m-0 mt-3.5 inline-flex rounded px-1.5 py-1 lg:mt-5 lg:px-[7px] lg:py-[5px]">
@@ -127,7 +176,16 @@ export function Journey({ report, text }: { report: Report; text: Text }) {
 }
 
 /** "The manifest": what was built, as six LED-coded entries, then the tools used. */
-export function Manifest({ report, text }: { report: Report; text: Text }) {
+export function Manifest({
+  report,
+  stack,
+  text,
+}: {
+  report: Report;
+  /** The project's tools, listed under "Built with". */
+  stack: string[];
+  text: Text;
+}) {
   return (
     <section aria-labelledby="manifest-title" className={`${container} pt-20 lg:pt-36`}>
       <h2 id="manifest-title" className={`rv-wipe ${sectionTitle}`}>
@@ -152,9 +210,26 @@ export function Manifest({ report, text }: { report: Report; text: Text }) {
           </li>
         ))}
       </ul>
-      <p className="rv mt-6.5 mb-2.5 text-[13px] text-label lg:mt-9 lg:mb-3">{text.builtWith}</p>
+      <StackList stack={stack} label={text.builtWith} className="mt-6.5 lg:mt-9" />
+    </section>
+  );
+}
+
+/** "Built with" and the tools as small LED chips that flip in one by one. */
+export function StackList({
+  stack,
+  label,
+  className = "",
+}: {
+  stack: string[];
+  label: string;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <p className="rv m-0 mb-2.5 text-[13px] text-label lg:mb-3">{label}</p>
       <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0 lg:gap-2">
-        {report.stack.map((tool) => (
+        {stack.map((tool) => (
           <li
             key={tool}
             className="rv-flap board chip-line inline-flex rounded px-2.5 py-2 lg:px-3 lg:py-[9px]"
@@ -163,7 +238,7 @@ export function Manifest({ report, text }: { report: Report; text: Text }) {
           </li>
         ))}
       </ul>
-    </section>
+    </div>
   );
 }
 

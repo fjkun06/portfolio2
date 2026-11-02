@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Led } from "@/components/Led";
-import type { FlightStatus } from "@/content/projects";
+import { STATUSES, type FlightStatus } from "@/content/projects";
 import { fill } from "@/i18n/fill";
 
 type Row = { slug: string; status: FlightStatus; row: React.ReactNode };
@@ -23,10 +23,9 @@ type WorkFilterProps = {
   header?: React.ReactNode;
 };
 
-const STATUSES: FlightStatus[] = ["LIVE", "BOARDING", "ON HOLD"];
-
 /**
- * Status filter for the Work page's board: ALL · LIVE · BOARDING · ON HOLD as LED buttons.
+ * Status filter for the Work page's board: ALL, then one LED button per status that at least
+ * one project has (LIVE · BOARDING · CHECK-IN · ON HOLD), so no button leads to an empty board.
  *
  * - The pressed button is lit in the accent colour and has `aria-pressed="true"`.
  * - Rows that don't match are hidden with the `hidden` attribute (they stay in the HTML, so the
@@ -62,7 +61,9 @@ export function WorkFilter({ rows, text, header }: WorkFilterProps) {
       <div className="rv flex flex-wrap items-center justify-between gap-4 border-t border-rule-board py-5">
         <div role="group" aria-label={text.filterLabel} className="flex flex-wrap gap-2">
           {button("ALL", text.all, text.allName)}
-          {STATUSES.map((s) => button(s, s, text.statusNames[s]))}
+          {STATUSES.filter((s) => rows.some((r) => r.status === s)).map((s) =>
+            button(s, s, text.statusNames[s]),
+          )}
         </div>
         <span
           aria-live="polite"

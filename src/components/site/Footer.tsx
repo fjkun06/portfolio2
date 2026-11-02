@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Led } from "@/components/Led";
+import { flipDelays, Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
 import { BackToTop } from "@/components/site/BackToTop";
 import { LangSwitch } from "@/components/site/LangSwitch";
@@ -23,17 +23,22 @@ type FooterProps = {
 
 /**
  * The big "NEXT DEPARTURE: YOUR PROJECT." sign: one LED line per entry, the last one in the
- * accent colour. Hidden from screen readers; the same sentence sits next to it as real text.
+ * accent colour. While it's on screen its letters turn over like a split-flap board, in one wave
+ * that runs through the lines in order (three loops at most, again each time it comes back). Hidden from screen readers; the same sentence sits next to it as
+ * real text.
  */
 function LedLines({ lines, pitch }: { lines: string[]; pitch: number }) {
+  const waves = flipDelays(lines);
   return (
-    <span aria-hidden="true" className="rv-wipe flex flex-col" style={{ gap: pitch * 2 }}>
+    <span aria-hidden="true" className="flip-sign rv-wipe flex flex-col" style={{ gap: pitch * 2 }}>
       {lines.map((line, i) => (
         <Led
           key={line}
           text={line}
           pitch={pitch}
           tone={i === lines.length - 1 ? "accent" : "white"}
+          flip="loop"
+          flipDelay={waves[i]}
         />
       ))}
     </span>

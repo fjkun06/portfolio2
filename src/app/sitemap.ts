@@ -1,17 +1,14 @@
 import type { MetadataRoute } from "next";
 
 import { projects } from "@/content/projects";
-import { reports } from "@/content/reports/herzog";
 import { locales } from "@/i18n/config";
 import { languageAlternates } from "@/lib/seo/metadata";
 import { siteConfig } from "@/utils/site";
 
 /** Every page's path without the language. Add new pages here. */
 export function sitemapPaths(): string[] {
-  const reportPaths = projects
-    .filter((p) => p.report && reports[p.slug])
-    .map((p) => `/work/${p.slug}`);
-  return ["", "/work", ...reportPaths, "/services", "/process", "/about", "/contact", "/legal"];
+  const projectPaths = projects.map((p) => `/work/${p.slug}`);
+  return ["", "/work", ...projectPaths, "/services", "/process", "/about", "/contact", "/legal"];
 }
 
 /**

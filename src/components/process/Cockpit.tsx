@@ -44,7 +44,7 @@ export function Cockpit({ text }: { text: ProcessContent }) {
           className="absolute top-0 left-[9px] -ml-px w-[3px]"
           style={{
             height: TRACK,
-            background:
+            backgroundImage:
               "repeating-linear-gradient(180deg, var(--line-strong) 0 3px, transparent 3px 8px)",
           }}
         />
@@ -52,7 +52,7 @@ export function Cockpit({ text }: { text: ProcessContent }) {
           className="pfill absolute top-0 left-[9px] -ml-px w-[3px]"
           style={{
             height: TRACK,
-            background: "repeating-linear-gradient(180deg, var(--led) 0 3px, transparent 3px 8px)",
+            backgroundImage: "repeating-linear-gradient(180deg, var(--led) 0 3px, transparent 3px 8px)",
             filter: "drop-shadow(0 0 3px var(--led-glow))",
           }}
         />
@@ -113,13 +113,13 @@ export function CockpitStrip({ text }: { text: ProcessContent }) {
       <div
         className="relative h-[3px]"
         style={{
-          background: "repeating-linear-gradient(90deg, var(--dot-dim) 0 3px, transparent 3px 6px)",
+          backgroundImage: "repeating-linear-gradient(90deg, var(--dot-dim) 0 3px, transparent 3px 6px)",
         }}
       >
         <div
           className="pfillx h-full"
           style={{
-            background: "repeating-linear-gradient(90deg, var(--led) 0 3px, transparent 3px 6px)",
+            backgroundImage: "repeating-linear-gradient(90deg, var(--led) 0 3px, transparent 3px 6px)",
           }}
         />
       </div>

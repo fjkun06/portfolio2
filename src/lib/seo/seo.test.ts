@@ -53,6 +53,7 @@ describe("sitemap", () => {
     const entries = sitemap();
     expect(entries).toHaveLength(sitemapPaths().length * locales.length);
     expect(entries.map((e) => e.url)).toContain(`${siteConfig.url}/de/work/herzog`);
+    expect(entries.map((e) => e.url)).toContain(`${siteConfig.url}/fr/work/translatpro`);
     for (const e of entries) expect(e.url.startsWith(`${siteConfig.url}/`)).toBe(true);
   });
 

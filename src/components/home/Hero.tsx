@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { HeroCycle } from "@/components/home/HeroCycle";
-import { Led } from "@/components/Led";
+import { flipDelays, Led } from "@/components/Led";
 import { container } from "@/components/ui/layout";
 import type { Locale } from "@/i18n/config";
 import type { Routes } from "@/i18n/routes";
@@ -23,9 +23,12 @@ type HeroProps = {
 /**
  * One headline in LED dots, in two shapes: three long lines from 1024 px, five short lines below
  * (the long lines wouldn't fit a phone). The last line(s) are in the accent colour.
- * Each line switches on column by column, one line after the other.
+ * Each line switches on column by column, one line after the other; then the letters keep
+ * flipping like a split-flap board, in one wave through the lines.
  */
 function Headline({ hero }: { hero: Dictionary["home"]["hero"] }) {
+  const waves = flipDelays(hero.headline);
+  const wavesShort = flipDelays(hero.headlineShort);
   return (
     <>
       <span className="hidden flex-col gap-5 lg:flex">
@@ -37,6 +40,8 @@ function Headline({ hero }: { hero: Dictionary["home"]["hero"] }) {
             step={7}
             delay={i * 260}
             animate
+            flip="once"
+            flipDelay={waves[i]}
             tone={i === hero.headline.length - 1 ? "accent" : "white"}
           />
         ))}
@@ -50,6 +55,8 @@ function Headline({ hero }: { hero: Dictionary["home"]["hero"] }) {
             step={6}
             delay={i * 180}
             animate
+            flip="once"
+            flipDelay={wavesShort[i]}
             tone={i >= all.length - 2 ? "accent" : "white"}
           />
         ))}

@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { FLIP_ONCE_AFTER, FLIP_STEP } from "@/components/Led";
+
 import { LedTitle } from "./LedTitle";
 import { PortraitFrame } from "./PortraitFrame";
 
@@ -17,6 +19,25 @@ describe("<LedTitle>", () => {
     const signs = container.querySelectorAll("h1 > [aria-hidden='true']");
     expect(signs).toHaveLength(2); // desktop and phone sizes
     for (const sign of signs) expect(sign.querySelectorAll("svg")).toHaveLength(2);
+  });
+
+  it("flips its letters once, in one wave through both lines", () => {
+    const { container } = render(
+      <LedTitle id="t" lines={["YOUR", "CAPTAIN"]} text="Your captain" />,
+    );
+    const [first, second] = container.querySelector("h1 > [aria-hidden='true']")!.children;
+    expect(first.querySelectorAll(".led-flip.once")).toHaveLength(4);
+    expect((second.querySelector(".led-flip") as SVGGElement).style.animationDelay).toBe(
+      `${FLIP_ONCE_AFTER + 4 * FLIP_STEP}ms`,
+    );
+  });
+
+  it("can stay still, for pages people come to read", () => {
+    const { container } = render(
+      <LedTitle id="t" lines={["LEGAL", "NOTICE"]} text="Legal notice" flip={false} />,
+    );
+    expect(container.querySelector(".led-flip")).toBeNull();
+    expect(container.querySelector(".led-col")).not.toBeNull(); // still lights up
   });
 });
 

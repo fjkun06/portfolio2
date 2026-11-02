@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { layoutLed } from "@/lib/led";
 
-import { dotsPath, Led } from "./Led";
+import { dotsPath, FLIP_ONCE_AFTER, FLIP_STEP, flipDelays, Led } from "./Led";
 
 describe("<Led>", () => {
   it("sizes the SVG from the text width and the pitch", () => {
@@ -65,6 +65,31 @@ describe("<Led>", () => {
     expect(cols.map((c) => c.style.animationDelay)).toEqual(["110ms", "120ms", "130ms"]);
   });
 
+  it("groups each letter, each turning a step later, when flipping", () => {
+    const { container } = render(<Led text="A B" flip="loop" flipDelay={500} />);
+    const letters = [...container.querySelectorAll<SVGGElement>(".led-flip")];
+    expect(letters).toHaveLength(2); // the space has no dots
+    expect(letters.map((l) => l.style.animationDelay)).toEqual(["500ms", `${500 + FLIP_STEP}ms`]);
+  });
+
+  it("flips headlines once, a few seconds after loading", () => {
+    const { container } = render(<Led text="AB" flip="once" />);
+    const letters = [...container.querySelectorAll<SVGGElement>(".led-flip")];
+    expect(letters.every((l) => l.classList.contains("once"))).toBe(true);
+    expect(letters.map((l) => l.style.animationDelay)).toEqual([
+      `${FLIP_ONCE_AFTER}ms`,
+      `${FLIP_ONCE_AFTER + FLIP_STEP}ms`,
+    ]);
+  });
+
+  it("still lights the columns up one by one inside flipping letters", () => {
+    const { container } = render(<Led text="II" animate step={10} flip="loop" />);
+    const letters = container.querySelectorAll(".led-flip");
+    expect(letters).toHaveLength(2);
+    expect(letters[1].querySelectorAll(".led-col")).toHaveLength(3);
+    expect(container.querySelectorAll(".led-col")).toHaveLength(6);
+  });
+
   it("passes className and style through to the SVG", () => {
     const { container } = render(<Led text="A" className="blink" style={{ width: 20 }} />);
     const svg = container.querySelector("svg")!;
@@ -77,5 +102,11 @@ describe("dotsPath", () => {
   it("writes one zero-length segment per dot, at the dot centres", () => {
     expect(dotsPath([{ x: 0, rows: [0, 1] }], 10)).toBe("M5 5h0M5 15h0");
     expect(dotsPath([{ x: 2, rows: [6] }], 3.4)).toBe("M8.5 22.1h0");
+  });
+});
+
+describe("flipDelays", () => {
+  it("starts each line right after the previous line's last letter", () => {
+    expect(flipDelays(["AB", "C D", "E"])).toEqual([0, 2 * FLIP_STEP, 4 * FLIP_STEP]);
   });
 });

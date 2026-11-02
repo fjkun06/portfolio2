@@ -54,7 +54,13 @@ async function Legal({ params }: { params: PageProps<"/[lang]/legal">["params"] 
         <div className={`${container} pt-5 pb-8 lg:pt-7.5 lg:pb-14`}>
           <Breadcrumb items={[{ label: work.home, href: to.home }, { label: text.breadcrumb }]} />
           <div className="mt-7.5 lg:mt-11.5">
-            <LedTitle id="legal-title" lines={text.titleLed} text={text.titleText} pitch={10} />
+            <LedTitle
+              id="legal-title"
+              lines={text.titleLed}
+              text={text.titleText}
+              pitch={10}
+              flip={false}
+            />
           </div>
           {note && <p className="rv mt-4.5 mb-0 max-w-[520px] text-on-board-2 lg:mt-6.5">{note}</p>}
           <nav aria-label={text.tabsLabel} className="rv mt-6 flex flex-wrap gap-2 lg:mt-9">

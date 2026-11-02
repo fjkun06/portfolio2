@@ -4,7 +4,7 @@ import { Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
 import { StatusLed } from "@/components/ui/StatusLed";
 import { WorkFilter } from "@/components/work/WorkFilter";
-import type { Project } from "@/content/projects";
+import { projectHref, STATUSES, type FlightStatus, type Project } from "@/content/projects";
 import type { Locale } from "@/i18n/config";
 import type { Routes } from "@/i18n/routes";
 import type { Dictionary } from "@/locales/en";
@@ -20,11 +20,6 @@ type WorkBoardProps = {
 const GRID =
   "lg:grid lg:grid-cols-[110px_96px_minmax(0,1.6fr)_minmax(0,1fr)_110px_120px_170px_40px] lg:items-center lg:gap-[18px]";
 
-/** Where a project leads: its flight report if it has one, its card further down otherwise. */
-export function workHref(project: Project, to: Routes): string {
-  return project.report ? `${to.work}/${project.slug}` : `#${project.slug}`;
-}
-
 /**
  * Every project as a departures board, with the status filter on top.
  * Same row design as the home page, plus the flight number. Below 1024 px rows become cards.
@@ -35,7 +30,7 @@ export function WorkBoard({ lang, projects, text, status, to }: WorkBoardProps) 
     status: p.status,
     row: (
       <Link
-        href={workHref(p, to)}
+        href={projectHref(p, to.work)}
         className={`row-board block border-t border-rule-board px-3 py-4 no-underline lg:min-h-[82px] lg:px-5 lg:py-0 ${GRID}`}
       >
         <span className="flex items-center justify-between gap-3 lg:contents">
@@ -97,11 +92,9 @@ export function WorkBoard({ lang, projects, text, status, to }: WorkBoardProps) 
         all: text.filters.all,
         allName: text.filters.allName,
         count: text.count,
-        statusNames: {
-          LIVE: `${status.label}: ${status.LIVE}`,
-          BOARDING: `${status.label}: ${status.BOARDING}`,
-          "ON HOLD": `${status.label}: ${status["ON HOLD"]}`,
-        },
+        statusNames: Object.fromEntries(
+          STATUSES.map((s) => [s, `${status.label}: ${status[s]}`]),
+        ) as Record<FlightStatus, string>,
       }}
     />
   );

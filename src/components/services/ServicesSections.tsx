@@ -1,4 +1,5 @@
 import { Led } from "@/components/Led";
+import { Disclosure } from "@/components/site/Disclosure";
 import { container, sectionTitle } from "@/components/ui/layout";
 import type { ServicesContent } from "@/content/services";
 
@@ -97,22 +98,27 @@ export function Faq({ text }: { text: ServicesContent["faq"] }) {
       <ul className="m-0 mt-7 list-none border-b-[1.5px] border-ink p-0 lg:mt-12.5">
         {text.items.map(([question, answer], i) => (
           <li key={question} className="rv border-t-[1.5px] border-ink">
-            <details className="faq">
-              <summary className="grid min-h-[72px] cursor-pointer grid-cols-[40px_minmax(0,1fr)_30px] items-center gap-3 lg:min-h-[88px] lg:grid-cols-[70px_minmax(0,1fr)_30px] lg:gap-5">
-                <span className="board chip-line inline-flex justify-self-start rounded px-1.5 py-1">
-                  <Led text={`Q${i + 1}`} pitch={2.6} />
-                </span>
-                <span className="font-stencil text-[25px] leading-[1.05] font-black tracking-[0.02em] uppercase lg:text-4xl">
-                  {question}
-                </span>
-                <span className="faq-x inline-flex justify-self-end">
-                  <Led text="+" pitch={3.4} tone="ink" board={false} glow={false} />
-                </span>
-              </summary>
+            <Disclosure
+              className="faq"
+              summaryClassName="grid min-h-[72px] cursor-pointer grid-cols-[40px_minmax(0,1fr)_30px] items-center gap-3 lg:min-h-[88px] lg:grid-cols-[70px_minmax(0,1fr)_30px] lg:gap-5"
+              summary={
+                <>
+                  <span className="board chip-line inline-flex justify-self-start rounded px-1.5 py-1">
+                    <Led text={`Q${i + 1}`} pitch={2.6} />
+                  </span>
+                  <span className="font-stencil text-[25px] leading-[1.05] font-black tracking-[0.02em] uppercase lg:text-4xl">
+                    {question}
+                  </span>
+                  <span className="faq-x inline-flex justify-self-end">
+                    <Led text="+" pitch={3.4} tone="ink" board={false} glow={false} />
+                  </span>
+                </>
+              }
+            >
               <p className="faq-answer m-0 max-w-[62ch] pb-6 text-muted lg:pb-7.5 lg:pl-[90px]">
                 {answer}
               </p>
-            </details>
+            </Disclosure>
           </li>
         ))}
       </ul>

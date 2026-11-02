@@ -31,13 +31,15 @@ export function Runway() {
       aria-hidden="true"
       className="absolute inset-x-0 -bottom-px h-[3px]"
       style={{
-        background: "repeating-linear-gradient(90deg, var(--dot-dim) 0 3px, transparent 3px 6px)",
+        backgroundImage:
+          "repeating-linear-gradient(90deg, var(--dot-dim) 0 3px, transparent 3px 6px)",
       }}
     >
       <div
         className="runway-fill h-full"
         style={{
-          background: "repeating-linear-gradient(90deg, var(--led) 0 3px, transparent 3px 6px)",
+          backgroundImage:
+            "repeating-linear-gradient(90deg, var(--led) 0 3px, transparent 3px 6px)",
           filter: "drop-shadow(0 0 3px var(--led-glow))",
         }}
       />
@@ -48,8 +50,9 @@ export function Runway() {
 /**
  * The site header, sticky at the top of every page. It renders two layouts and CSS shows one:
  *
- * - From 1024 px (`lg`): logo · navigation · language, mode switch and "Book a project".
- * - Below 1024 px: logo · mode switch and menu button (the menu holds navigation and language).
+ * - From 1090 px (`nav`, see globals.css): logo · navigation · language, mode switch and
+ *   "Book a project".
+ * - Below 1090 px: logo · mode switch and menu button (the menu holds navigation and language).
  *
  * It's a server component; only the interactive parts inside it (navigation highlight,
  * language switch, mode switch, mobile menu) run in the browser.
@@ -74,7 +77,7 @@ export function Header({ lang, nav, menu, to, progress = true }: HeaderProps) {
   return (
     <header className="board sticky top-0 z-50 border-b border-rule-board">
       {/* Desktop */}
-      <div className="mx-auto hidden h-[78px] max-w-[1280px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-8 px-10 lg:grid">
+      <div className="mx-auto hidden h-[78px] max-w-[1280px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-8 px-10 nav:grid">
         <Logo href={to.home} label={nav.home} />
         <NavLinks items={items} label={nav.main} />
         <div className="flex items-center gap-[18px]">
@@ -87,7 +90,7 @@ export function Header({ lang, nav, menu, to, progress = true }: HeaderProps) {
       </div>
 
       {/* Phones and tablets */}
-      <div className="flex h-16 items-center justify-between px-4 lg:hidden">
+      <div className="flex h-16 items-center justify-between px-4 nav:hidden">
         <Logo href={to.home} label={nav.home} pitch={5.1} />
         <span className="inline-flex items-center gap-2.5">
           <ModeSwitch label={nav.mode} hint={nav.modeHint} size={48} />

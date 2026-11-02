@@ -8,6 +8,8 @@
  *   <circle>s, which keeps pages light (the home page went from ~13,000 SVG nodes to ~1,000).
  *   With `animate`, there is one path per column, and each column switches on a few
  *   milliseconds after the previous one, so the text lights up from left to right.
+ *   With `flip`, each letter is its own group, so it can turn on its own (and with `animate`
+ *   too, its columns still light up one by one inside the group).
  * - Colours are CSS variables, so the same SVG follows dark and light mode with no re-render.
  *
  * It has no state and no hooks, so it works in both server and client components.
@@ -16,7 +18,7 @@
  * <Led text="NEXT DEPARTURE:" pitch={12} tone="white" />
  * <Led text="LIVE" pitch={4} label="Status: live" />
  */
-import { layoutLed } from "@/lib/led";
+import { layoutLed, type LedColumn } from "@/lib/led";
 
 /**
  * Which colour the lit dots take. All follow dark and light mode:
@@ -53,6 +55,19 @@ type LedProps = {
   delay?: number;
   /** With `animate`: milliseconds between two columns. */
   step?: number;
+  /**
+   * Letters turn over like a split-flap board: one after another they turn to face backwards,
+   * hold, and turn back. Works with or without `animate`.
+   * - "once": a single wave, FLIP_ONCE_AFTER ms after the page loads, then the text stays still.
+   *   For headlines, which people need to read.
+   * - "loop": over and over (see .led-flip in globals.css for when it runs). For decorative signs.
+   */
+  flip?: "once" | "loop";
+  /**
+   * With `flip`: milliseconds before this text's first letter turns, so several lines can
+   * continue one wave (see `flipDelays`).
+   */
+  flipDelay?: number;
   /** When set, the lettering is announced as an image with this text. Otherwise it is hidden from screen readers, so put the words in the page another way. */
   label?: string;
   /** Extra classes on the <svg>, e.g. "blink" or "lg:hidden". */
@@ -88,6 +103,28 @@ export function dotsPath(columns: { x: number; rows: number[] }[], pitch: number
   return d;
 }
 
+/** With `flip`: milliseconds between two letters turning. */
+export const FLIP_STEP = 70;
+
+/** With `flip="once"`: milliseconds after the page loads before the wave starts. */
+export const FLIP_ONCE_AFTER = 3000;
+
+/**
+ * `flipDelay` for each line of a multi-line sign, so one flip wave runs through all the lines
+ * in order: a line starts turning right after the previous line's last letter.
+ *
+ * @example
+ * flipDelays(["AB", "C D"]) // [0, 140]
+ */
+export function flipDelays(lines: readonly string[]): number[] {
+  let letters = 0;
+  return lines.map((line) => {
+    const start = letters * FLIP_STEP;
+    letters += line.replace(/ /g, "").length;
+    return start;
+  });
+}
+
 /** Text drawn in LED dots, as an SVG. See the file header for how it works. */
 export function Led({
   text,
@@ -98,11 +135,13 @@ export function Led({
   animate = false,
   delay = 0,
   step = 10,
+  flip,
+  flipDelay = 0,
   label,
   className,
   style,
 }: LedProps) {
-  const { columns, width } = layoutLed(text);
+  const { columns, width, chars } = layoutLed(text);
   const r = pitch * 0.38;
   const w = width * pitch;
   const h = 7 * pitch;
@@ -111,6 +150,21 @@ export function Led({
   const filter = glow
     ? `drop-shadow(0 0 ${Math.max(1.5, pitch / 4).toFixed(1)}px ${glowColour})`
     : undefined;
+
+  /** Lit dots: one path per column when they light up one by one, else a single path. */
+  const dots = (cols: LedColumn[]) =>
+    animate ? (
+      cols.map((column) => (
+        <path
+          key={column.x}
+          className="led-col"
+          d={dotsPath([column], pitch)}
+          style={{ animationDelay: `${delay + column.x * step}ms` }}
+        />
+      ))
+    ) : (
+      <path d={dotsPath(cols, pitch)} />
+    );
 
   const a11y = label ? { role: "img", "aria-label": label } : { "aria-hidden": true };
 
@@ -139,18 +193,19 @@ export function Led({
         strokeWidth={num(r * 2)}
         style={{ stroke: FILL[tone], filter }}
       >
-        {animate ? (
-          columns.map((column) => (
-            <path
-              key={column.x}
-              className="led-col"
-              d={dotsPath([column], pitch)}
-              style={{ animationDelay: `${delay + column.x * step}ms` }}
-            />
-          ))
-        ) : (
-          <path d={dotsPath(columns, pitch)} />
-        )}
+        {flip
+          ? chars.map((char, i) => (
+              <g
+                key={i}
+                className={flip === "once" ? "led-flip once" : "led-flip"}
+                style={{
+                  animationDelay: `${(flip === "once" ? FLIP_ONCE_AFTER : 0) + flipDelay + i * FLIP_STEP}ms`,
+                }}
+              >
+                {dots(char)}
+              </g>
+            ))
+          : dots(columns)}
       </g>
     </svg>
   );

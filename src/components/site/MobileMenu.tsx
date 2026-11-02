@@ -59,7 +59,8 @@ function CloseIcon() {
 }
 
 /**
- * Menu for phones and tablets (hidden from 1024 px up, where the desktop nav shows).
+ * Menu for phones, tablets and small laptops (hidden from 1090 px up, where the desktop nav
+ * shows).
  *
  * Behaviour:
  * - The button toggles a full-height "Gates" panel under the header. It's announced with

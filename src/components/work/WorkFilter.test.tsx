@@ -15,7 +15,12 @@ const text = {
   all: "ALL",
   allName: "All projects",
   count: { one: "{n} flight", other: "{n} flights" },
-  statusNames: { LIVE: "Status: live", BOARDING: "Status: boarding", "ON HOLD": "Status: on hold" },
+  statusNames: {
+    LIVE: "Status: live",
+    BOARDING: "Status: boarding",
+    "CHECK-IN": "Status: check-in",
+    "ON HOLD": "Status: on hold",
+  },
 };
 const visible = () =>
   ["Alpha", "Bravo", "Charlie", "Delta"].filter((n) => !screen.getByText(n).closest("[hidden]"));
@@ -50,6 +55,12 @@ describe("<WorkFilter>", () => {
     render(<WorkFilter rows={rows} text={text} />);
     await userEvent.click(screen.getByRole("button", { name: "Status: on hold" }));
     expect(screen.getByText("01 FLIGHT")).toBeInTheDocument();
+  });
+
+  it("only offers statuses that some project has", () => {
+    render(<WorkFilter rows={rows} text={text} />);
+    expect(screen.getByRole("button", { name: "Status: boarding" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Status: check-in" })).toBeNull();
   });
 
   it("announces the count to screen readers and names the group", () => {

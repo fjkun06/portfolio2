@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { findProject } from "@/content/projects";
 import { herzogReport } from "@/content/reports/herzog";
@@ -8,6 +8,8 @@ import en from "@/locales/en";
 import { ReportHero } from "./ReportHero";
 import { Brief, HomepageShot, Journey, Manifest, NextDeparture, Quote } from "./ReportSections";
 import { RouteMap } from "./RouteMap";
+
+vi.mock("next/image", () => import("@/test/next-image-mock"));
 
 const project = findProject("herzog")!;
 const report = herzogReport.en;
@@ -53,6 +55,10 @@ describe("report sections", () => {
       "href",
       "https://herzog-translations.com",
     );
+    expect(screen.getByRole("img", { name: /herzog-translations\.com homepage/ })).toHaveAttribute(
+      "src",
+      project.image!.src,
+    );
   });
 
   it("tell the brief with the client and the goal", () => {
@@ -69,10 +75,10 @@ describe("report sections", () => {
   });
 
   it("list the manifest and the tools", () => {
-    render(<Manifest report={report} text={text} />);
+    render(<Manifest report={report} stack={project.stack} text={text} />);
     for (const m of report.manifest)
       expect(screen.getByRole("heading", { name: m.title })).toBeInTheDocument();
-    for (const tool of report.stack)
+    for (const tool of project.stack)
       expect(screen.getByRole("img", { name: tool })).toBeInTheDocument();
   });
 
