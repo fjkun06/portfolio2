@@ -161,15 +161,17 @@ export function ProjectStory({
   );
 }
 
-/** Which progress stage a project is at: 0 check-in, 1 boarding, 2 departed. */
+/** Which progress stage a project is at: 0 check-in, 1 boarding (or paused there), 2 departed. */
 export function stageOf(project: Project): number {
-  return isLive(project) ? 2 : 1;
+  if (isLive(project)) return 2;
+  return project.status === "CHECK-IN" ? 0 : 1;
 }
 
 /**
  * "Flight status": where the project stands, in a sentence and as three stages on a dotted line
  * (check-in, boarding, departed), the current one lit.
  * - Live: all three lit, "finished and online since…".
+ * - Check-in: the first stage is lit, the project has just started; invites you to book yours.
  * - Boarding: the current stage blinks, the site is being built; invites you to book yours.
  * - On hold: the current stage is dimmed, the project is paused.
  */
@@ -190,7 +192,9 @@ export function FlightStatus({
     ? fill(text.live, { year: project.year })
     : project.status === "ON HOLD"
       ? text.onHold
-      : text.boarding;
+      : project.status === "CHECK-IN"
+        ? text.checkIn
+        : text.boarding;
 
   const toneOf = (i: number): LedTone =>
     i < current ? "white" : i > current ? "dim" : project.status === "ON HOLD" ? "grey" : "accent";

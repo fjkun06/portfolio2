@@ -53,6 +53,7 @@ const en = {
     LIVE: "live",
     BOARDING: "boarding, in progress",
     "ON HOLD": "on hold",
+    "CHECK-IN": "check-in, just started",
   },
   home: {
     hero: {
@@ -223,6 +224,8 @@ const en = {
     noRoute: "None",
     statusTitle: "FLIGHT STATUS",
     live: "Finished and online since {year}.",
+    checkIn:
+      "Check-in: the project has just started, with planning and design first. This page fills in as it moves to boarding.",
     boarding:
       "Boarding: the new site is being built right now. This page fills in once it takes off.",
     onHold: "On hold: the project is paused for now and will pick up again later.",

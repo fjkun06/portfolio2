@@ -4,7 +4,7 @@ import { Led } from "@/components/Led";
 
 /** The band's text. It mixes all three languages on purpose, like a real departures board. */
 export const MARQUEE_TEXT =
-  "HERZOG TRAD' LIVE  ·  TRANSLATPRO BOARDING  ·  FIRST TRUCKS SARL LIVE  ·  NEXT DEPARTURE: YOUR PROJECT  ·  PROCHAIN DÉPART : VOTRE PROJET  ·  NÄCHSTER ABFLUG: IHR PROJEKT  ·  ";
+  "HERZOG TRAD' LIVE  ·  TRANSLATPRO CHECK-IN  ·  FIRST TRUCKS SARL LIVE  ·  NEXT DEPARTURE: YOUR PROJECT  ·  PROCHAIN DÉPART : VOTRE PROJET  ·  NÄCHSTER ABFLUG: IHR PROJEKT  ·  ";
 
 type MarqueeProps = {
   /** Where the band leads (the contact page). */

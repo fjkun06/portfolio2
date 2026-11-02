@@ -4,7 +4,7 @@ import type { Dictionary } from "@/locales/en";
 
 /**
  * Dark strip across the top of an in-progress project's picture: "Work in progress" and the
- * status in LED dots (BOARDING blinking, ON HOLD dimmed), over a dotted LED line.
+ * status in LED dots (see <StatusLed>), over a dotted LED line.
  * Put it inside a `relative` box, next to the picture (which gets `.wip-media`).
  */
 export function WipBand({

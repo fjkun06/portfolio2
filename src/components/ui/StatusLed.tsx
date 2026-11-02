@@ -10,7 +10,7 @@ type StatusLedProps = {
 
 /**
  * A project's status as it appears on the departures board:
- * LIVE lit in the accent colour, BOARDING blinking, ON HOLD dimmed.
+ * LIVE lit in the accent colour, BOARDING blinking, CHECK-IN steady in grey, ON HOLD dimmed.
  * Status is shown by the lettering alone (no coloured dot), and screen readers hear
  * the translated status ("Status: live").
  */
@@ -24,6 +24,7 @@ export function StatusLed({ status, text, pitch = 4 }: StatusLedProps) {
       {status === "BOARDING" && (
         <Led text="BOARDING" pitch={pitch} tone="white" className="blink" />
       )}
+      {status === "CHECK-IN" && <Led text="CHECK-IN" pitch={pitch} tone="grey" />}
       {status === "ON HOLD" && <Led text="ON HOLD" pitch={pitch} tone="dim" glow={false} />}
     </span>
   );

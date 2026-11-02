@@ -4,7 +4,7 @@ import { Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
 import { StatusLed } from "@/components/ui/StatusLed";
 import { WorkFilter } from "@/components/work/WorkFilter";
-import { projectHref, type Project } from "@/content/projects";
+import { projectHref, STATUSES, type FlightStatus, type Project } from "@/content/projects";
 import type { Locale } from "@/i18n/config";
 import type { Routes } from "@/i18n/routes";
 import type { Dictionary } from "@/locales/en";
@@ -92,11 +92,9 @@ export function WorkBoard({ lang, projects, text, status, to }: WorkBoardProps) 
         all: text.filters.all,
         allName: text.filters.allName,
         count: text.count,
-        statusNames: {
-          LIVE: `${status.label}: ${status.LIVE}`,
-          BOARDING: `${status.label}: ${status.BOARDING}`,
-          "ON HOLD": `${status.label}: ${status["ON HOLD"]}`,
-        },
+        statusNames: Object.fromEntries(
+          STATUSES.map((s) => [s, `${status.label}: ${status[s]}`]),
+        ) as Record<FlightStatus, string>,
       }}
     />
   );

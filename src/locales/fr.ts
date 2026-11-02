@@ -51,6 +51,7 @@ const fr: Dictionary = {
     LIVE: "en ligne",
     BOARDING: "embarquement, en cours",
     "ON HOLD": "en pause",
+    "CHECK-IN": "enregistrement, tout juste commencé",
   },
   home: {
     hero: {
@@ -226,6 +227,8 @@ const fr: Dictionary = {
     noRoute: "Aucune",
     statusTitle: "ÉTAT DU VOL",
     live: "Terminé et en ligne depuis {year}.",
+    checkIn:
+      "Enregistrement : le projet vient de commencer, d’abord par la conception et le design. Cette page se remplira à l’embarquement.",
     boarding:
       "Embarquement : le nouveau site est en cours de construction. Cette page se remplira au décollage.",
     onHold: "En attente : le projet est en pause pour l’instant et reprendra plus tard.",

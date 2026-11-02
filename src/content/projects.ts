@@ -14,7 +14,10 @@ import trucks from "../../public/work/trucks.webp";
  * Status codes as shown on the departures board. They stay in English in every language,
  * the way real airport boards do; screen readers get a translated label from the dictionary.
  */
-export type FlightStatus = "LIVE" | "BOARDING" | "ON HOLD";
+export type FlightStatus = "LIVE" | "BOARDING" | "CHECK-IN" | "ON HOLD";
+
+/** Every status, in the order boards and filters list them. */
+export const STATUSES: FlightStatus[] = ["LIVE", "BOARDING", "CHECK-IN", "ON HOLD"];
 
 /** One project ("flight"). Texts that change per language are records keyed by locale. */
 export type Project = {
@@ -111,7 +114,7 @@ export const projects: Project[] = [
     client: { en: "Translation agency", fr: "Agence de traduction", de: "Übersetzungsagentur" },
     route: "CM",
     languages: "FR EN DE",
-    status: "BOARDING",
+    status: "CHECK-IN",
     website: "",
     repo: "",
     onHome: true,
@@ -131,7 +134,7 @@ export const projects: Project[] = [
     name: "FIRST TRUCKS SARL",
     client: { en: "Car parts supplier", fr: "Fournisseur de pièces auto", de: "Autoteilehändler" },
     route: "CM",
-    languages: "FR EN DE",
+    languages: "FR EN",
     status: "LIVE",
     website: "first-trucks-e-commerce-6uzz.vercel.app",
     repo: "https://github.com/fjkun06/first_trucks-e-commerce",
@@ -230,7 +233,10 @@ export const projects: Project[] = [
   },
 ];
 
-/** Live projects are finished and online; the others (boarding, on hold) are still in progress. */
+/**
+ * Live projects are finished and online; the others are still in progress: at check-in (just
+ * started), boarding (being built) or on hold (paused).
+ */
 export function isLive(project: Project): boolean {
   return project.status === "LIVE";
 }

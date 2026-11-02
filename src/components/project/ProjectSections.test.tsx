@@ -7,7 +7,9 @@ import en from "@/locales/en";
 import { FlightStatus, ProjectHero, ProjectStory, stageOf } from "./ProjectSections";
 
 const live = findProject("first-trucks")!;
-const boarding = findProject("translatpro")!;
+const checkIn = findProject("translatpro")!;
+/** No project is boarding right now; the same one, a step further. */
+const boarding = { ...checkIn, status: "BOARDING" as const };
 const onHold = findProject("brytzone")!;
 
 function hero(project = live) {
@@ -55,8 +57,9 @@ describe("<ProjectHero>", () => {
 });
 
 describe("stageOf", () => {
-  it("puts live projects at departure and the others at boarding", () => {
+  it("puts live projects at departure, new ones at check-in, the others at boarding", () => {
     expect(stageOf(live)).toBe(2);
+    expect(stageOf(checkIn)).toBe(0);
     expect(stageOf(boarding)).toBe(1);
     expect(stageOf(onHold)).toBe(1);
   });
@@ -78,6 +81,13 @@ describe("<FlightStatus>", () => {
       "href",
       "/en/contact",
     );
+  });
+
+  it("shows a project that has just started at check-in", () => {
+    status(checkIn);
+    expect(screen.getByText(en.project.checkIn)).toBeInTheDocument();
+    expect(screen.getAllByRole("listitem")[0]).toHaveAttribute("aria-current", "step");
+    expect(screen.getByRole("link", { name: en.project.book.toUpperCase() })).toBeInTheDocument();
   });
 
   it("says when a project is on hold", () => {
