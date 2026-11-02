@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
 
+import { PATH_HEADER } from "@/i18n/config";
+
 import { pickLocale, proxy } from "./proxy";
 
 describe("pickLocale", () => {
@@ -36,7 +38,11 @@ describe("proxy", () => {
   });
 
   it("leaves addresses that already have a language alone", () => {
-    expect(proxy(request("/fr/contact"))).toBeUndefined();
-    expect(proxy(request("/en"))).toBeUndefined();
+    for (const path of ["/fr/contact", "/en"]) {
+      const response = proxy(request(path))!;
+      expect(response.headers.get("location")).toBeNull();
+      // the path is handed on to the page as a request header (for the 404 page's language)
+      expect(response.headers.get(`x-middleware-request-${PATH_HEADER}`)).toBe(path);
+    }
   });
 });

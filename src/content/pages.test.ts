@@ -5,6 +5,8 @@ import { missingGlyphs } from "@/lib/led";
 
 import { aboutContent } from "./about";
 import { contactContent } from "./contact";
+import { LEGAL_UPDATED, legalContent } from "./legal";
+import { notFoundContent } from "./not-found";
 import { processContent } from "./process";
 import { findProject } from "./projects";
 import { servicesContent } from "./services";
@@ -69,11 +71,31 @@ function contactLed(lang: (typeof locales)[number]): string[] {
   return [...t.titleLed, ...t.status.map(([, value]) => value)];
 }
 
+/** Every text the legal page draws in LED dots. */
+function legalLed(lang: (typeof locales)[number]): string[] {
+  const t = legalContent[lang];
+  return [
+    ...t.titleLed,
+    t.tabs.impressum,
+    t.tabs.privacy,
+    LEGAL_UPDATED,
+    ...[...t.impressum.sections, ...t.privacy.sections].map((s) => s.code),
+  ];
+}
+
+/** Every text the 404 page draws in LED dots. */
+function notFoundLed(lang: (typeof locales)[number]): string[] {
+  const t = notFoundContent[lang];
+  return [...t.titleLed, t.error, t.status, "HOM", "WRK", "FJ1", "TKT"];
+}
+
 describe.each([
   ["services", servicesContent, servicesLed],
   ["process", processContent, processLed],
   ["about", aboutContent, aboutLed],
   ["contact", contactContent, contactLed],
+  ["legal", legalContent, legalLed],
+  ["not-found", notFoundContent, notFoundLed],
 ] as const)("%s content", (_, content, led) => {
   it("has the same structure in every language", () => {
     for (const lang of locales) expect(shape(content[lang]), lang).toEqual(shape(content.en));
@@ -127,5 +149,38 @@ describe("about content", () => {
     const years = (lang: (typeof locales)[number]) =>
       aboutContent[lang].log.entries.slice(1).map((e) => e.year);
     for (const lang of locales) expect(years(lang)).toEqual(years("en"));
+  });
+});
+
+describe("legal content", () => {
+  const paragraphs = (lang: (typeof locales)[number]) =>
+    [...legalContent[lang].impressum.sections, ...legalContent[lang].privacy.sections].flatMap(
+      (s) => s.paragraphs,
+    );
+
+  it("only uses tokens the legal page knows", () => {
+    for (const lang of locales)
+      for (const p of paragraphs(lang))
+        for (const [token] of p.matchAll(/\{\w+\}/g))
+          expect(["{name}", "{street}", "{city}", "{email}", "{contact}"], lang).toContain(token);
+  });
+
+  it("uses the same sections and tokens as the binding German text", () => {
+    const tokens = (lang: (typeof locales)[number]) =>
+      paragraphs(lang).map((p) => [...p.matchAll(/\{\w+\}/g)].map(([t]) => t).join());
+    const codes = (lang: (typeof locales)[number]) =>
+      [...legalContent[lang].impressum.sections, ...legalContent[lang].privacy.sections].map(
+        (s) => s.code,
+      );
+    for (const lang of locales) {
+      expect(codes(lang)).toEqual(codes("de"));
+      expect(tokens(lang)).toEqual(tokens("de"));
+    }
+  });
+
+  it("says which version is binding everywhere except on the German page", () => {
+    expect(legalContent.de.binding).toBeNull();
+    expect(legalContent.en.binding).toBeTruthy();
+    expect(legalContent.fr.binding).toBeTruthy();
   });
 });

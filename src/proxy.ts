@@ -1,12 +1,12 @@
 /**
  * Proxy (formerly called "middleware" in Next.js): runs before every page request.
- * Its only job is the language: a visit to "/" or "/work" is redirected to "/en", "/fr/work"…
+ * Its job is the language: a visit to "/" or "/work" is redirected to "/en", "/fr/work"…
  * based on the browser's preferred languages. Addresses that already start with a language
- * pass through untouched.
+ * pass through, with the path added as a request header for the 404 page.
  */
 import { NextResponse, type NextRequest } from "next/server";
 
-import { defaultLocale, hasLocale, locales, type Locale } from "@/i18n/config";
+import { defaultLocale, hasLocale, locales, PATH_HEADER, type Locale } from "@/i18n/config";
 
 /**
  * Picks the visitor's language from the Accept-Language header the browser sends.
@@ -41,7 +41,12 @@ export function proxy(request: NextRequest) {
   const hasPrefix = locales.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
   );
-  if (hasPrefix) return;
+  if (hasPrefix) {
+    // Pass the path on to the page, so the 404 page knows its language (it gets no params).
+    const headers = new Headers(request.headers);
+    headers.set(PATH_HEADER, pathname);
+    return NextResponse.next({ request: { headers } });
+  }
 
   const locale = pickLocale(request.headers.get("accept-language"));
   const url = request.nextUrl.clone();

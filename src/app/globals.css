@@ -1410,13 +1410,14 @@
     transform: none;
   }
 }
+/* The clip reaches a little outside the box so accents above tight stencil lines (É, Ü) show. */
 @keyframes rv-wipe {
   from {
-    clip-path: inset(0 100% 0 0);
+    clip-path: inset(-0.4em 100% -0.3em -0.2em);
     opacity: 0.2;
   }
   to {
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-0.4em -0.2em -0.3em -0.2em);
     opacity: 1;
   }
 }
@@ -1465,7 +1466,7 @@
   transform: translateX(-40px);
 }
 .no-sda .rv-wipe:not(.is-in) {
-  clip-path: inset(0 100% 0 0);
+  clip-path: inset(-0.4em 100% -0.3em -0.2em);
   opacity: 0.2;
 }
 .no-sda .rv-scale:not(.is-in) {

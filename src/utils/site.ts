@@ -10,6 +10,18 @@ export const siteConfig = {
   whatsapp: "",
   linkedin: "https://www.linkedin.com/in/fjkun06/",
   github: "https://github.com/fjkun06",
+  /**
+   * Legal details for the Impressum and the privacy policy (required in Germany, § 5 DDG).
+   * Empty fields show as red placeholders on the legal page until they're filled in.
+   */
+  owner: {
+    /** Full legal name, as in your ID. */
+    name: "",
+    /** Street and house number. */
+    street: "",
+    /** Postcode and city, e.g. "45127 Essen". */
+    city: "",
+  },
 } as const;
 
 /**
