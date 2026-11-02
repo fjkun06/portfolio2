@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
+import { InlineScript } from "@/components/site/InlineScript";
 import { MotionEffects } from "@/components/site/MotionEffects";
 import type { Locale } from "@/i18n/config";
 import { routes } from "@/i18n/routes";
@@ -30,9 +31,10 @@ const body = localFont({
 /**
  * Runs before the first paint: picks dark or light mode (saved choice, else the device setting)
  * and adds .motion to <html> unless the visitor prefers reduced motion (CSS that only makes
- * sense with animations, like the grey start of .read-on, hangs off it).
+ * sense with animations, like the grey start of .read-on, hangs off it). Also restores the
+ * visitor's "Pause animations" choice (data-motion="paused", see lib/motion/pause.ts).
  */
-export const BOOT = `(function(){var d=document.documentElement;try{var m=localStorage.getItem("mode");if(m!=="light"&&m!=="dark"){m=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}d.dataset.mode=m}catch(e){}try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("motion")}catch(e){}})()`;
+export const BOOT = `(function(){var d=document.documentElement;try{var m=localStorage.getItem("mode");if(m!=="light"&&m!=="dark"){m=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}d.dataset.mode=m}catch(e){}try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("motion")}catch(e){}try{if(localStorage.getItem("motion")==="paused")d.dataset.motion="paused"}catch(e){}})()`;
 
 /**
  * The whole HTML document around a page: fonts, the dark/light boot script, skip link,
@@ -63,7 +65,8 @@ export function SiteDocument({
       {/* App Router document, not a Pages Router page: a plain <head> is right here. */}
       {/* eslint-disable-next-line @next/next/no-head-element */}
       <head>
-        <script dangerouslySetInnerHTML={{ __html: BOOT }} />
+        {/* Not a plain <script>: React warns when one renders on the client (InlineScript). */}
+        <InlineScript html={BOOT} />
       </head>
       <body id="top">
         <a

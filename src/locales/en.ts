@@ -46,6 +46,8 @@ const en = {
     legal: "Legal",
     imprint: "Impressum",
     privacy: "Privacy policy",
+    motionPause: "Pause animations",
+    motionPlay: "Play animations",
     backToTop: "Back to top",
   },
   status: {

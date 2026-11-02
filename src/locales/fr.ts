@@ -44,6 +44,8 @@ const fr: Dictionary = {
     legal: "Mentions légales",
     imprint: "Impressum",
     privacy: "Confidentialité",
+    motionPause: "Mettre les animations en pause",
+    motionPlay: "Relancer les animations",
     backToTop: "Retour en haut",
   },
   status: {

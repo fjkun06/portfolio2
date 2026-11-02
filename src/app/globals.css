@@ -711,6 +711,15 @@
   filter: drop-shadow(0 0 6px var(--led-glow));
   animation: route-shuttle 15s ease-in-out infinite;
 }
+/* "Pause animations" (footer, lib/motion/pause.ts): everything that moves on its own for more
+   than a few seconds stops, and rests where it would with reduced motion. One-off animations
+   (reveals, the LED light-up, the single headline flip) still play: they're over in seconds. */
+html[data-motion="paused"] :is(.led-flip:not(.once), .flight-plane, .route-plane, .blink, .marquee) {
+  animation: none !important;
+}
+html[data-motion="paused"] .route-plane {
+  offset-distance: 100%;
+}
 /* <FlightLine>: the plane flies the dotted line, start to end, fading in at take-off and out at
    landing, every 6.5 s; only while the line is on screen (MotionEffects sets data-on-screen).
    Lines further down a page are a step further into the loop (negative animation-delay), so

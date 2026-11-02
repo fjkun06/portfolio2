@@ -7,7 +7,7 @@ export const siteConfig = {
   url: "https://frankjordan.dev",
   email: "hello@frankjordan.dev",
   /** International format without +, spaces or leading zeros, e.g. "4917612345678". */
-  whatsapp: "",
+  whatsapp: "491771560344",
   linkedin: "https://www.linkedin.com/in/fjkun06/",
   github: "https://github.com/fjkun06",
   /**
@@ -20,8 +20,8 @@ export const siteConfig = {
     /** Street and house number. */
     street: "",
     /** Postcode and city, e.g. "45127 Essen". */
-    city: "",
-  },
+    city: ""
+  }
 } as const;
 
 /**
