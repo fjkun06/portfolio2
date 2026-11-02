@@ -30,7 +30,7 @@ type FooterProps = {
 function LedLines({ lines, pitch }: { lines: string[]; pitch: number }) {
   const waves = flipDelays(lines);
   return (
-    <span aria-hidden="true" className="flip-sign rv-wipe flex flex-col" style={{ gap: pitch * 2 }}>
+    <span aria-hidden="true" className="on-screen rv-wipe flex flex-col" style={{ gap: pitch * 2 }}>
       {lines.map((line, i) => (
         <Led
           key={line}

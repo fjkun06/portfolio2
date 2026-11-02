@@ -23,8 +23,8 @@ type HeroProps = {
 /**
  * One headline in LED dots, in two shapes: three long lines from 1024 px, five short lines below
  * (the long lines wouldn't fit a phone). The last line(s) are in the accent colour.
- * Each line switches on column by column, one line after the other; then the letters keep
- * flipping like a split-flap board, in one wave through the lines.
+ * Each line switches on column by column, one line after the other; a few seconds later the
+ * letters flip once like a split-flap board, in one wave through the lines.
  */
 function Headline({ hero }: { hero: Dictionary["home"]["hero"] }) {
   const waves = flipDelays(hero.headline);

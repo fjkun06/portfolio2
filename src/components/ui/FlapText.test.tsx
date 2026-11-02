@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { arrivalAfter, FlapText } from "./FlapText";
+import { arrivalAfter, FlapText, fitLongestWord } from "./FlapText";
 
 describe("<FlapText>", () => {
   it("keeps the real text for screen readers and hides the letters", () => {
@@ -32,5 +32,12 @@ describe("arrivalAfter", () => {
   it("grows with the number of letters, not counting spaces", () => {
     expect(arrivalAfter("AB CD")).toBe(arrivalAfter("ABCD"));
     expect(arrivalAfter("ABCDE")).toBeGreaterThan(arrivalAfter("ABCD"));
+  });
+});
+
+describe("fitLongestWord", () => {
+  it("sizes headings by their longest word, counting letters like Ü once", () => {
+    expect(fitLongestWord("LC FACHÜBERSETZUNGEN")).toEqual({ "--k": "8.84" });
+    expect(fitLongestWord("HERZOG TRAD'")).toEqual({ "--k": "3.12" });
   });
 });

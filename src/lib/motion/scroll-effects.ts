@@ -1,7 +1,7 @@
 import { scroll } from "motion";
 import { animate } from "motion/mini";
 
-import { type Stop, withinRange } from "./presets";
+import { along, type Stop, within } from "./presets";
 
 /** Section passing through the screen: from its top at the bottom edge to its bottom at the top. */
 const COVER = ["start end", "end start"] as const;
@@ -74,19 +74,6 @@ const through = (target: HTMLElement, offset: Offset) => ({
   offset: [...offset] as never,
 });
 
-/** Links a keyframe animation to the scroll over `offset` of `target`. */
-const scrollAnimate = (
-  el: HTMLElement,
-  keyframes: Record<string, string[]>,
-  target: HTMLElement,
-  offset: Offset,
-  times?: number[],
-) => scroll(animate(el, keyframes, { ease: "linear", times }), through(target, offset));
-
-/** Writes a section's scroll progress to --p; its CSS lights the stops from it. */
-const progressVar = (el: HTMLElement, offset: Offset) =>
-  scroll((p: number) => el.style.setProperty("--p", p.toFixed(4)), through(el, offset));
-
 function applyEffect(el: HTMLElement, effect: ScrollEffect): Stop {
   const range = effect.offset && through(el, effect.offset);
   if ("keyframes" in effect)
@@ -97,83 +84,78 @@ function applyEffect(el: HTMLElement, effect: ScrollEffect): Stop {
 /** Sets up `setup` once for every displayed element matching `selector`. */
 type Each = (selector: string, setup: (el: HTMLElement) => Stop[]) => void;
 
-/** Home flight plan: the plane circles the orbit (desktop) or drops down the track (phones). */
+/** Where the four stops fall along a flight plan, as a share of the flight (0 to 1). */
+const STOPS_AT = [0, 0.283, 0.567, 0.85, 1];
+
+/**
+ * Home flight plan: the plane circles the orbit (desktop) or drops down the track (phones).
+ * One scroll callback writes the progress to --p (the stops light up from it in CSS) and moves
+ * the plane from the same number, so stop and plane never drift apart.
+ */
 function flightPlan(each: Each) {
-  // Desktop: around the orbit between 18 % and 72 % of the way.
-  each(".orbit", (orbit) => {
-    const stops = [progressVar(orbit, COVER)];
-    const plane = orbit.querySelector<HTMLElement>(".orbit-plane");
-    if (plane) {
-      const at = [0, 0.283, 0.567, 0.85, 1];
-      const distance = withinRange(["0%", "25%", "50%", "75%", "75%"], at, 0.18, 0.72);
-      const size = withinRange(
-        ["scale(1)", "scale(0.62)", "scale(1)", "scale(1.45)", "scale(1.45)"],
-        at,
-        0.18,
-        0.72,
-      );
-      stops.push(
-        scrollAnimate(
-          plane,
-          { offsetDistance: distance.values, transform: size.values },
-          orbit,
-          COVER,
-          distance.times,
-        ),
-      );
-    }
-    return stops;
+  // Desktop: the orbit is pinned while its track scrolls by; the plane flies the lap between
+  // 10 % and 90 % of the track (the rest is a short wait at take-off and after landing).
+  // It shrinks a little at the far side and grows near you, for a 3D feel.
+  each(".orbit-track", (track) => {
+    const orbit = track.querySelector<HTMLElement>(".orbit");
+    const plane = track.querySelector<HTMLElement>(".orbit-plane");
+    if (!orbit || !plane) return [];
+    return [
+      scroll(
+        (p: number) => {
+          orbit.style.setProperty("--p", p.toFixed(4));
+          const k = within(p, 0.1, 0.9);
+          plane.style.offsetDistance = `${along(k, STOPS_AT, [0, 25, 50, 75, 75]).toFixed(3)}%`;
+          plane.style.transform = `scale(${along(k, STOPS_AT, [1, 0.82, 1, 1.2, 1.2]).toFixed(4)})`;
+        },
+        through(track, CONTAIN),
+      ),
+    ];
   });
 
-  // Phones: down the track between 25 % and 75 %.
+  // Phones: down the track between 25 % and 75 % of its way through the screen.
   each(".vtrack", (track) => {
-    const stops = [progressVar(track, COVER)];
     const plane = track.querySelector<HTMLElement>(".vplane");
-    if (plane) {
-      const drop = withinRange(
-        [0, 180, 360, 540, 540].map((y) => `translateY(${y}px)`),
-        [0, 0.283, 0.567, 0.85, 1],
-        0.25,
-        0.75,
-      );
-      stops.push(scrollAnimate(plane, { transform: drop.values }, track, COVER, drop.times));
-    }
-    return stops;
+    return [
+      scroll(
+        (p: number) => {
+          track.style.setProperty("--p", p.toFixed(4));
+          if (plane) {
+            const y = along(within(p, 0.25, 0.75), STOPS_AT, [0, 180, 360, 540, 540]);
+            plane.style.transform = `translateY(${y.toFixed(1)}px)`;
+          }
+        },
+        through(track, COVER),
+      ),
+    ];
   });
 }
 
-/** Process cockpit: progress through the four stops while they fill the screen. */
+/**
+ * Process cockpit: progress through the four stops while they fill the screen. As for the
+ * flight plan, one callback writes --p (the stop names and numbers switch from it in CSS) and
+ * moves the planes and fill lines from the same number.
+ */
 function processCockpit(each: Each) {
+  const steps = [0, 0.22, 0.48, 0.74, 1];
   each(".proc", (proc) => {
-    const stops = [progressVar(proc, CONTAIN)];
-    const stepTimes = [0, 0.22, 0.48, 0.74, 1];
-    const all = (selector: string) => proc.querySelectorAll<HTMLElement>(selector);
-    all(".pplane").forEach((plane) =>
-      stops.push(
-        scrollAnimate(
-          plane,
-          { top: ["0%", "33.3%", "66.7%", "100%", "100%"] },
-          proc,
-          CONTAIN,
-          stepTimes,
-        ),
+    const all = (selector: string) => [...proc.querySelectorAll<HTMLElement>(selector)];
+    const planes = all(".pplane");
+    const fills = all(".pfill");
+    const bars = all(".pfillx");
+    return [
+      scroll(
+        (p: number) => {
+          proc.style.setProperty("--p", p.toFixed(4));
+          const top = along(p, steps, [0, 33.3, 66.7, 100, 100]);
+          const fill = along(p, steps, [0, 0.333, 0.667, 1, 1]);
+          for (const el of planes) el.style.top = `${top.toFixed(2)}%`;
+          for (const el of fills) el.style.transform = `scaleY(${fill.toFixed(4)})`;
+          for (const el of bars) el.style.transform = `scaleX(${p.toFixed(4)})`;
+        },
+        through(proc, CONTAIN),
       ),
-    );
-    all(".pfill").forEach((fill) =>
-      stops.push(
-        scrollAnimate(
-          fill,
-          { transform: ["scaleY(0)", "scaleY(0.333)", "scaleY(0.667)", "scaleY(1)", "scaleY(1)"] },
-          proc,
-          CONTAIN,
-          stepTimes,
-        ),
-      ),
-    );
-    all(".pfillx").forEach((fill) =>
-      stops.push(scrollAnimate(fill, { transform: ["scaleX(0)", "scaleX(1)"] }, proc, CONTAIN)),
-    );
-    return stops;
+    ];
   });
 }
 

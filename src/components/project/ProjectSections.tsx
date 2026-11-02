@@ -4,7 +4,7 @@ import { Led, type LedTone } from "@/components/Led";
 import { StackList } from "@/components/report/ReportSections";
 import { Arrow } from "@/components/site/Arrow";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { arrivalAfter, FlapText } from "@/components/ui/FlapText";
+import { arrivalAfter, FlapText, fitLongestWord } from "@/components/ui/FlapText";
 import { container, sectionTitle } from "@/components/ui/layout";
 import { StatusLed } from "@/components/ui/StatusLed";
 import { isLive, type Project } from "@/content/projects";
@@ -78,7 +78,10 @@ export function ProjectHero({ lang, project, text, facts, status, crumbs }: Proj
           </p>
           <h1
             id="project-title"
-            className="m-0 mt-5 font-stencil text-[min(80px,17vw)] leading-[0.88] font-black tracking-[0.01em] [overflow-wrap:anywhere] lg:mt-6.5 lg:text-[168px]"
+            // As big as before (80 px, 168 px from 1024 px), smaller only when the longest word
+            // wouldn't fit the content width.
+            style={fitLongestWord(project.name)}
+            className="m-0 mt-5 font-stencil text-[length:min(80px,calc((100vw_-_32px)/var(--k)))] leading-[0.88] font-black tracking-[0.01em] lg:mt-6.5 lg:text-[length:min(168px,calc((min(100vw,1280px)_-_80px)/var(--k)))]"
           >
             <FlapText text={project.name} />
           </h1>

@@ -13,6 +13,19 @@ export function arrivalAfter(text: string): number {
 }
 
 /**
+ * Inline style for a big stencil heading that must fit its longest word on one line: sets
+ * --k, the width of that word in em (a stencil capital is about 0.52 em wide). The heading's
+ * font size then divides the available width by --k, so long names shrink just enough.
+ *
+ * @example
+ * fitLongestWord("LC FACHÜBERSETZUNGEN") // { "--k": "8.84" } (17 letters)
+ */
+export function fitLongestWord(text: string): React.CSSProperties {
+  const longest = Math.max(...text.split(" ").map((word) => [...word].length));
+  return { "--k": (0.52 * longest).toFixed(2) } as React.CSSProperties;
+}
+
+/**
  * Text whose letters drop into place one after another, like split-flap cards on a departures
  * board when a flight arrives. Plays once when the page loads (CSS only, so from the first
  * paint), then stays still; visitors who prefer reduced motion see it in place straight away.
