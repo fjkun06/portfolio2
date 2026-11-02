@@ -3,6 +3,9 @@
  * and `scroll`). Kept free of DOM work so they can be tested on their own.
  */
 
+/** Ends a running effect: an `inView` watcher or a `scroll` link. */
+export type Stop = () => void;
+
 /** Smooth "ease out" used by every reveal: quick start, long soft landing. */
 export const EASE = [0.2, 0.7, 0.2, 1] as const;
 

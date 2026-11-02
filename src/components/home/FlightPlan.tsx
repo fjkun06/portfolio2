@@ -36,7 +36,7 @@ function StopNumber({ i, pitch = 4 }: { i: number; pitch?: number }) {
 }
 
 const markStyle: React.CSSProperties = {
-  background: "var(--led)",
+  backgroundColor: "var(--led)",
   boxShadow: "0 0 0 6px var(--led-glow)",
   transform: "scale(1.25)",
 };
@@ -144,7 +144,7 @@ export function FlightPlan({ text, processHref }: FlightPlanProps) {
           aria-hidden="true"
           className="absolute top-3.5 left-[11px] h-[560px] w-[3px]"
           style={{
-            background: "repeating-linear-gradient(180deg, var(--ink) 0 3px, transparent 3px 10px)",
+            backgroundImage: "repeating-linear-gradient(180deg, var(--ink) 0 3px, transparent 3px 10px)",
           }}
         />
         <span aria-hidden="true" className="vplane text-ink">

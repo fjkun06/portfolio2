@@ -18,7 +18,7 @@ function FlightLine({ className = "" }: { className?: string }) {
       aria-hidden="true"
       className={`rv-line relative block h-[3px] ${className}`}
       style={{
-        background: "repeating-linear-gradient(90deg, var(--ink) 0 3px, transparent 3px 10px)",
+        backgroundImage: "repeating-linear-gradient(90deg, var(--ink) 0 3px, transparent 3px 10px)",
       }}
     >
       <span className="absolute top-[-13px] left-1/2 -ml-[14px] text-ink">

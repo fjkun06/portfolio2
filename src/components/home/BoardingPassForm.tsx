@@ -330,7 +330,7 @@ export function BoardingPassForm({
           aria-hidden="true"
           className="h-[54px] w-full lg:h-[70px]"
           style={{
-            background:
+            backgroundImage:
               "repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 5px, var(--ink) 5px 6px, transparent 6px 9px, var(--ink) 9px 12px, transparent 12px 14px)",
           }}
         />
