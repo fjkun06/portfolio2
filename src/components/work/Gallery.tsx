@@ -6,7 +6,7 @@ import { container, sectionTitle } from "@/components/ui/layout";
 import { Placeholder } from "@/components/ui/Placeholder";
 import { StatusLed } from "@/components/ui/StatusLed";
 import { WipBand } from "@/components/ui/WipBand";
-import { isLive, projectHref, type Project } from "@/content/projects";
+import { isLive, projectHref, SHOT_QUALITY, type Project } from "@/content/projects";
 import { fill } from "@/i18n/fill";
 import type { Locale } from "@/i18n/config";
 import type { Routes } from "@/i18n/routes";
@@ -22,8 +22,15 @@ type GalleryProps = {
   to: Routes;
 };
 
+/** At most five tools, then how many more: "NEXT.JS · TYPESCRIPT · … +3". */
+export function stackLine(stack: string[], max = 5): string {
+  const shown = stack.slice(0, max).join(" · ");
+  return stack.length > max ? `${shown} +${stack.length - max}` : shown;
+}
+
 /**
- * One project card: picture on a dark board, flight number and status, name, summary, and a link
+ * One project card: picture on a dark board, flight number and status, name, summary, the main
+ * tools it's built with, and a link
  * to the project's own page (the whole picture links there too).
  * Live projects show their screenshot as it is. Projects still in progress wait greyed out
  * under a "Work in progress" band with their status, and invite you to follow the build.
@@ -44,6 +51,7 @@ function Card({
       src={p.image}
       alt={live ? fill(text.shot, { name: p.name }) : fill(text.shotWip, { name: p.name })}
       sizes={wide ? "(min-width: 1280px) 1200px, 100vw" : "(min-width: 1024px) 600px, 100vw"}
+      quality={SHOT_QUALITY}
       placeholder="blur"
       className={`px-media block aspect-video w-full object-cover object-top ${live ? "" : "wip-media"}`}
     />
@@ -82,6 +90,12 @@ function Card({
       </div>
       <p className="mt-2.5 mb-0 text-sm text-label lg:text-[15px]">{p.client[lang]}</p>
       <p className="rv mt-2 mb-0 max-w-[46ch] text-base text-muted lg:text-lg">{p.summary[lang]}</p>
+      {p.stack.length > 0 && (
+        <p className="mt-3 mb-0 font-stencil text-[13px] font-bold tracking-[0.1em] text-label lg:text-sm">
+          <span className="sr-only">{text.stackLabel}: </span>
+          {stackLine(p.stack)}
+        </p>
+      )}
       <Link href={href} className="mt-3 inline-block font-semibold underline-offset-[6px]">
         {p.report ? text.readReport : live ? text.viewProject : text.followBuild}
       </Link>

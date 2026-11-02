@@ -5,7 +5,7 @@ import { projects } from "@/content/projects";
 import { routes } from "@/i18n/routes";
 import en from "@/locales/en";
 
-import { Gallery } from "./Gallery";
+import { Gallery, stackLine } from "./Gallery";
 
 vi.mock("next/image", () => import("@/test/next-image-mock"));
 
@@ -21,6 +21,13 @@ function setup() {
     />,
   );
 }
+
+describe("stackLine", () => {
+  it("lists up to five tools, then how many more", () => {
+    expect(stackLine(["A", "B"])).toBe("A · B");
+    expect(stackLine(["A", "B", "C", "D", "E", "F", "G"])).toBe("A · B · C · D · E +2");
+  });
+});
 
 describe("<Gallery>", () => {
   it("gives every card its project address as id, so /work#slug lands on it", () => {
@@ -53,6 +60,13 @@ describe("<Gallery>", () => {
     expect(boarding.querySelector(".wip-band")).toHaveTextContent(en.project.wip);
     expect(boarding).toHaveTextContent(en.work.followBuild);
     expect(screen.getByRole("img", { name: "TRANSLATPRO: work in progress" })).toBeInTheDocument();
+  });
+
+  it("names the main tools of each project", () => {
+    const { container } = setup();
+    expect(container.querySelector("#flippbidd")).toHaveTextContent(
+      `${en.work.stackLabel}: NEXT.JS · TYPESCRIPT · SCSS · FIGMA`,
+    );
   });
 
   it("calls Herzog's link a flight report", () => {

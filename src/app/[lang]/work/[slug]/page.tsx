@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { FlightStatus, ProjectHero } from "@/components/project/ProjectSections";
+import { FlightStatus, ProjectHero, ProjectStory } from "@/components/project/ProjectSections";
 import { ReportHero } from "@/components/report/ReportHero";
 import {
   Brief,
@@ -27,6 +27,13 @@ import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { routes } from "@/i18n/routes";
 import { pageMetadata } from "@/lib/seo/metadata";
+
+/**
+ * The whole page is built ahead of time. For an address that isn't a project (/work/nope),
+ * Next.js waits for that result instead of streaming a shell first, so notFound() can still
+ * answer with a real 404 status, not a 200 carrying the 404 page.
+ */
+export const ensureStatic = "navigation";
 
 /** Every project gets a page, in every language. */
 export function generateStaticParams() {
@@ -56,8 +63,9 @@ export async function generateMetadata({
  * A project's own page.
  * - With a flight report (case study): hero with route map and facts, the homepage screenshot,
  *   the brief, the customer journey, what was built, the client's words, and the next project.
- * - Without one: hero with the facts, the screenshot, the flight status (live, or still in
- *   progress with the picture greyed out under a status band), and the next project.
+ * - Without one: hero with the facts, the screenshot, what the project is and what it's built
+ *   with (with links to the demo and the code), the flight status (live, or still in progress
+ *   with the picture greyed out under a status band), and the next project.
  */
 export default function ReportPage({ params }: PageProps<"/[lang]/work/[slug]">) {
   return (
@@ -91,7 +99,7 @@ async function ReportContent({ params }: { params: PageProps<"/[lang]/work/[slug
       <HomepageShot project={project} text={text} />
       <Brief report={report} text={text} />
       <Journey report={report} shots={journeyShots[slug]} text={text} />
-      <Manifest report={report} text={text} />
+      <Manifest report={report} stack={project.stack} text={text} />
       <Quote report={report} text={text} />
       <NextDeparture project={next} href={projectHref(next, to.work)} text={text} />
     </>
@@ -132,6 +140,7 @@ async function ProjectContent({ lang, project }: { lang: Locale; project: Projec
               }
         }
       />
+      <ProjectStory lang={lang} project={project} text={text} builtWith={report.builtWith} />
       <FlightStatus project={project} text={text} status={status} contactHref={to.contact} />
       <NextDeparture project={next} href={projectHref(next, to.work)} text={report} />
     </>

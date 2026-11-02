@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Led, type LedTone } from "@/components/Led";
+import { StackList } from "@/components/report/ReportSections";
 import { Arrow } from "@/components/site/Arrow";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { container, sectionTitle } from "@/components/ui/layout";
@@ -102,6 +103,64 @@ export function ProjectHero({ lang, project, text, facts, status, crumbs }: Proj
   );
 }
 
+/**
+ * "The flight": what the project is, in a few sentences (its story, or its summary), with the
+ * tools it's built with and links to the live demo and the code on GitHub, where public.
+ * Not shown when there's nothing to add to the hero yet (no story, stack or links).
+ */
+export function ProjectStory({
+  lang,
+  project,
+  text,
+  builtWith,
+}: {
+  lang: Locale;
+  project: Project;
+  text: ProjectText;
+  builtWith: string;
+}) {
+  const links = [
+    project.website && { href: `https://${project.website}`, label: text.demo },
+    project.repo && { href: project.repo, label: text.repo },
+  ].filter((l): l is { href: string; label: string } => Boolean(l));
+  if (!project.story && !project.stack.length && !links.length) return null;
+
+  return (
+    <section aria-labelledby="about-title" className={`${container} pt-20 lg:pt-36`}>
+      <h2 id="about-title" className={`rv-wipe ${sectionTitle}`}>
+        {text.about}
+      </h2>
+      <div className="mt-7 grid grid-cols-1 gap-10 lg:mt-11 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16">
+        <p className="rv m-0 max-w-[36em] text-xl leading-[1.5] lg:text-[23px]">
+          {(project.story ?? project.summary)[lang]}
+        </p>
+        <div className="flex flex-col gap-8">
+          {project.stack.length > 0 && <StackList stack={project.stack} label={builtWith} />}
+          {links.length > 0 && (
+            <ul className="m-0 flex list-none flex-col border-b-[1.5px] border-ink p-0">
+              {links.map((l) => (
+                <li key={l.href} className="rv border-t-[1.5px] border-ink">
+                  <a
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="row-light flex min-h-[60px] items-center justify-between gap-4 font-semibold no-underline"
+                  >
+                    {l.label}
+                    <span className="row-go inline-flex">
+                      <Arrow />
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /** Which progress stage a project is at: 0 check-in, 1 boarding, 2 departed. */
 export function stageOf(project: Project): number {
   return isLive(project) ? 2 : 1;
@@ -110,7 +169,7 @@ export function stageOf(project: Project): number {
 /**
  * "Flight status": where the project stands, in a sentence and as three stages on a dotted line
  * (check-in, boarding, departed), the current one lit.
- * - Live: all three lit, "finished and online since…", and a link to the site if it's public.
+ * - Live: all three lit, "finished and online since…".
  * - Boarding: the current stage blinks, the site is being built; invites you to book yours.
  * - On hold: the current stage is dimmed, the project is paused.
  */
@@ -144,16 +203,6 @@ export function FlightStatus({
       <div className="board card-edge rv mt-8 rounded-xl px-5.5 py-7 lg:mt-12 lg:rounded-[14px] lg:px-12 lg:py-11">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <StatusLed status={project.status} text={status} pitch={6} />
-          {live && project.website && (
-            <a
-              href={`https://${project.website}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-on-board-2"
-            >
-              {text.liveSite} <Arrow />
-            </a>
-          )}
           {!live && (
             <Link href={contactHref} className="btn btn-accent min-h-[52px] px-6 text-xl">
               {text.book.toUpperCase()}

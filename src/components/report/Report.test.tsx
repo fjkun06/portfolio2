@@ -75,10 +75,10 @@ describe("report sections", () => {
   });
 
   it("list the manifest and the tools", () => {
-    render(<Manifest report={report} text={text} />);
+    render(<Manifest report={report} stack={project.stack} text={text} />);
     for (const m of report.manifest)
       expect(screen.getByRole("heading", { name: m.title })).toBeInTheDocument();
-    for (const tool of report.stack)
+    for (const tool of project.stack)
       expect(screen.getByRole("img", { name: tool })).toBeInTheDocument();
   });
 

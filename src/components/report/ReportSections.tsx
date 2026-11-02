@@ -5,7 +5,7 @@ import { Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
 import { container, sectionTitle } from "@/components/ui/layout";
 import { Placeholder } from "@/components/ui/Placeholder";
-import type { Project } from "@/content/projects";
+import { SHOT_QUALITY, type Project } from "@/content/projects";
 import type { Report } from "@/content/reports/herzog";
 import { fill } from "@/i18n/fill";
 import type { Dictionary } from "@/locales/en";
@@ -67,12 +67,13 @@ export function HomepageShot({
               src={project.image}
               alt={alt}
               sizes="(min-width: 1280px) 1200px, 100vw"
+              quality={SHOT_QUALITY}
               placeholder="blur"
               loading="eager"
-              className={`block aspect-[16/8.5] w-full object-cover object-top ${wip ? "wip-media" : ""}`}
+              className={`block aspect-video w-full object-cover object-top ${wip ? "wip-media" : ""}`}
             />
           ) : (
-            <Placeholder label={alt} ratio="16 / 8.5" className="w-full" />
+            <Placeholder label={alt} ratio="16 / 9" className="w-full" />
           )}
           {wip?.band}
         </div>
@@ -146,6 +147,7 @@ export function Journey({
                       src={shots[i]}
                       alt={fill(text.shotScreen, { step: s.step.toLowerCase() })}
                       sizes="(min-width: 1024px) 260px, 194px"
+                      quality={SHOT_QUALITY}
                       placeholder="blur"
                       className="block aspect-[9/17] w-full object-cover object-top"
                     />
@@ -174,7 +176,16 @@ export function Journey({
 }
 
 /** "The manifest": what was built, as six LED-coded entries, then the tools used. */
-export function Manifest({ report, text }: { report: Report; text: Text }) {
+export function Manifest({
+  report,
+  stack,
+  text,
+}: {
+  report: Report;
+  /** The project's tools, listed under "Built with". */
+  stack: string[];
+  text: Text;
+}) {
   return (
     <section aria-labelledby="manifest-title" className={`${container} pt-20 lg:pt-36`}>
       <h2 id="manifest-title" className={`rv-wipe ${sectionTitle}`}>
@@ -199,9 +210,26 @@ export function Manifest({ report, text }: { report: Report; text: Text }) {
           </li>
         ))}
       </ul>
-      <p className="rv mt-6.5 mb-2.5 text-[13px] text-label lg:mt-9 lg:mb-3">{text.builtWith}</p>
+      <StackList stack={stack} label={text.builtWith} className="mt-6.5 lg:mt-9" />
+    </section>
+  );
+}
+
+/** "Built with" and the tools as small LED chips that flip in one by one. */
+export function StackList({
+  stack,
+  label,
+  className = "",
+}: {
+  stack: string[];
+  label: string;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <p className="rv m-0 mb-2.5 text-[13px] text-label lg:mb-3">{label}</p>
       <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0 lg:gap-2">
-        {report.stack.map((tool) => (
+        {stack.map((tool) => (
           <li
             key={tool}
             className="rv-flap board chip-line inline-flex rounded px-2.5 py-2 lg:px-3 lg:py-[9px]"
@@ -210,7 +238,7 @@ export function Manifest({ report, text }: { report: Report; text: Text }) {
           </li>
         ))}
       </ul>
-    </section>
+    </div>
   );
 }
 

@@ -184,6 +184,7 @@ const en = {
     shot: "Homepage of {name}",
     shotMissing: "Screenshot: {name}",
     shotWip: "{name}: work in progress",
+    stackLabel: "Built with",
     viewProject: "View the project",
     followBuild: "Follow the build",
   },
@@ -215,11 +216,13 @@ const en = {
   },
   project: {
     tag: "FLIGHT",
+    about: "THE FLIGHT",
+    demo: "Live demo",
+    repo: "Source code on GitHub",
     started: "Started",
     noRoute: "None",
     statusTitle: "FLIGHT STATUS",
     live: "Finished and online since {year}.",
-    liveSite: "Take a look at the live site.",
     boarding:
       "Boarding: the new site is being built right now. This page fills in once it takes off.",
     onHold: "On hold: the project is paused for now and will pick up again later.",

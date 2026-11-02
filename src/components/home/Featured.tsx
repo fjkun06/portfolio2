@@ -5,7 +5,7 @@ import { Led } from "@/components/Led";
 import { fill } from "@/i18n/fill";
 import { container, ledTag } from "@/components/ui/layout";
 import { Placeholder } from "@/components/ui/Placeholder";
-import type { Project } from "@/content/projects";
+import { SHOT_QUALITY, type Project } from "@/content/projects";
 import type { Routes } from "@/i18n/routes";
 import type { Dictionary } from "@/locales/en";
 
@@ -82,11 +82,12 @@ export function Featured({ project, text, status, to }: FeaturedProps) {
                 src={project.image}
                 alt={text.shotDesktop}
                 sizes="(min-width: 1280px) 700px, (min-width: 1024px) 58vw, 100vw"
+                quality={SHOT_QUALITY}
                 placeholder="blur"
-                className="block aspect-[16/9.5] w-full object-cover object-top"
+                className="block aspect-video w-full object-cover object-top"
               />
             ) : (
-              <Placeholder label={text.shotDesktop} ratio="16 / 9.5" className="w-full" />
+              <Placeholder label={text.shotDesktop} ratio="16 / 9" className="w-full" />
             )}
           </Link>
           <span className="shot board card-edge absolute right-0 bottom-0 w-[120px] rounded-[26px] p-2 shadow-[0_30px_50px_-30px_rgba(0,0,0,0.6)] lg:-right-6 lg:w-[190px]">
@@ -95,6 +96,7 @@ export function Featured({ project, text, status, to }: FeaturedProps) {
                 src={project.imagePhone}
                 alt={text.shotPhone}
                 sizes="(min-width: 1024px) 174px, 104px"
+                quality={SHOT_QUALITY}
                 placeholder="blur"
                 className="block aspect-[9/18] w-full rounded-[19px] object-cover object-top"
               />

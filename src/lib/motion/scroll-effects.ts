@@ -42,10 +42,11 @@ const SCROLL_EFFECTS: ScrollEffect[] = [
   },
   // Report: the plane on the route map flies from CM to DE over the whole page.
   { selector: ".route-plane", keyframes: { offsetDistance: ["0%", "100%"] } },
-  // Parallax: the photo drifts inside its frame.
+  // Parallax: the screenshot drifts inside its frame. Enlarged just enough (8 %) to cover the
+  // ±3.5 % drift, so it stays sharp and loses as little of its edges as possible.
   {
     selector: ".px-media",
-    keyframes: { transform: ["translateY(-7%) scale(1.14)", "translateY(7%) scale(1.14)"] },
+    keyframes: { transform: ["translateY(-3.5%) scale(1.08)", "translateY(3.5%) scale(1.08)"] },
     offset: COVER,
   },
   // Phones in a row drift apart (wide screens only).

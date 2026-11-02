@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { findProject } from "@/content/projects";
 import en from "@/locales/en";
 
-import { FlightStatus, ProjectHero, stageOf } from "./ProjectSections";
+import { FlightStatus, ProjectHero, ProjectStory, stageOf } from "./ProjectSections";
 
 const live = findProject("first-trucks")!;
 const boarding = findProject("translatpro")!;
@@ -83,5 +83,38 @@ describe("<FlightStatus>", () => {
   it("says when a project is on hold", () => {
     status(onHold);
     expect(screen.getByText(en.project.onHold)).toBeInTheDocument();
+  });
+});
+
+describe("<ProjectStory>", () => {
+  function story(project = findProject("digtal")!) {
+    return render(
+      <ProjectStory
+        lang="en"
+        project={project}
+        text={en.project}
+        builtWith={en.report.builtWith}
+      />,
+    );
+  }
+
+  it("tells the story, lists the stack, and links to the demo and the code", () => {
+    const digtal = findProject("digtal")!;
+    story(digtal);
+    expect(screen.getByText(digtal.story!.en)).toBeInTheDocument();
+    for (const tool of digtal.stack)
+      expect(screen.getByRole("img", { name: tool })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: en.project.demo })).toHaveAttribute(
+      "href",
+      `https://${digtal.website}`,
+    );
+    const repo = screen.getByRole("link", { name: en.project.repo });
+    expect(repo).toHaveAttribute("href", digtal.repo);
+    expect(repo).toHaveAttribute("target", "_blank");
+  });
+
+  it("is left out while there's nothing to add to the hero", () => {
+    const { container } = story(boarding);
+    expect(container).toBeEmptyDOMElement();
   });
 });

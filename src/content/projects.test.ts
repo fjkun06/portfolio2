@@ -22,8 +22,21 @@ describe("projects", () => {
 
   it("only use drawable characters in the LED fields", () => {
     for (const p of projects)
-      for (const value of [p.year, p.route, p.code, p.status])
+      for (const value of [p.year, p.route, p.code, p.status, p.languages, ...p.stack])
         expect(missingGlyphs(value), `${p.slug}: ${value}`).toEqual([]);
+  });
+
+  it("tell the story in every language when they have one", () => {
+    for (const p of projects)
+      if (p.story) for (const l of locales) expect(p.story[l], `${p.slug} ${l}`).not.toBe("");
+  });
+
+  it("list the stack of every finished project, and link only to GitHub for code", () => {
+    for (const p of projects) {
+      if (p.status === "LIVE") expect(p.stack.length, p.slug).toBeGreaterThan(0);
+      if (p.repo) expect(p.repo).toMatch(/^https:\/\/github\.com\/fjkun06\//);
+      expect(p.website).not.toMatch(/^https?:/);
+    }
   });
 
   it("feature Herzog trad' with its website", () => {

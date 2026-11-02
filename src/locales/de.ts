@@ -185,6 +185,7 @@ const de: Dictionary = {
     shot: "Startseite von {name}",
     shotMissing: "Screenshot: {name}",
     shotWip: "{name}: in Arbeit",
+    stackLabel: "Gebaut mit",
     viewProject: "Zum Projekt",
     followBuild: "Den Bau verfolgen",
   },
@@ -216,11 +217,13 @@ const de: Dictionary = {
   },
   project: {
     tag: "FLUG",
+    about: "DER FLUG",
+    demo: "Live-Demo",
+    repo: "Quellcode auf GitHub",
     started: "Begonnen",
     noRoute: "Keine",
     statusTitle: "FLUGSTATUS",
     live: "Fertig und online seit {year}.",
-    liveSite: "Schauen Sie sich die Live-Website an.",
     boarding:
       "Boarding: Die neue Website wird gerade gebaut. Diese Seite füllt sich, sobald sie abhebt.",
     onHold: "Pausiert: Das Projekt ruht im Moment und geht später weiter.",

@@ -10,9 +10,10 @@ import upload from "../../../public/work/herzog-upload.webp";
 /**
  * The flight report (case study) of Herzog trad', in three languages.
  * Section headings (THE BRIEF, THE JOURNEY…) are shared by every report and live in the
- * dictionaries under `report`; this file holds what's specific to this project.
+ * dictionaries under `report`; this file holds what's specific to this project. Its tech stack
+ * is on the project (src/content/projects.ts), like every other project's.
  *
- * LED texts (manifest codes, stack) are drawn in dots: capitals and simple punctuation only.
+ * LED texts (manifest codes) are drawn in dots: capitals and simple punctuation only.
  */
 export type Report = {
   /** One-line promise under the title. */
@@ -32,24 +33,11 @@ export type Report = {
   journey: { step: string; text: string }[];
   /** What was built: a three-letter LED code, a title and a sentence. */
   manifest: { code: string; title: string; text: string }[];
-  /** Tools used, drawn in LED dots. */
-  stack: string[];
   /** A sentence from the client. Leave empty and the quote section isn't shown. */
   quote: string;
   /** Who said it, e.g. "Jane Doe, founder of Herzog trad'". */
   quoteBy: string;
 };
-
-const stack = [
-  "NEXT.JS",
-  "TYPESCRIPT",
-  "TAILWIND CSS",
-  "REACT HOOK FORM",
-  "ZOD",
-  "REACT EMAIL",
-  "CLOUDFLARE R2",
-  "VERCEL",
-];
 
 export const herzogReport: Record<Locale, Report> = {
   en: {
@@ -111,7 +99,6 @@ export const herzogReport: Record<Locale, Report> = {
         text: "Titles in the words clients really search for, structured data and a Google Business Profile.",
       },
     ],
-    stack,
     quote: "",
     quoteBy: "",
   },
@@ -174,7 +161,6 @@ export const herzogReport: Record<Locale, Report> = {
         text: "Des titres avec les mots que les clients cherchent vraiment, des données structurées et une fiche Google Business.",
       },
     ],
-    stack,
     quote: "",
     quoteBy: "",
   },
@@ -237,7 +223,6 @@ export const herzogReport: Record<Locale, Report> = {
         text: "Titel mit den Wörtern, nach denen Kunden wirklich suchen, strukturierte Daten und ein Google-Unternehmensprofil.",
       },
     ],
-    stack,
     quote: "",
     quoteBy: "",
   },

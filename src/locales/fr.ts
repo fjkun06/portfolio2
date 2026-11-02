@@ -187,6 +187,7 @@ const fr: Dictionary = {
     shot: "Page d’accueil de {name}",
     shotMissing: "Capture d’écran : {name}",
     shotWip: "{name} : en cours",
+    stackLabel: "Réalisé avec",
     viewProject: "Voir le projet",
     followBuild: "Suivre le chantier",
   },
@@ -218,11 +219,13 @@ const fr: Dictionary = {
   },
   project: {
     tag: "VOL",
+    about: "LE VOL",
+    demo: "Démo en ligne",
+    repo: "Code source sur GitHub",
     started: "Commencé",
     noRoute: "Aucune",
     statusTitle: "ÉTAT DU VOL",
     live: "Terminé et en ligne depuis {year}.",
-    liveSite: "Jetez un œil au site en ligne.",
     boarding:
       "Embarquement : le nouveau site est en cours de construction. Cette page se remplira au décollage.",
     onHold: "En attente : le projet est en pause pour l’instant et reprendra plus tard.",

@@ -14,17 +14,14 @@ describe("Herzog trad' flight report", () => {
     }
   });
 
-  it("uses the same manifest codes and tools in every language", () => {
+  it("uses the same manifest codes in every language", () => {
     const codes = herzogReport.en.manifest.map((m) => m.code);
-    for (const [, r] of languages) {
-      expect(r.manifest.map((m) => m.code)).toEqual(codes);
-      expect(r.stack).toEqual(herzogReport.en.stack);
-    }
+    for (const [, r] of languages) expect(r.manifest.map((m) => m.code)).toEqual(codes);
   });
 
   it("only puts drawable characters in its LED texts", () => {
     for (const [lang, r] of languages)
-      for (const text of [...r.manifest.map((m) => m.code), ...r.stack, r.delivered])
+      for (const text of [...r.manifest.map((m) => m.code), r.delivered])
         expect(missingGlyphs(text), `${lang}: ${text}`).toEqual([]);
   });
 
