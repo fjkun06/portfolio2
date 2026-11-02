@@ -56,10 +56,13 @@ type LedProps = {
   /** With `animate`: milliseconds between two columns. */
   step?: number;
   /**
-   * Letters keep turning over like a split-flap board, on a loop: one after another they turn to
-   * face backwards, hold, and turn back. Works with or without `animate`.
+   * Letters turn over like a split-flap board: one after another they turn to face backwards,
+   * hold, and turn back. Works with or without `animate`.
+   * - "once": a single wave, FLIP_ONCE_AFTER ms after the page loads, then the text stays still.
+   *   For headlines, which people need to read.
+   * - "loop": over and over (see .led-flip in globals.css for when it runs). For decorative signs.
    */
-  flip?: boolean;
+  flip?: "once" | "loop";
   /**
    * With `flip`: milliseconds before this text's first letter turns, so several lines can
    * continue one wave (see `flipDelays`).
@@ -103,6 +106,9 @@ export function dotsPath(columns: { x: number; rows: number[] }[], pitch: number
 /** With `flip`: milliseconds between two letters turning. */
 export const FLIP_STEP = 70;
 
+/** With `flip="once"`: milliseconds after the page loads before the wave starts. */
+export const FLIP_ONCE_AFTER = 3000;
+
 /**
  * `flipDelay` for each line of a multi-line sign, so one flip wave runs through all the lines
  * in order: a line starts turning right after the previous line's last letter.
@@ -129,7 +135,7 @@ export function Led({
   animate = false,
   delay = 0,
   step = 10,
-  flip = false,
+  flip,
   flipDelay = 0,
   label,
   className,
@@ -191,8 +197,10 @@ export function Led({
           ? chars.map((char, i) => (
               <g
                 key={i}
-                className="led-flip"
-                style={{ animationDelay: `${flipDelay + i * FLIP_STEP}ms` }}
+                className={flip === "once" ? "led-flip once" : "led-flip"}
+                style={{
+                  animationDelay: `${(flip === "once" ? FLIP_ONCE_AFTER : 0) + flipDelay + i * FLIP_STEP}ms`,
+                }}
               >
                 {dots(char)}
               </g>

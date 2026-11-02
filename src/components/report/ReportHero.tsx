@@ -1,6 +1,7 @@
 import { Led } from "@/components/Led";
 import { RouteMap } from "@/components/report/RouteMap";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { arrivalAfter, FlapText } from "@/components/ui/FlapText";
 import { container } from "@/components/ui/layout";
 import type { Project } from "@/content/projects";
 import type { Report } from "@/content/reports/herzog";
@@ -73,13 +74,13 @@ export function ReportHero({
           <div className="min-w-0 flex-[1_1_560px]">
             <p className="m-0 inline-flex rounded border border-rule-board px-2 py-1.5">
               <span className="sr-only">{tag}</span>
-              <Led text={tag} pitch={3} tone="grey" glow={false} />
+              <Led text={tag} pitch={3} tone="grey" glow={false} animate step={8} />
             </p>
             <h1
               id="report-title"
-              className="rv-wipe m-0 mt-5 font-stencil text-[80px] leading-[0.88] font-black tracking-[0.01em] lg:mt-6.5 lg:text-[168px]"
+              className="m-0 mt-5 font-stencil text-[80px] leading-[0.88] font-black tracking-[0.01em] lg:mt-6.5 lg:text-[168px]"
             >
-              {project.name}
+              <FlapText text={project.name} />
             </h1>
             <p className="rv mt-5 mb-0 max-w-[30em] text-lg leading-normal text-on-board-2 lg:mt-7 lg:text-[22px] lg:leading-[1.45]">
               {report.intro}
@@ -94,11 +95,12 @@ export function ReportHero({
         </div>
       </div>
       <div className={`${container} mt-6 lg:mt-15`}>
-        <dl className="m-0 grid grid-cols-1 border-y border-rule-board lg:grid-cols-5">
+        <dl className="facts-arrive m-0 grid grid-cols-1 border-y border-rule-board lg:grid-cols-5">
           {facts.map(([label, value], i) => (
             <div
               key={label}
-              className={`rv flex min-w-0 items-center justify-between gap-3 py-3.5 lg:block lg:px-6 lg:pt-5.5 lg:pb-6 ${i ? "border-t border-rule-board lg:border-t-0 lg:border-l" : ""}`}
+              style={{ animationDelay: `${arrivalAfter(project.name) + i * 90}ms` }}
+              className={`flex min-w-0 items-center justify-between gap-3 py-3.5 lg:block lg:px-6 lg:pt-5.5 lg:pb-6 ${i ? "border-t border-rule-board lg:border-t-0 lg:border-l" : ""}`}
             >
               <dt className="text-[13px] text-muted-board lg:mb-3">{label}</dt>
               <dd className="m-0">{value}</dd>

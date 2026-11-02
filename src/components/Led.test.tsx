@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { layoutLed } from "@/lib/led";
 
-import { dotsPath, FLIP_STEP, flipDelays, Led } from "./Led";
+import { dotsPath, FLIP_ONCE_AFTER, FLIP_STEP, flipDelays, Led } from "./Led";
 
 describe("<Led>", () => {
   it("sizes the SVG from the text width and the pitch", () => {
@@ -66,14 +66,24 @@ describe("<Led>", () => {
   });
 
   it("groups each letter, each turning a step later, when flipping", () => {
-    const { container } = render(<Led text="A B" flip flipDelay={500} />);
+    const { container } = render(<Led text="A B" flip="loop" flipDelay={500} />);
     const letters = [...container.querySelectorAll<SVGGElement>(".led-flip")];
     expect(letters).toHaveLength(2); // the space has no dots
     expect(letters.map((l) => l.style.animationDelay)).toEqual(["500ms", `${500 + FLIP_STEP}ms`]);
   });
 
+  it("flips headlines once, a few seconds after loading", () => {
+    const { container } = render(<Led text="AB" flip="once" />);
+    const letters = [...container.querySelectorAll<SVGGElement>(".led-flip")];
+    expect(letters.every((l) => l.classList.contains("once"))).toBe(true);
+    expect(letters.map((l) => l.style.animationDelay)).toEqual([
+      `${FLIP_ONCE_AFTER}ms`,
+      `${FLIP_ONCE_AFTER + FLIP_STEP}ms`,
+    ]);
+  });
+
   it("still lights the columns up one by one inside flipping letters", () => {
-    const { container } = render(<Led text="II" animate step={10} flip />);
+    const { container } = render(<Led text="II" animate step={10} flip="loop" />);
     const letters = container.querySelectorAll(".led-flip");
     expect(letters).toHaveLength(2);
     expect(letters[1].querySelectorAll(".led-col")).toHaveLength(3);

@@ -40,7 +40,7 @@ function Headline({ hero }: { hero: Dictionary["home"]["hero"] }) {
             step={7}
             delay={i * 260}
             animate
-            flip
+            flip="once"
             flipDelay={waves[i]}
             tone={i === hero.headline.length - 1 ? "accent" : "white"}
           />
@@ -55,7 +55,7 @@ function Headline({ hero }: { hero: Dictionary["home"]["hero"] }) {
             step={6}
             delay={i * 180}
             animate
-            flip
+            flip="once"
             flipDelay={wavesShort[i]}
             tone={i >= all.length - 2 ? "accent" : "white"}
           />

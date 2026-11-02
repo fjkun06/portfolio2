@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import type { Stop } from "@/lib/motion/presets";
+import { setupFlipSigns } from "@/lib/motion/flip-signs";
 import { clearStyles, setupReveals } from "@/lib/motion/reveals";
 import { setupScrollEffects } from "@/lib/motion/scroll-effects";
 
@@ -23,7 +24,8 @@ function whenIdle(fn: () => void): () => void {
  *
  * 1. starts the new page at the top after a link click (not Back/Forward, not a #link);
  * 2. sets up the reveals (.rv, .rv-left…, see lib/motion/reveals.ts);
- * 3. sets up the scroll-linked effects (lib/motion/scroll-effects.ts).
+ * 3. sets up the scroll-linked effects (lib/motion/scroll-effects.ts);
+ * 4. lets looping LED signs flip only while they're on screen (lib/motion/flip-signs.ts).
  *
  * It also watches the page for content that streams in later. Visitors who prefer reduced
  * motion get only the progress indicators (runway, back-to-top).
@@ -53,7 +55,10 @@ export function MotionEffects() {
     const pending = new Set<HTMLElement>();
     const linked = new Set<Element>();
     const run = () => {
-      if (!still) setupReveals(pending, stops);
+      if (!still) {
+        setupReveals(pending, stops);
+        setupFlipSigns(linked, stops);
+      }
       setupScrollEffects(linked, stops, still);
     };
 

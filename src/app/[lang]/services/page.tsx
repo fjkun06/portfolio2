@@ -59,26 +59,40 @@ async function Services({ params }: { params: PageProps<"/[lang]/services">["par
               <h1 id="services-title" className="m-0">
                 <span className="sr-only">{text.titleText}</span>
                 <span aria-hidden="true" className="hidden flex-col gap-6 lg:flex">
-                  <Led text={text.titleLed[0]} pitch={12} step={10} animate flip tone="white" />
+                  <Led
+                    text={text.titleLed[0]}
+                    pitch={12}
+                    step={10}
+                    animate
+                    flip="once"
+                    tone="white"
+                  />
                   <Led
                     text={text.titleLed[1]}
                     pitch={12}
                     step={10}
                     delay={160}
                     animate
-                    flip
+                    flip="once"
                     flipDelay={flipDelays(text.titleLed)[1]}
                   />
                 </span>
                 <span aria-hidden="true" className="flex flex-col gap-3 lg:hidden">
-                  <Led text={text.titleLed[0]} pitch={6} step={10} animate flip tone="white" />
+                  <Led
+                    text={text.titleLed[0]}
+                    pitch={6}
+                    step={10}
+                    animate
+                    flip="once"
+                    tone="white"
+                  />
                   <Led
                     text={text.titleLed[1]}
                     pitch={6}
                     step={10}
                     delay={160}
                     animate
-                    flip
+                    flip="once"
                     flipDelay={flipDelays(text.titleLed)[1]}
                   />
                 </span>
