@@ -95,7 +95,7 @@ export function boardingPassHtml(pass: BoardingPass): string {
 <div style="display:none;max-height:0;overflow:hidden;">New boarding pass from ${name}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.page};">
   <tr><td align="center" style="padding:32px 12px;">
-    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:${C.board};border-radius:14px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;background:${C.board};border-radius:14px;">
 
       <!-- Ticket header: airline and pass type, like the site's board header -->
       <tr><td style="padding:22px 28px 18px;border-bottom:1px solid ${C.ruleBoard};">
