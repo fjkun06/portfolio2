@@ -918,6 +918,356 @@
   transform: perspective(1400px) rotateX(26deg) scale(0.88);
 }
 
+/* ---------- Services page ---------- */
+/* Planes looping along the hero's route map, each on its own curve (offset-path set inline). */
+.net-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-rotate: auto;
+  color: var(--led);
+  filter: drop-shadow(0 0 6px var(--led-glow));
+  animation: net-fly 6.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes net-fly {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+@layer components {
+  .route-chip {
+    transition:
+      border-color 0.2s,
+      background-color 0.2s;
+  }
+  .route-chip:hover {
+    border-color: var(--led);
+    background: var(--row-hover);
+  }
+  /* FAQ: native <details>, with an LED "+" that turns into "×" when open */
+  .faq summary {
+    list-style: none;
+  }
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq summary:hover {
+    color: var(--accent-ink);
+  }
+  .faq-x {
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .faq[open] .faq-x {
+    transform: rotate(45deg);
+  }
+  .faq[open] .faq-answer {
+    animation: faq-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+@keyframes faq-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Process page: the cockpit follows you through the four stops ----------
+ * Desktop: a sticky panel with the stop number, the stop name and a vertical track the plane
+ * flies down. Phones: a sticky strip under the header. Both are driven by how far you've
+ * scrolled through the stops (view timeline --proc); stops switch at 22 %, 48 % and 74 %.
+ */
+.pq {
+  grid-area: 1 / 1;
+}
+.pq.q1,
+.pq.q2,
+.pq.q3 {
+  opacity: 0;
+}
+.pfill {
+  transform: scaleY(0);
+  transform-origin: top;
+}
+.pfillx {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.pplane {
+  position: absolute;
+  top: 0;
+}
+.pdot {
+  background: var(--board);
+  border-color: var(--line-mid);
+}
+.plab {
+  color: var(--text-off);
+}
+.pdot.d0 {
+  background: var(--led);
+  border-color: var(--led);
+}
+.plab.d0 {
+  color: var(--on-board);
+}
+@supports (animation-timeline: view()) {
+  .proc {
+    view-timeline-name: --proc;
+  }
+  .pq,
+  .pfill,
+  .pfillx,
+  .pplane,
+  .pdot,
+  .plab {
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --proc;
+    animation-range: contain 0% contain 100%;
+  }
+  .pq.q0 {
+    animation-name: q0;
+  }
+  .pq.q1 {
+    animation-name: q1;
+  }
+  .pq.q2 {
+    animation-name: q2;
+  }
+  .pq.q3 {
+    animation-name: q3;
+  }
+  .pfill {
+    animation-name: pfill;
+  }
+  .pfillx {
+    animation-name: pfillx;
+  }
+  .pplane {
+    animation-name: pplane;
+  }
+  .pdot.d1 {
+    animation-name: pd1;
+  }
+  .pdot.d2 {
+    animation-name: pd2;
+  }
+  .pdot.d3 {
+    animation-name: pd3;
+  }
+  .plab.d1 {
+    animation-name: pl1;
+  }
+  .plab.d2 {
+    animation-name: pl2;
+  }
+  .plab.d3 {
+    animation-name: pl3;
+  }
+}
+@keyframes q0 {
+  0%,
+  21.9% {
+    opacity: 1;
+  }
+  22%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes q1 {
+  0%,
+  21.9% {
+    opacity: 0;
+  }
+  22%,
+  47.9% {
+    opacity: 1;
+  }
+  48%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes q2 {
+  0%,
+  47.9% {
+    opacity: 0;
+  }
+  48%,
+  73.9% {
+    opacity: 1;
+  }
+  74%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes q3 {
+  0%,
+  73.9% {
+    opacity: 0;
+  }
+  74%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes pfill {
+  0% {
+    transform: scaleY(0);
+  }
+  22% {
+    transform: scaleY(0.333);
+  }
+  48% {
+    transform: scaleY(0.667);
+  }
+  74%,
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes pfillx {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes pplane {
+  0% {
+    top: 0;
+  }
+  22% {
+    top: 33.3%;
+  }
+  48% {
+    top: 66.7%;
+  }
+  74%,
+  100% {
+    top: 100%;
+  }
+}
+@keyframes pd1 {
+  0%,
+  21.9% {
+    background: var(--board);
+    border-color: var(--line-mid);
+  }
+  22%,
+  100% {
+    background: var(--led);
+    border-color: var(--led);
+  }
+}
+@keyframes pd2 {
+  0%,
+  47.9% {
+    background: var(--board);
+    border-color: var(--line-mid);
+  }
+  48%,
+  100% {
+    background: var(--led);
+    border-color: var(--led);
+  }
+}
+@keyframes pd3 {
+  0%,
+  73.9% {
+    background: var(--board);
+    border-color: var(--line-mid);
+  }
+  74%,
+  100% {
+    background: var(--led);
+    border-color: var(--led);
+  }
+}
+@keyframes pl1 {
+  0%,
+  21.9% {
+    color: var(--text-off);
+  }
+  22%,
+  100% {
+    color: var(--on-board);
+  }
+}
+@keyframes pl2 {
+  0%,
+  47.9% {
+    color: var(--text-off);
+  }
+  48%,
+  100% {
+    color: var(--on-board);
+  }
+}
+@keyframes pl3 {
+  0%,
+  73.9% {
+    color: var(--text-off);
+  }
+  74%,
+  100% {
+    color: var(--on-board);
+  }
+}
+/* Fallback (Firefox): ScrollEffects writes the section's scroll progress to --p. */
+.no-sda .proc {
+  --k: clamp(0, calc((var(--p, 0) - 0.12) / 0.76), 1);
+  --on1: clamp(0, calc((var(--k) - 0.22) * 1000), 1);
+  --on2: clamp(0, calc((var(--k) - 0.48) * 1000), 1);
+  --on3: clamp(0, calc((var(--k) - 0.74) * 1000), 1);
+}
+.no-sda .pq.q0 {
+  opacity: calc(1 - var(--on1));
+}
+.no-sda .pq.q1 {
+  opacity: calc(var(--on1) - var(--on2));
+}
+.no-sda .pq.q2 {
+  opacity: calc(var(--on2) - var(--on3));
+}
+.no-sda .pq.q3 {
+  opacity: var(--on3);
+}
+.no-sda .pfill {
+  transform: scaleY(var(--k));
+}
+.no-sda .pfillx {
+  transform: scaleX(var(--k));
+}
+.no-sda .pplane {
+  top: calc(var(--k) * 100%);
+}
+.no-sda .pdot.d1 {
+  background: color-mix(in srgb, var(--led) calc(var(--on1) * 100%), var(--board));
+}
+.no-sda .pdot.d2 {
+  background: color-mix(in srgb, var(--led) calc(var(--on2) * 100%), var(--board));
+}
+.no-sda .pdot.d3 {
+  background: color-mix(in srgb, var(--led) calc(var(--on3) * 100%), var(--board));
+}
+
 /* ---------- Scroll progress: the runway under the header and the back-to-top frame ----------
  * Browsers with scroll-driven animations do it in CSS. Others (Firefox today) get --scroll
  * from a small script, 0 at the top of the page and 1 at the bottom.
@@ -1156,8 +1506,12 @@
     background: none !important;
     color: inherit !important;
   }
-  .stop-num.n0 {
+  .stop-num.n0,
+  .pq.q0 {
     opacity: 1 !important;
+  }
+  .pq:not(.q0) {
+    opacity: 0 !important;
   }
   .stop-num:not(.n0) {
     opacity: 0 !important;
