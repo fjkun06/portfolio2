@@ -170,6 +170,30 @@
       opacity: 1;
     }
   }
+  /* <Led flip>: each letter turns over like a split-flap, faces backwards, then turns back.
+     Every letter runs the same 9.7 s loop, started a little later than the one before (inline
+     animation-delay), so the turn travels along the text as a wave.
+     Loop: 2.7 s normal, 0.8 s turn, 2.7 s backwards, 0.8 s turn back, 2.7 s normal. Both turns
+     ease in and out the same way, fastest when the letter is edge-on, like a real flap. */
+  .led-flip {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: led-flip 9.7s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  @keyframes led-flip {
+    0%,
+    27.84% {
+      transform: scaleX(1);
+    }
+    36.08%,
+    63.92% {
+      transform: scaleX(-1);
+    }
+    72.16%,
+    100% {
+      transform: scaleX(1);
+    }
+  }
   /* Hero headlines: the hidden languages don't animate; the one that becomes active relights. */
   .hero-variant[data-active="false"] .led-col {
     animation: none;

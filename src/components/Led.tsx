@@ -8,6 +8,7 @@
  *   <circle>s, which keeps pages light (the home page went from ~13,000 SVG nodes to ~1,000).
  *   With `animate`, there is one path per column, and each column switches on a few
  *   milliseconds after the previous one, so the text lights up from left to right.
+ *   With `flip`, there is one path per letter instead, so each letter can turn on its own.
  * - Colours are CSS variables, so the same SVG follows dark and light mode with no re-render.
  *
  * It has no state and no hooks, so it works in both server and client components.
@@ -53,6 +54,12 @@ type LedProps = {
   delay?: number;
   /** With `animate`: milliseconds between two columns. */
   step?: number;
+  /**
+   * Letters keep turning over like a split-flap board, on a loop: one after another they turn to
+   * face backwards, hold, and turn back. `delay` sets when this text's first letter turns, so
+   * several lines can continue one wave.
+   */
+  flip?: boolean;
   /** When set, the lettering is announced as an image with this text. Otherwise it is hidden from screen readers, so put the words in the page another way. */
   label?: string;
   /** Extra classes on the <svg>, e.g. "blink" or "lg:hidden". */
@@ -88,6 +95,9 @@ export function dotsPath(columns: { x: number; rows: number[] }[], pitch: number
   return d;
 }
 
+/** With `flip`: milliseconds between two letters turning. */
+export const FLIP_STEP = 70;
+
 /** Text drawn in LED dots, as an SVG. See the file header for how it works. */
 export function Led({
   text,
@@ -98,11 +108,12 @@ export function Led({
   animate = false,
   delay = 0,
   step = 10,
+  flip = false,
   label,
   className,
   style,
 }: LedProps) {
-  const { columns, width } = layoutLed(text);
+  const { columns, width, chars } = layoutLed(text);
   const r = pitch * 0.38;
   const w = width * pitch;
   const h = 7 * pitch;
@@ -139,7 +150,18 @@ export function Led({
         strokeWidth={num(r * 2)}
         style={{ stroke: FILL[tone], filter }}
       >
-        {animate ? (
+        {flip ? (
+          chars.map((char, i) =>
+            char.length ? (
+              <path
+                key={i}
+                className="led-flip"
+                d={dotsPath(char, pitch)}
+                style={{ animationDelay: `${delay + i * FLIP_STEP}ms` }}
+              />
+            ) : null,
+          )
+        ) : animate ? (
           columns.map((column) => (
             <path
               key={column.x}

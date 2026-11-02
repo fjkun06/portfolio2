@@ -37,6 +37,13 @@ describe("layoutLed", () => {
     expect(columns[0].rows).toEqual([0, 6]); // the serifs
   });
 
+  it("groups the columns per character, leaving spaces out", () => {
+    const { columns, chars } = layoutLed("I I");
+    expect(chars).toHaveLength(2);
+    expect(chars.flat()).toEqual(columns);
+    expect(chars[1].map((c) => c.x)).toEqual([10, 11, 12]); // after "I" (6) and a space (3)
+  });
+
   it("draws lowercase letters as capitals", () => {
     expect(layoutLed("fj")).toEqual(layoutLed("FJ"));
   });

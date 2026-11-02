@@ -92,13 +92,19 @@ export type LedColumn = { x: number; rows: number[] };
  *
  * @param text The text to draw. Use capitals; lowercase is drawn as capitals.
  * @returns `columns`: only the columns that have at least one lit dot (empty columns are skipped,
- *   which keeps the SVG small), and `width`: the total width in dot columns, without the trailing gap.
+ *   which keeps the SVG small), `width`: the total width in dot columns, without the trailing gap,
+ *   and `chars`: the same columns grouped per character (spaces left out), for per-letter effects.
  *
  * @example
  * layoutLed("FJ").width // 11: five columns for F, one gap, five for J
  */
-export function layoutLed(text: string): { columns: LedColumn[]; width: number } {
+export function layoutLed(text: string): {
+  columns: LedColumn[];
+  width: number;
+  chars: LedColumn[][];
+} {
   const columns: LedColumn[] = [];
+  const chars: LedColumn[][] = [];
   let x = 0;
   for (const raw of text) {
     if (raw === " ") {
@@ -107,14 +113,17 @@ export function layoutLed(text: string): { columns: LedColumn[]; width: number }
     }
     const glyph = GLYPHS[raw] ?? GLYPHS[raw.toUpperCase()] ?? GLYPHS["?"];
     const rows = glyph.split(" ");
+    const char: LedColumn[] = [];
     for (let c = 0; c < 5; c++) {
       const lit: number[] = [];
       for (let r = 0; r < 7; r++) if (rows[r][c] === "1") lit.push(r);
-      if (lit.length) columns.push({ x: x + c, rows: lit });
+      if (lit.length) char.push({ x: x + c, rows: lit });
     }
+    columns.push(...char);
+    chars.push(char);
     x += ADVANCE;
   }
-  return { columns, width: Math.max(x - 1, 1) };
+  return { columns, width: Math.max(x - 1, 1), chars };
 }
 
 /**

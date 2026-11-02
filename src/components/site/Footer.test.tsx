@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { FLIP_STEP } from "@/components/Led";
 import { routes } from "@/i18n/routes";
 import en from "@/locales/en";
 import { siteConfig } from "@/utils/site";
@@ -33,6 +34,20 @@ describe("<Footer>", () => {
   it("says the LED sentence as real text too", () => {
     setup();
     expect(screen.getByText(en.footer.next)).toBeInTheDocument();
+  });
+
+  it("flips the sign's letters in one wave through its lines", () => {
+    const { container } = render(
+      <Footer lang="en" text={en.footer} nav={en.nav} to={routes("en")} />,
+    );
+    const desktop = container.querySelector('[class~="lg:block"]')!;
+    const lines = [...desktop.querySelectorAll("svg")];
+    expect(lines).toHaveLength(en.footer.nextLed.length);
+    // The second line's first letter turns right after the first line's last one.
+    const firstLine = lines[0].querySelectorAll<SVGPathElement>(".led-flip");
+    const last = parseInt(firstLine[firstLine.length - 1].style.animationDelay);
+    const next = parseInt(lines[1].querySelector<SVGPathElement>(".led-flip")!.style.animationDelay);
+    expect(next - last).toBe(FLIP_STEP);
   });
 
   it("links the book button to the contact page", () => {

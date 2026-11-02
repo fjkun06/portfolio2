@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { layoutLed } from "@/lib/led";
 
-import { dotsPath, Led } from "./Led";
+import { dotsPath, FLIP_STEP, Led } from "./Led";
 
 describe("<Led>", () => {
   it("sizes the SVG from the text width and the pitch", () => {
@@ -63,6 +63,16 @@ describe("<Led>", () => {
     const cols = [...container.querySelectorAll<SVGGElement>(".led-col")];
     expect(cols).toHaveLength(3);
     expect(cols.map((c) => c.style.animationDelay)).toEqual(["110ms", "120ms", "130ms"]);
+  });
+
+  it("draws one path per letter, each turning a step later, when flipping", () => {
+    const { container } = render(<Led text="A B" flip delay={500} />);
+    const letters = [...container.querySelectorAll<SVGPathElement>(".led-flip")];
+    expect(letters).toHaveLength(2); // the space has no dots
+    expect(letters.map((l) => l.style.animationDelay)).toEqual([
+      "500ms",
+      `${500 + FLIP_STEP}ms`,
+    ]);
   });
 
   it("passes className and style through to the SVG", () => {

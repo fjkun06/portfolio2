@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Led } from "@/components/Led";
+import { FLIP_STEP, Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
 import { BackToTop } from "@/components/site/BackToTop";
 import { LangSwitch } from "@/components/site/LangSwitch";
@@ -21,9 +21,14 @@ type FooterProps = {
   to: Routes;
 };
 
+/** Letters (not spaces) in a line: how many steps its flip wave takes. */
+const letterCount = (line: string) => line.replace(/ /g, "").length;
+
 /**
  * The big "NEXT DEPARTURE: YOUR PROJECT." sign: one LED line per entry, the last one in the
- * accent colour. Hidden from screen readers; the same sentence sits next to it as real text.
+ * accent colour. Its letters keep turning over like a split-flap board, in one wave that runs
+ * through the lines in order. Hidden from screen readers; the same sentence sits next to it as
+ * real text.
  */
 function LedLines({ lines, pitch }: { lines: string[]; pitch: number }) {
   return (
@@ -34,6 +39,8 @@ function LedLines({ lines, pitch }: { lines: string[]; pitch: number }) {
           text={line}
           pitch={pitch}
           tone={i === lines.length - 1 ? "accent" : "white"}
+          flip
+          delay={lines.slice(0, i).reduce((sum, l) => sum + letterCount(l), 0) * FLIP_STEP}
         />
       ))}
     </span>
