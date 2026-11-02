@@ -802,6 +802,122 @@
   opacity: var(--on3);
 }
 
+/* ---------- Work and project pages ----------
+ * .rv-tilt: cards tip up from a slight 3D angle as they arrive.
+ * .px-media / .px-up / .px-down: parallax; images drift slower or faster than the page.
+ * .read-on: a big sentence fills in from grey to black as you read down.
+ * .route-plane: the plane on the report's route map flies from CM to DE over the whole page.
+ * All are pure CSS where supported; elsewhere (and with reduced motion) everything simply shows.
+ */
+.route-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-rotate: auto;
+  offset-distance: calc(var(--scroll, 0) * 100%);
+  color: var(--led);
+  filter: drop-shadow(0 0 6px var(--led-glow));
+}
+@supports (animation-timeline: view()) {
+  .rv-tilt {
+    animation: rv-tilt cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+    transform-origin: 50% 100%;
+  }
+  .px-media {
+    animation: px-move linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+  /* Phones in a row drift apart only on wide screens; on phones they sit in a swipe strip. */
+  @media (min-width: 1024px) {
+    .px-up {
+      animation: px-up linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+    .px-down {
+      animation: px-down linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+  .read-on {
+    background: linear-gradient(90deg, var(--ink) 50%, #b9bcb6 50%) 100% 0 / 200% 100% no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: read-on linear both;
+    animation-timeline: view();
+    animation-range: cover 15% cover 50%;
+  }
+}
+@supports (animation-timeline: scroll()) {
+  .route-plane {
+    offset-distance: 0%;
+    animation: route-fly linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes rv-tilt {
+  from {
+    opacity: 0.25;
+    transform: perspective(1400px) rotateX(26deg) scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes px-move {
+  from {
+    transform: translateY(-7%) scale(1.14);
+  }
+  to {
+    transform: translateY(7%) scale(1.14);
+  }
+}
+@keyframes px-up {
+  from {
+    transform: translateY(60px);
+  }
+  to {
+    transform: translateY(-60px);
+  }
+}
+@keyframes px-down {
+  from {
+    transform: translateY(-30px);
+  }
+  to {
+    transform: translateY(30px);
+  }
+}
+@keyframes read-on {
+  to {
+    background-position: 0 0;
+  }
+}
+@keyframes route-fly {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+.no-sda .rv-tilt {
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transform-origin: 50% 100%;
+}
+.no-sda .rv-tilt:not(.is-in) {
+  opacity: 0.25;
+  transform: perspective(1400px) rotateX(26deg) scale(0.88);
+}
+
 /* ---------- Scroll progress: the runway under the header and the back-to-top frame ----------
  * Browsers with scroll-driven animations do it in CSS. Others (Firefox today) get --scroll
  * from a small script, 0 at the top of the page and 1 at the bottom.
@@ -1024,7 +1140,7 @@
     animation: none !important;
     transition: none !important;
   }
-  .no-sda :is(.rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap) {
+  .no-sda :is(.rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap, .rv-tilt) {
     opacity: 1 !important;
     transform: none !important;
     clip-path: none !important;
@@ -1032,6 +1148,13 @@
   .totop {
     opacity: 1;
     visibility: visible;
+  }
+  .route-plane {
+    offset-distance: 100% !important;
+  }
+  .read-on {
+    background: none !important;
+    color: inherit !important;
   }
   .stop-num.n0 {
     opacity: 1 !important;

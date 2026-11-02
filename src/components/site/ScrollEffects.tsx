@@ -18,7 +18,7 @@ export function sectionProgress(element: Element): string {
 }
 
 /** Every class that reveals on scroll. Keep in sync with globals.css. */
-export const REVEALS = ".rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap";
+export const REVEALS = ".rv, .rv-left, .rv-wipe, .rv-scale, .rv-line, .rv-flap, .rv-tilt";
 
 /**
  * Fallback for browsers without CSS scroll-driven animations (Firefox today).

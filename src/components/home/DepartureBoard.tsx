@@ -17,9 +17,9 @@ type DepartureBoardProps = {
   to: Routes;
 };
 
-/** Where a row leads: the project's own page for the featured flight, the Work page otherwise. */
+/** Where a row leads: the project's flight report if it has one, its card on the Work page otherwise. */
 export function projectHref(project: Project, to: Routes): string {
-  return project.slug === "herzog" ? `${to.work}/${project.slug}` : `${to.work}#${project.slug}`;
+  return project.report ? `${to.work}/${project.slug}` : `${to.work}#${project.slug}`;
 }
 
 /**
