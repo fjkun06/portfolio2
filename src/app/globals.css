@@ -79,7 +79,7 @@
 }
 
 /* `nav:` (1090 px): where the header switches from the menu button to the full navigation.
-   Any narrower and the links, language switch and button don't fit on one line. */
+   Any narrower, and the links, language switch and button don't fit on one line. */
 @theme {
   --breakpoint-nav: 68.125rem;
 }

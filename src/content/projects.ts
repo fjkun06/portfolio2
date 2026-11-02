@@ -2,11 +2,14 @@ import type { StaticImageData } from "next/image";
 
 import type { Locale } from "@/i18n/config";
 
+import bktConstruction from "../../public/work/bkt-construction.webp";
 import brytzone from "../../public/work/brytzone.webp";
 import digtal from "../../public/work/digtal.webp";
 import flippbidd from "../../public/work/flippbidd.webp";
 import herzogPhone from "../../public/work/herzog-phone.webp";
 import herzog from "../../public/work/herzog.webp";
+import lcTranslations from "../../public/work/lc-translations.webp";
+import tefAnalytics from "../../public/work/tef-analytics.webp";
 import translatpro from "../../public/work/translatpro.webp";
 import trucks from "../../public/work/trucks.webp";
 
@@ -128,8 +131,94 @@ export const projects: Project[] = [
     report: false,
   },
   {
-    slug: "first-trucks",
+    slug: "lc-translations",
     code: "FJ 003",
+    year: "2026",
+    name: "LC FACHÜBERSETZUNGEN",
+    client: { en: "Sworn translators", fr: "Traducteurs assermentés", de: "Vereidigte Übersetzer" },
+    route: "DE",
+    languages: "DE EN FR",
+    status: "LIVE",
+    website: "leo-translation-website.vercel.app",
+    repo: "https://github.com/fjkun06/leo-translation",
+    onHome: true,
+    summary: {
+      en: "A website for a team of sworn translators in Germany: certified legal and technical translations between French, German and English, with an online quote request.",
+      fr: "Le site d’une équipe de traducteurs assermentés en Allemagne : traductions juridiques et techniques certifiées entre le français, l’allemand et l’anglais, avec demande de devis en ligne.",
+      de: "Website für ein Team vereidigter Übersetzer in Deutschland: beglaubigte Rechts- und Fachübersetzungen zwischen Französisch, Deutsch und Englisch, mit Online-Angebotsanfrage.",
+    },
+    story: {
+      en: "Six kinds of translation, from contracts to medical reports, each with the language pairs it covers, in German, English and French. Clients upload their document and ask for a free quote through a form that checks every field before it’s sent.",
+      fr: "Six types de traduction, des contrats aux rapports médicaux, chacun avec ses paires de langues, en allemand, anglais et français. Les clients envoient leur document et demandent un devis gratuit via un formulaire qui vérifie chaque champ avant l’envoi.",
+      de: "Sechs Übersetzungsarten, von Verträgen bis zu medizinischen Berichten, jeweils mit ihren Sprachpaaren, auf Deutsch, Englisch und Französisch. Kunden laden ihr Dokument hoch und fordern ein kostenloses Angebot an, über ein Formular, das jedes Feld vor dem Absenden prüft.",
+    },
+    stack: [
+      "NEXT.JS",
+      "TYPESCRIPT",
+      "TAILWIND CSS",
+      "REACT HOOK FORM",
+      "ZOD",
+      "FRAMER MOTION",
+      "I18N",
+    ],
+    image: lcTranslations,
+    report: false,
+  },
+  {
+    slug: "bkt-construction",
+    code: "FJ 004",
+    year: "2026",
+    name: "BKT CONSTRUCTION",
+    client: { en: "Construction company", fr: "Entreprise de BTP", de: "Bauunternehmen" },
+    route: "CM",
+    languages: "FR",
+    status: "LIVE",
+    website: "bkt-construction.vercel.app",
+    repo: "https://github.com/fjkun06/bkt-construction",
+    onHome: true,
+    summary: {
+      en: "A website for a building and public works company in Cameroon: its services, its completed projects and a quote request.",
+      fr: "Le site d’une entreprise de bâtiment et travaux publics au Cameroun : ses services, ses réalisations et une demande de devis.",
+      de: "Website für ein Hoch- und Tiefbauunternehmen in Kamerun: Leistungen, Referenzprojekte und Angebotsanfrage.",
+    },
+    story: {
+      en: "Residential, commercial, industrial and public works, from feasibility study to turnkey delivery. The site presents each service and the company’s completed projects, takes quote requests through a form, and comes in light and dark mode.",
+      fr: "Résidentiel, commercial, industriel et travaux publics, de l’étude de faisabilité à la livraison clé en main. Le site présente chaque service et les réalisations de l’entreprise, reçoit les demandes de devis via un formulaire, en mode clair comme en mode sombre.",
+      de: "Wohn-, Gewerbe- und Industriebau sowie Tiefbau, von der Machbarkeitsstudie bis zur schlüsselfertigen Übergabe. Die Website stellt jede Leistung und die Referenzprojekte vor, nimmt Angebotsanfragen über ein Formular entgegen und gibt es im hellen und dunklen Modus.",
+    },
+    stack: ["NEXT.JS", "TYPESCRIPT", "TAILWIND CSS", "REACT HOOK FORM", "SWIPER", "FRAMER MOTION"],
+    image: bktConstruction,
+    report: false,
+  },
+  {
+    slug: "tef-analytics",
+    code: "FJ 005",
+    year: "2025",
+    name: "TEF ANALYTICS",
+    client: { en: "Data scientist", fr: "Data scientist", de: "Data Scientist" },
+    route: "-",
+    languages: "DE EN FR",
+    status: "LIVE",
+    website: "tef-analytics.vercel.app",
+    repo: "https://github.com/fjkun06/tef-analytics",
+    onHome: true,
+    summary: {
+      en: "A portfolio for a data scientist and AI specialist: his projects, skills and experience, in German, English and French.",
+      fr: "Le portfolio d’un data scientist spécialiste de l’IA : ses projets, ses compétences et son parcours, en allemand, anglais et français.",
+      de: "Portfolio für einen Data Scientist und KI-Spezialisten: Projekte, Kompetenzen und Erfahrung, auf Deutsch, Englisch und Französisch.",
+    },
+    story: {
+      en: "Projects presented with their results and tools, his specialities on a scrolling band, and the legal pages a German site needs. Built to be easy to maintain: tests with Jest and Testing Library, linting and formatting on every commit, and translations with next-international.",
+      fr: "Des projets présentés avec leurs résultats et leurs outils, ses spécialités sur un bandeau défilant et les pages légales qu’exige un site allemand. Conçu pour être facile à maintenir : tests avec Jest et Testing Library, vérification et formatage du code à chaque commit, traductions avec next-international.",
+      de: "Projekte mit ihren Ergebnissen und Werkzeugen, seine Fachgebiete auf einem Laufband und die Rechtstexte, die eine deutsche Website braucht. Auf Wartbarkeit ausgelegt: Tests mit Jest und Testing Library, Linting und Formatierung bei jedem Commit und Übersetzungen mit next-international.",
+    },
+    stack: ["NEXT.JS", "TYPESCRIPT", "TAILWIND CSS", "I18N", "JEST"],
+    image: tefAnalytics,
+    report: false,
+  },
+  {
+    slug: "first-trucks",
+    code: "FJ 006",
     year: "2023",
     name: "FIRST TRUCKS SARL",
     client: { en: "Car parts supplier", fr: "Fournisseur de pièces auto", de: "Autoteilehändler" },
@@ -155,7 +244,7 @@ export const projects: Project[] = [
   },
   {
     slug: "digtal",
-    code: "FJ 004",
+    code: "FJ 007",
     year: "2023",
     name: "DIGTAL",
     client: { en: "Web agency", fr: "Agence web", de: "Webagentur" },
@@ -181,7 +270,7 @@ export const projects: Project[] = [
   },
   {
     slug: "brytzone",
-    code: "FJ 005",
+    code: "FJ 008",
     year: "2023",
     name: "BRYTZONE",
     client: { en: "Student platform", fr: "Plateforme étudiante", de: "Studierendenplattform" },
@@ -207,7 +296,7 @@ export const projects: Project[] = [
   },
   {
     slug: "flippbidd",
-    code: "FJ 006",
+    code: "FJ 009",
     year: "2023",
     name: "FLIPPBIDD",
     client: { en: "Landing page", fr: "Page d’accueil produit", de: "Landingpage" },

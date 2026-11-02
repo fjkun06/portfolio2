@@ -93,8 +93,8 @@ describe("report sections", () => {
 
   it("lead to the next departure", () => {
     const next = findProject("first-trucks")!;
-    render(<NextDeparture project={next} href="/en/work#first-trucks" text={text} />);
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/en/work#first-trucks");
-    expect(screen.getByText("Next departure, FJ 003")).toBeInTheDocument();
+    render(<NextDeparture project={next} href="/en/work/first-trucks" text={text} />);
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/en/work/first-trucks");
+    expect(screen.getByText(`Next departure, ${next.code}`)).toBeInTheDocument();
   });
 });

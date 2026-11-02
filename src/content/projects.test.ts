@@ -79,7 +79,7 @@ describe("findProject", () => {
 
 describe("nextDeparture", () => {
   it("suggests the next live project, skipping ones in progress or on hold", () => {
-    expect(nextDeparture(findProject("herzog")!).slug).toBe("first-trucks");
+    expect(nextDeparture(findProject("herzog")!).slug).toBe("lc-translations");
     expect(nextDeparture(findProject("digtal")!).slug).toBe("flippbidd");
   });
 
