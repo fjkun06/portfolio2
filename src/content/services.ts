@@ -58,7 +58,7 @@ const codes = ["MLT", "ORD", "LND", "RBD"];
 export const servicesContent: Record<Locale, ServicesContent> = {
   en: {
     meta: {
-      title: "Services · Frank Jordan",
+      title: "Services: multilingual websites · Frank Jordan",
       description:
         "Multilingual business websites, ordering forms, landing pages and rebuilds that keep your Google rankings. In English, French and German.",
     },
@@ -215,7 +215,7 @@ export const servicesContent: Record<Locale, ServicesContent> = {
 
   fr: {
     meta: {
-      title: "Services · Frank Jordan",
+      title: "Services : sites web multilingues · Frank Jordan",
       description:
         "Sites d’entreprise multilingues, formulaires de commande, pages de lancement et refontes qui gardent votre référencement Google. En français, anglais et allemand.",
     },
@@ -385,7 +385,7 @@ export const servicesContent: Record<Locale, ServicesContent> = {
 
   de: {
     meta: {
-      title: "Leistungen · Frank Jordan",
+      title: "Leistungen: mehrsprachige Websites · Frank Jordan",
       description:
         "Mehrsprachige Firmenwebsites, Bestellformulare, Landingpages und Relaunches ohne Google-Verlust. Auf Deutsch, Englisch und Französisch.",
     },

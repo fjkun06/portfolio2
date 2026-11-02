@@ -4,9 +4,9 @@
  */
 const en = {
   meta: {
-    title: "Frank Jordan · Websites that speak your clients’ language",
+    title: "Frank Jordan · Multilingual websites, made in Essen",
     description:
-      "Frontend developer in Germany. I design and build fast websites in English, French and German.",
+      "Frontend developer in Essen, Germany. I design and build fast websites in English, French and German.",
     jobTitle: "Frontend developer",
     ogAlt:
       "Departures board: websites that speak your clients’ language. Frank Jordan, frontend developer.",
@@ -168,7 +168,7 @@ const en = {
   },
   work: {
     meta: {
-      title: "Work · Frank Jordan",
+      title: "Work: websites I’ve built · Frank Jordan",
       description:
         "Websites I’ve built for translators, agencies and businesses in Germany and Cameroon, in English, French and German.",
     },

@@ -1,18 +1,14 @@
 import { Led } from "@/components/Led";
 import { Disclosure } from "@/components/site/Disclosure";
 import { container, sectionTitle } from "@/components/ui/layout";
+import { SplitTitle } from "@/components/ui/SplitTitle";
 import type { ServicesContent } from "@/content/services";
 
-/** Two-line section heading: real text for screen readers, a line break for the eye. */
+/** Two-line section heading, its words written once (see SplitTitle). */
 function TwoLineTitle({ id, lines, text }: { id: string; lines: [string, string]; text: string }) {
   return (
     <h2 id={id} className={`rv-wipe ${sectionTitle}`}>
-      <span className="sr-only">{text}</span>
-      <span aria-hidden="true">
-        {lines[0]}
-        <br />
-        {lines[1]}
-      </span>
+      <SplitTitle text={text} lines={lines} />
     </h2>
   );
 }

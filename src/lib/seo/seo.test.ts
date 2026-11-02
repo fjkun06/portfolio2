@@ -5,11 +5,12 @@ import { describe, expect, it } from "vitest";
 
 import robots from "@/app/robots";
 import sitemap, { sitemapPaths } from "@/app/sitemap";
+import { projects } from "@/content/projects";
 import { locales } from "@/i18n/config";
 import { siteConfig } from "@/utils/site";
 
-import { homeJsonLd, jsonLdScript } from "./json-ld";
-import { languageAlternates, pageMetadata } from "./metadata";
+import { breadcrumbJsonLd, homeJsonLd, jsonLdScript } from "./json-ld";
+import { languageAlternates, pageMetadata, projectOgImage } from "./metadata";
 
 describe("languageAlternates", () => {
   it("lists the page in every language, plus the address without a language", () => {
@@ -96,6 +97,57 @@ describe("homeJsonLd", () => {
       inLanguage: "de",
       url: `${siteConfig.url}/de`,
     });
+  });
+
+  it("describes the business as a local service in Essen, without a street address", () => {
+    const business = data["@graph"].find((node) => node["@type"] === "ProfessionalService");
+    expect(business).toMatchObject({
+      url: siteConfig.url,
+      address: { addressLocality: "Essen", addressCountry: "DE" },
+      knowsLanguage: ["en", "fr", "de"],
+      founder: { "@id": `${siteConfig.url}/#frank` },
+    });
+    expect(JSON.stringify(business)).not.toContain(siteConfig.owner.street);
+  });
+});
+
+describe("breadcrumbJsonLd", () => {
+  it("numbers the steps and makes their addresses absolute", () => {
+    const data = breadcrumbJsonLd([
+      { name: "Home", path: "/en" },
+      { name: "All departures", path: "/en/work" },
+      { name: "Herzog trad’", path: "/en/work/herzog" },
+    ]);
+    expect(data["@type"]).toBe("BreadcrumbList");
+    expect(data.itemListElement.map((item) => [item.position, item.item])).toEqual([
+      [1, `${siteConfig.url}/en`],
+      [2, `${siteConfig.url}/en/work`],
+      [3, `${siteConfig.url}/en/work/herzog`],
+    ]);
+  });
+});
+
+describe("project link-preview images", () => {
+  it("point to the project's own image, which exists for every project with a screenshot", () => {
+    for (const project of projects.filter((p) => p.image)) {
+      const image = projectOgImage(project);
+      expect(image).toBe(`/og/work/${project.slug}.jpg`);
+      expect(existsSync(join(process.cwd(), "public", image!)), image).toBe(true);
+    }
+  });
+
+  it("are used by pageMetadata instead of the language's image", () => {
+    const meta = pageMetadata({
+      lang: "en",
+      path: "/work/herzog",
+      title: "Herzog",
+      description: "Case study",
+      imageAlt: "Homepage of Herzog",
+      image: "/og/work/herzog.jpg",
+    });
+    expect(meta.openGraph?.images).toEqual([
+      { url: "/og/work/herzog.jpg", width: 1200, height: 630, alt: "Homepage of Herzog" },
+    ]);
   });
 });
 

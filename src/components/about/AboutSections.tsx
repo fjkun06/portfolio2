@@ -1,5 +1,6 @@
 import { Led } from "@/components/Led";
 import { container, sectionTitle } from "@/components/ui/layout";
+import { SplitTitle } from "@/components/ui/SplitTitle";
 import { LANGUAGES, TOOLS, type AboutContent } from "@/content/about";
 import { fill } from "@/i18n/fill";
 
@@ -28,12 +29,7 @@ export function Languages({ text }: { text: AboutContent["languages"] }) {
   return (
     <section aria-labelledby="languages-title" className={`${container} pt-18 lg:pt-36`}>
       <h2 id="languages-title" className={`rv-wipe ${sectionTitle}`}>
-        <span className="sr-only">{text.titleText}</span>
-        <span aria-hidden="true">
-          {text.title[0]}
-          <br />
-          {text.title[1]}
-        </span>
+        <SplitTitle text={text.titleText} lines={text.title} />
       </h2>
       <ul className="m-0 mt-6.5 list-none border-b-[1.5px] border-ink p-0 lg:mt-12.5">
         {LANGUAGES.map((l) => (

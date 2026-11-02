@@ -20,7 +20,7 @@ export type ContactContent = {
 export const contactContent: Record<Locale, ContactContent> = {
   en: {
     meta: {
-      title: "Contact · Frank Jordan",
+      title: "Contact: tell me about your website · Frank Jordan",
       description:
         "Tell me about your website project. I answer within one working day, in English, French or German.",
     },
@@ -47,7 +47,7 @@ export const contactContent: Record<Locale, ContactContent> = {
 
   fr: {
     meta: {
-      title: "Contact · Frank Jordan",
+      title: "Contact : parlez-moi de votre site · Frank Jordan",
       description:
         "Parlez-moi de votre projet de site. Je réponds sous un jour ouvré, en français, en anglais ou en allemand.",
     },
@@ -74,7 +74,7 @@ export const contactContent: Record<Locale, ContactContent> = {
 
   de: {
     meta: {
-      title: "Kontakt · Frank Jordan",
+      title: "Kontakt: erzählen Sie mir von Ihrer Website · Frank Jordan",
       description:
         "Erzählen Sie mir von Ihrem Website-Projekt. Ich antworte innerhalb eines Werktags, auf Deutsch, Englisch oder Französisch.",
     },

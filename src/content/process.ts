@@ -43,7 +43,7 @@ export type ProcessContent = {
 export const processContent: Record<Locale, ProcessContent> = {
   en: {
     meta: {
-      title: "Process · Frank Jordan",
+      title: "Process: how a website project runs · Frank Jordan",
       description:
         "How a website project with me runs, in four stops: check-in, boarding, in flight and landing. You always know where we are.",
     },
@@ -135,7 +135,7 @@ export const processContent: Record<Locale, ProcessContent> = {
 
   fr: {
     meta: {
-      title: "Méthode · Frank Jordan",
+      title: "Méthode : comment naît votre site · Frank Jordan",
       description:
         "Comment se déroule un projet de site avec moi, en quatre escales : enregistrement, embarquement, en vol et atterrissage. Vous savez toujours où nous en sommes.",
     },
@@ -227,7 +227,7 @@ export const processContent: Record<Locale, ProcessContent> = {
 
   de: {
     meta: {
-      title: "Ablauf · Frank Jordan",
+      title: "Ablauf: so entsteht Ihre Website · Frank Jordan",
       description:
         "So läuft ein Website-Projekt mit mir, in vier Stationen: Check-in, Boarding, im Flug und Landung. Sie wissen immer, wo wir stehen.",
     },

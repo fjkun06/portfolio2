@@ -2,9 +2,9 @@ import type { Dictionary } from "./en";
 
 const de: Dictionary = {
   meta: {
-    title: "Frank Jordan · Websites, die die Sprache Ihrer Kunden sprechen",
+    title: "Frank Jordan · Mehrsprachige Websites aus Essen",
     description:
-      "Frontend-Entwickler in Deutschland. Ich gestalte und entwickle schnelle Websites auf Deutsch, Englisch und Französisch.",
+      "Frontend-Entwickler in Essen. Ich gestalte und entwickle schnelle Websites auf Deutsch, Englisch und Französisch.",
     jobTitle: "Frontend-Entwickler",
     ogAlt:
       "Abflugtafel: Websites, die die Sprache Ihrer Kunden sprechen. Frank Jordan, Frontend-Entwickler.",
@@ -168,7 +168,7 @@ const de: Dictionary = {
   },
   work: {
     meta: {
-      title: "Projekte · Frank Jordan",
+      title: "Projekte: Websites, die ich gebaut habe · Frank Jordan",
       description:
         "Websites, die ich für Übersetzer, Agenturen und Unternehmen in Deutschland und Kamerun gebaut habe, auf Deutsch, Englisch und Französisch.",
     },

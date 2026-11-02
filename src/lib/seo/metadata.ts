@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import type { Project } from "@/content/projects";
 import { locales, ogLocales, type Locale } from "@/i18n/config";
 import { siteConfig } from "@/utils/site";
 
@@ -11,6 +12,11 @@ type PageMetadataInput = {
   description: string;
   /** Describes the link-preview image (meta.ogAlt in the dictionaries). */
   imageAlt: string;
+  /**
+   * A page's own link-preview image, e.g. a project's screenshot ("/og/work/herzog.jpg",
+   * 1200 × 630). Without it, the language's departures-board image is used.
+   */
+  image?: string;
 };
 
 /**
@@ -28,6 +34,18 @@ export function languageAlternates(path: string): Record<Locale | "x-default", s
 }
 
 /**
+ * A project's link-preview image: its screenshot on the board background, 1200 × 630, made by
+ * `node scripts/og-work.mjs` into public/og/work. Undefined for a project without a screenshot
+ * (its page then shares the departures-board image).
+ *
+ * @example
+ * projectOgImage(herzog) // "/og/work/herzog.jpg"
+ */
+export function projectOgImage(project: Pick<Project, "slug" | "image">): string | undefined {
+  return project.image ? `/og/work/${project.slug}.jpg` : undefined;
+}
+
+/**
  * Everything search engines and link previews need for one page:
  * - title and description;
  * - canonical address and the same page in the other languages (hreflang);
@@ -40,9 +58,10 @@ export function pageMetadata({
   title,
   description,
   imageAlt,
+  image: ownImage,
 }: PageMetadataInput): Metadata {
   const url = `/${lang}${path}`;
-  const image = { url: `/og/${lang}.png`, width: 1200, height: 630, alt: imageAlt };
+  const image = { url: ownImage ?? `/og/${lang}.png`, width: 1200, height: 630, alt: imageAlt };
   return {
     title,
     description,
