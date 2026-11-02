@@ -20,6 +20,8 @@ const valid: BoardingPass = {
   email: "ada@example.com",
   from: "Ada Ltd, Douala",
   languages: ["EN", "FR"],
+  routes: ["MLT"],
+  when: "SOON",
   message: "I need a site in French and English.",
   consent: true,
   company: "",
@@ -51,6 +53,14 @@ describe("readBoardingPass", () => {
       lang: "de",
       company: "",
     });
+  });
+
+  it("reads the route and departure ticks of the Contact page, ignoring unknown values", () => {
+    const pass = readBoardingPass(formData({ routes: ["MLT", "XXX", "TBD"], when: "ASAP" }));
+    expect(pass.routes).toEqual(["MLT", "TBD"]);
+    expect(pass.when).toBe("ASAP");
+    expect(readBoardingPass(formData({ when: "TOMORROW" })).when).toBe("");
+    expect(readBoardingPass(formData({})).routes).toEqual([]);
   });
 
   it("ignores unknown languages and falls back to English for an unknown page language", () => {

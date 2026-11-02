@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { locales } from "@/i18n/config";
 import { missingGlyphs } from "@/lib/led";
 
+import { aboutContent } from "./about";
+import { contactContent } from "./contact";
 import { processContent } from "./process";
 import { findProject } from "./projects";
 import { servicesContent } from "./services";
@@ -50,9 +52,28 @@ function processLed(lang: (typeof locales)[number]): string[] {
   ];
 }
 
+/** Every text the About page (and the home page's flight log) draws in LED dots. */
+function aboutLed(lang: (typeof locales)[number]): string[] {
+  const t = aboutContent[lang];
+  return [
+    ...t.titleLed,
+    ...t.badges,
+    t.log.count.replace("{n}", "5"),
+    ...t.log.entries.map((e) => e.year),
+  ];
+}
+
+/** Every text the Contact page draws in LED dots. */
+function contactLed(lang: (typeof locales)[number]): string[] {
+  const t = contactContent[lang];
+  return [...t.titleLed, ...t.status.map(([, value]) => value)];
+}
+
 describe.each([
   ["services", servicesContent, servicesLed],
   ["process", processContent, processLed],
+  ["about", aboutContent, aboutLed],
+  ["contact", contactContent, contactLed],
 ] as const)("%s content", (_, content, led) => {
   it("has the same structure in every language", () => {
     for (const lang of locales) expect(shape(content[lang]), lang).toEqual(shape(content.en));
@@ -98,5 +119,13 @@ describe("services content", () => {
 describe("process content", () => {
   it("has four stops, like the cockpit's /04", () => {
     for (const lang of locales) expect(processContent[lang].stops).toHaveLength(4);
+  });
+});
+
+describe("about content", () => {
+  it("keeps the same flight log years in every language, except the first (now)", () => {
+    const years = (lang: (typeof locales)[number]) =>
+      aboutContent[lang].log.entries.slice(1).map((e) => e.year);
+    for (const lang of locales) expect(years(lang)).toEqual(years("en"));
   });
 });

@@ -154,13 +154,6 @@ const de: Dictionary = {
       body: "Seit 2021 entwickle ich Web-Frontends mit React, Next.js und TypeScript, zuletzt in einem internationalen Team bei Accenture. Bei eigenen Projekten kümmere ich mich um alles: Design, Code, Hosting, E-Mail und die Auffindbarkeit bei Google.",
       log: "Flugbuch",
       logColumns: ["Jahr", "Rolle", "Wo"],
-      entries: [
-        { year: "JETZT", role: "INGENIEURINFORMATIK", where: "THGA Bochum" },
-        { year: "2023-25", role: "FRONTEND-ENTWICKLER", where: "Accenture GmbH" },
-        { year: "2023", role: "FRONTEND-ENTWICKLER", where: "WandaPrep" },
-        { year: "2023", role: "B.SC. TECHNISCHE INFORMATIK", where: "University of Buea" },
-        { year: "2021", role: "EHRENAMTLICHER FRONTEND-DEV", where: "Positive Impact Events" },
-      ],
     },
     ticket: {
       title: "IHRE BORDKARTE",
@@ -225,6 +218,17 @@ const de: Dictionary = {
     fromPlaceholder: "Ihr Unternehmen, und wo es ist",
     languages: "Nach: welche Sprachen?",
     languageNames: { EN: "Englisch", FR: "Französisch", DE: "Deutsch" },
+    routes: "Route: was brauchen Sie?",
+    routeNames: {
+      MLT: "Mehrsprachige Website",
+      ORD: "Bestellformular",
+      LND: "Landingpage",
+      RBD: "Relaunch",
+      TBD: "Weiß ich noch nicht",
+    },
+    when: "Abflug: wann?",
+    whenNames: { ASAP: "So bald wie möglich", SOON: "In 1–2 Monaten", LATER: "Später" },
+    messageMore: "Gepäck: erzählen Sie mehr",
     message: "Gepäck: was brauchen Sie?",
     messagePlaceholder: "Ein paar Zeilen zur Website, die Ihnen vorschwebt",
     consent:

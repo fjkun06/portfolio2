@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
 import { servicesContent } from "@/content/services";
+import { ledWidth } from "@/lib/led";
 
 import { ROUTES, RouteNetwork } from "./RouteNetwork";
 import { ServiceBlock } from "./ServiceBlock";
@@ -17,6 +18,14 @@ describe("<RouteNetwork>", () => {
     expect(screen.getByRole("img", { name: t.mapLabel })).toBeInTheDocument();
     expect(ROUTES).toHaveLength(codes.length);
     for (const r of ROUTES) expect(container.querySelector(`path[d="${r.d}"]`)).not.toBeNull();
+  });
+
+  it("keeps every route code inside the 600 x 420 drawing", () => {
+    ROUTES.forEach(({ label: [x, y] }, i) => {
+      expect(x).toBeGreaterThanOrEqual(0);
+      expect(x + ledWidth(codes[i], 3.4), codes[i]).toBeLessThanOrEqual(600);
+      expect(y + 7 * 3.4, codes[i]).toBeLessThanOrEqual(420);
+    });
   });
 });
 

@@ -33,6 +33,8 @@ export function composeEmail(pass: BoardingPass) {
     `Email: ${pass.email}`,
     `From: ${pass.from || "-"}`,
     `Languages: ${pass.languages.join(", ") || "-"}`,
+    `Route: ${pass.routes.join(", ") || "-"}`,
+    `When: ${pass.when || "-"}`,
     `Page language: ${pass.lang.toUpperCase()}`,
     "",
     pass.message,

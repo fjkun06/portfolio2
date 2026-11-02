@@ -9,13 +9,14 @@ import { BoardingPassForm } from "./BoardingPassForm";
 const send = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/contact/send-boarding-pass", () => ({ sendBoardingPass: send }));
 
-function setup() {
+function setup(extended = false) {
   render(
     <BoardingPassForm
       lang="en"
       text={en.form}
       privacyHref="/en/legal#privacy"
       email="hello@frankjordan.dev"
+      extended={extended}
     />,
   );
   const submit = () =>
@@ -23,11 +24,11 @@ function setup() {
   return { submit };
 }
 
-async function fillIn() {
+async function fillIn(messageLabel = en.form.message) {
   await userEvent.type(screen.getByLabelText(en.form.name.toUpperCase()), "Ada");
   await userEvent.type(screen.getByLabelText(en.form.email.toUpperCase()), "ada@example.com");
   await userEvent.type(
-    screen.getByLabelText(en.form.message.toUpperCase()),
+    screen.getByLabelText(messageLabel.toUpperCase()),
     "A site in three languages.",
   );
   await userEvent.click(screen.getByRole("checkbox", { name: /I agree/ }));
@@ -74,6 +75,32 @@ describe("<BoardingPassForm>", () => {
     expect(sent.getAll("languages")).toEqual(["EN", "FR"]);
     expect(Number(sent.get("startedAt"))).toBeGreaterThan(0);
     expect(sent.get("lang")).toBe("en");
+  });
+
+  it("keeps the short form on the home page: no route or departure questions", () => {
+    setup();
+    expect(screen.queryByRole("group", { name: en.form.routes.toUpperCase() })).toBeNull();
+    expect(screen.queryByRole("radio")).toBeNull();
+  });
+
+  it("on the Contact page, also asks for the route and departure and sends them", async () => {
+    send.mockResolvedValue({ status: "sent" });
+    const { submit } = setup(true);
+    expect(screen.getByRole("group", { name: en.form.routes.toUpperCase() })).toBeInTheDocument();
+    expect(screen.getAllByRole("radio")).toHaveLength(3);
+    for (const radio of screen.getAllByRole("radio")) expect(radio).not.toBeChecked();
+
+    await fillIn(en.form.messageMore);
+    await userEvent.click(screen.getByRole("checkbox", { name: en.form.routeNames.MLT }));
+    await userEvent.click(screen.getByRole("checkbox", { name: en.form.routeNames.RBD }));
+    await userEvent.click(screen.getByRole("radio", { name: en.form.whenNames.SOON }));
+    await userEvent.click(screen.getByRole("radio", { name: en.form.whenNames.ASAP }));
+    await submit();
+
+    await waitFor(() => expect(send).toHaveBeenCalled());
+    const sent = send.mock.calls[0][1] as FormData;
+    expect(sent.getAll("routes")).toEqual(["MLT", "RBD"]);
+    expect(sent.get("when")).toBe("ASAP"); // radios: only the last choice counts
   });
 
   it("offers to send another, with an empty form", async () => {

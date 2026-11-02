@@ -157,13 +157,6 @@ const fr: Dictionary = {
       body: "Depuis 2021, je développe des interfaces web avec React, Next.js et TypeScript, dernièrement au sein d’une équipe internationale chez Accenture. Sur mes propres projets, je m’occupe de tout : design, code, hébergement, e-mail et référencement sur Google.",
       log: "Carnet de vol",
       logColumns: ["Année", "Poste", "Où"],
-      entries: [
-        { year: "AUJ.", role: "INGENIEURINFORMATIK", where: "THGA Bochum" },
-        { year: "2023-25", role: "DÉVELOPPEUR FRONTEND", where: "Accenture GmbH" },
-        { year: "2023", role: "DÉVELOPPEUR FRONTEND", where: "WandaPrep" },
-        { year: "2023", role: "B.SC. GÉNIE INFORMATIQUE", where: "Université de Buea" },
-        { year: "2021", role: "DÉV. FRONTEND BÉNÉVOLE", where: "Positive Impact Events" },
-      ],
     },
     ticket: {
       title: "VOTRE CARTE D’EMBARQUEMENT",
@@ -227,6 +220,17 @@ const fr: Dictionary = {
     fromPlaceholder: "Votre entreprise, et où elle se trouve",
     languages: "Destination : quelles langues ?",
     languageNames: { EN: "Anglais", FR: "Français", DE: "Allemand" },
+    routes: "Ligne : de quoi avez-vous besoin ?",
+    routeNames: {
+      MLT: "Site multilingue",
+      ORD: "Formulaire de commande",
+      LND: "Landing page",
+      RBD: "Refonte",
+      TBD: "Je ne sais pas encore",
+    },
+    when: "Départ : quand ?",
+    whenNames: { ASAP: "Au plus vite", SOON: "Dans 1–2 mois", LATER: "Plus tard" },
+    messageMore: "Bagages : dites-m’en plus",
     message: "Bagages : de quoi avez-vous besoin ?",
     messagePlaceholder: "Quelques lignes sur le site que vous imaginez",
     consent:

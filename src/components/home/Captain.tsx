@@ -1,47 +1,26 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { Led } from "@/components/Led";
 import { Arrow } from "@/components/site/Arrow";
 import { container, ledTag, sectionTitle } from "@/components/ui/layout";
+import { PortraitFrame } from "@/components/ui/PortraitFrame";
+import type { LogEntry } from "@/content/about";
 import type { Dictionary } from "@/locales/en";
-
-import portrait from "../../../public/about/frank.webp";
 
 type CaptainProps = {
   text: Dictionary["home"]["captain"];
+  /** Flight log entries (shared with the About page, which also shows their notes). */
+  entries: LogEntry[];
   /** Address of the About page. */
   aboutHref: string;
 };
-
-/** Dotted side panel next to the portrait, with a rotated LED label. */
-function SidePanel({ label, side }: { label: string; side: "left" | "right" }) {
-  return (
-    <div
-      aria-hidden="true"
-      className={`relative min-w-[22px] flex-1 border-rule-board ${side === "left" ? "border-r" : "border-l"} max-lg:flex-[0_0_26px]`}
-      style={{
-        backgroundImage: "radial-gradient(circle, var(--dot-dim) 1.1px, transparent 1.3px)",
-        backgroundSize: "6px 6px",
-        backgroundPosition: "center",
-      }}
-    >
-      <span
-        className="absolute top-1/2 left-1/2 hidden lg:block"
-        style={{ transform: `translate(-50%, -50%) rotate(${side === "left" ? -90 : 90}deg)` }}
-      >
-        <Led text={label} pitch={3} tone="dim" glow={false} />
-      </span>
-    </div>
-  );
-}
 
 /**
  * "Your captain": who builds the site.
  * A black-and-white portrait centred in a dark frame with dotted side panels, the story in two
  * paragraphs, and the flight log (studies and jobs) as a small departures board.
  */
-export function Captain({ text, aboutHref }: CaptainProps) {
+export function Captain({ text, entries, aboutHref }: CaptainProps) {
   return (
     <section id="captain" aria-labelledby="captain-title" className={`${container} pt-20 lg:pt-40`}>
       <div className="flex flex-wrap items-end justify-between gap-6">
@@ -63,25 +42,8 @@ export function Captain({ text, aboutHref }: CaptainProps) {
       </div>
 
       <div className="mt-6 flex flex-wrap items-stretch gap-14 lg:mt-13">
-        <div className="board card-edge rv-scale flex min-w-0 flex-[1_1_460px] items-stretch overflow-hidden rounded-xl">
-          <SidePanel label="CREW FJ-001" side="left" />
-          <figure className="m-0 flex min-w-0 flex-[0_1_380px] flex-col p-2.5 pb-4 lg:p-3.5 lg:pb-5">
-            <Image
-              src={portrait}
-              alt={text.photo}
-              sizes="(min-width: 1024px) 352px, 80vw"
-              placeholder="blur"
-              className="block aspect-[4/5] w-full rounded-md object-cover object-[center_30%] grayscale contrast-[1.08]"
-            />
-            <figcaption className="mt-4.5 flex flex-col gap-2.5 px-1.5">
-              <Led text="FRANK JORDAN" pitch={4} tone="white" label="Frank Jordan" />
-              <span className="flex items-center justify-between gap-3">
-                <span className="text-sm text-muted-board">{text.caption}</span>
-                <Led text="EN FR DE" pitch={3} />
-              </span>
-            </figcaption>
-          </figure>
-          <SidePanel label="CM ⇄ DE" side="right" />
+        <div className="flex min-w-0 flex-[1_1_460px]">
+          <PortraitFrame alt={text.photo} caption={text.caption} />
         </div>
 
         <div className="flex min-w-0 flex-[1_1_520px] flex-col">
@@ -104,7 +66,7 @@ export function Captain({ text, aboutHref }: CaptainProps) {
               {text.log}
             </p>
             <ul className="m-0 list-none p-0">
-              {text.entries.map((entry) => (
+              {entries.map((entry) => (
                 <li
                   key={entry.year + entry.role}
                   className="rv-left border-t border-rule-board py-3 lg:grid lg:min-h-[54px] lg:grid-cols-[120px_minmax(0,1.3fr)_minmax(0,1fr)] lg:items-center lg:gap-4 lg:py-0"

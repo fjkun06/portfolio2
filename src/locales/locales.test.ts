@@ -23,7 +23,6 @@ function ledLines(dict: typeof en): string[] {
     ...dict.home.hero.headlineShort,
     dict.home.featured.tag,
     dict.home.captain.onDuty,
-    ...dict.home.captain.entries.map((entry) => entry.year),
     ...dict.work.titleLed,
     dict.work.filters.all,
     `${dict.report.tag} FJ 001`,

@@ -7,7 +7,9 @@ import { Led } from "@/components/Led";
 import { CheckLed } from "@/components/ui/icons";
 import {
   readBoardingPass,
+  ROUTE_CODES,
   SITE_LANGUAGES,
+  WHEN_CODES,
   validateBoardingPass,
   type FieldError,
   type SendState,
@@ -24,6 +26,11 @@ type BoardingPassFormProps = {
   privacyHref: string;
   /** Shown in the error message so visitors can write directly if sending fails. */
   email: string;
+  /**
+   * Contact page version: also asks which service they need ("Route") and when they want to
+   * start ("Departure"). The home page keeps the short form.
+   */
+  extended?: boolean;
 };
 
 const label = "font-stencil text-sm font-extrabold tracking-[0.1em] text-label lg:text-[15px]";
@@ -37,10 +44,43 @@ function ErrorText({ id, children }: { id: string; children: React.ReactNode }) 
   );
 }
 
+/** One tickable chip (checkbox or radio) with an LED tick, like the language chips. */
+function Chip({
+  type,
+  name,
+  value,
+  label,
+  checked,
+}: {
+  type: "checkbox" | "radio";
+  name: string;
+  value: string;
+  label: string;
+  checked?: boolean;
+}) {
+  return (
+    <label className="relative inline-flex">
+      <input
+        type={type}
+        name={name}
+        value={value}
+        defaultChecked={checked}
+        className="cb-input"
+        aria-label={label}
+      />
+      <span className="chip">
+        <CheckLed />
+        {label.toUpperCase()}
+      </span>
+    </label>
+  );
+}
+
 /**
  * The boarding pass: the contact form, styled as a plane ticket.
  *
  * - Left part: name, email, business, languages (chips with an LED tick), message, consent.
+ *   With `extended` (Contact page), also the service they need and when they want to start.
  * - Right part (the stub, after the dashed tear line): gate, seat, reply time, time zone,
  *   a barcode and the send button. On phones the stub sits under the form.
  *
@@ -55,7 +95,13 @@ function ErrorText({ id, children }: { id: string; children: React.ReactNode }) 
  * Spam protection without a captcha: a hidden "company" field only bots fill in, and the time
  * since the first keystroke (people take more than 3 seconds).
  */
-export function BoardingPassForm({ lang, text, privacyHref, email }: BoardingPassFormProps) {
+export function BoardingPassForm({
+  lang,
+  text,
+  privacyHref,
+  email,
+  extended = false,
+}: BoardingPassFormProps) {
   const [state, send] = useActionState(sendBoardingPass, { status: "idle" } as SendState);
   const [pending, startTransition] = useTransition();
   const [errors, setErrors] = useState<FieldError[]>([]);
@@ -158,31 +204,66 @@ export function BoardingPassForm({ lang, text, privacyHref, email }: BoardingPas
           />
         </div>
 
-        <fieldset className="m-0 border-0 p-0">
-          <legend className={`mb-2.5 p-0 ${label}`}>{text.languages.toUpperCase()}</legend>
-          <div className="flex flex-wrap gap-2 lg:gap-2.5">
-            {SITE_LANGUAGES.map((code) => (
-              <label key={code} className="relative inline-flex">
-                <input
+        {extended && (
+          <fieldset className="m-0 border-0 p-0">
+            <legend className={`mb-2.5 p-0 ${label}`}>{text.routes.toUpperCase()}</legend>
+            <div className="flex flex-wrap gap-2 lg:gap-2.5">
+              {ROUTE_CODES.map((code) => (
+                <Chip
+                  key={code}
                   type="checkbox"
-                  name="languages"
+                  name="routes"
                   value={code}
-                  defaultChecked={code !== "DE"}
-                  className="cb-input"
-                  aria-label={text.languageNames[code]}
+                  label={text.routeNames[code]}
                 />
-                <span className="chip">
-                  <CheckLed />
-                  {code}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        <div className="flex flex-wrap gap-6 lg:gap-7.5">
+          <fieldset className="m-0 min-w-0 flex-[1_1_260px] border-0 p-0">
+            <legend className={`mb-2.5 p-0 ${label}`}>{text.languages.toUpperCase()}</legend>
+            <div className="flex flex-wrap gap-2 lg:gap-2.5">
+              {SITE_LANGUAGES.map((code) => (
+                <label key={code} className="relative inline-flex">
+                  <input
+                    type="checkbox"
+                    name="languages"
+                    value={code}
+                    defaultChecked={code !== "DE"}
+                    className="cb-input"
+                    aria-label={text.languageNames[code]}
+                  />
+                  <span className="chip">
+                    <CheckLed />
+                    {code}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          {extended && (
+            <fieldset className="m-0 min-w-0 flex-[1_1_320px] border-0 p-0">
+              <legend className={`mb-2.5 p-0 ${label}`}>{text.when.toUpperCase()}</legend>
+              <div className="flex flex-wrap gap-2 lg:gap-2.5">
+                {WHEN_CODES.map((code) => (
+                  <Chip
+                    key={code}
+                    type="radio"
+                    name="when"
+                    value={code}
+                    label={text.whenNames[code]}
+                  />
+                ))}
+              </div>
+            </fieldset>
+          )}
+        </div>
 
         <div className="flex flex-col gap-1">
           <label htmlFor="bp-message" className={label}>
-            {text.message.toUpperCase()}
+            {(extended ? text.messageMore : text.message).toUpperCase()}
           </label>
           <textarea
             id="bp-message"

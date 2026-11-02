@@ -9,12 +9,24 @@ import { hasLocale, type Locale } from "@/i18n/config";
 export const SITE_LANGUAGES = ["EN", "FR", "DE"] as const;
 export type SiteLanguage = (typeof SITE_LANGUAGES)[number];
 
+/** Services a visitor can tick on the Contact page (the codes from the Services page; TBD = not sure). */
+export const ROUTE_CODES = ["MLT", "ORD", "LND", "RBD", "TBD"] as const;
+export type RouteCode = (typeof ROUTE_CODES)[number];
+
+/** When the visitor wants to start (Contact page): as soon as possible, in 1–2 months, later. */
+export const WHEN_CODES = ["ASAP", "SOON", "LATER"] as const;
+export type WhenCode = (typeof WHEN_CODES)[number];
+
 export type BoardingPass = {
   name: string;
   email: string;
   /** Business and where it is (optional). */
   from: string;
   languages: SiteLanguage[];
+  /** What they need (Contact page only; empty from the home page). */
+  routes: RouteCode[];
+  /** When they want to start (Contact page only; "" when not given). */
+  when: WhenCode | "";
   message: string;
   consent: boolean;
   /** Hidden field people never see; bots fill it in. Must stay empty. */
@@ -42,6 +54,7 @@ function text(form: FormData, key: string, max: number): string {
 /** Reads the form's fields into a BoardingPass, trimming and cutting overly long values. */
 export function readBoardingPass(form: FormData): BoardingPass {
   const lang = text(form, "lang", 2);
+  const when = text(form, "when", 10);
   return {
     name: text(form, "name", LIMITS.name),
     email: text(form, "email", LIMITS.email),
@@ -49,6 +62,10 @@ export function readBoardingPass(form: FormData): BoardingPass {
     languages: form
       .getAll("languages")
       .filter((v): v is SiteLanguage => SITE_LANGUAGES.includes(v as SiteLanguage)),
+    routes: form
+      .getAll("routes")
+      .filter((v): v is RouteCode => ROUTE_CODES.includes(v as RouteCode)),
+    when: WHEN_CODES.includes(when as WhenCode) ? (when as WhenCode) : "",
     message: text(form, "message", LIMITS.message),
     consent: form.get("consent") === "on",
     company: text(form, "company", 200),

@@ -9,6 +9,7 @@ import { Hero } from "@/components/home/Hero";
 import { Marquee } from "@/components/home/Marquee";
 import { Routes } from "@/components/home/Routes";
 import { Ticket } from "@/components/home/Ticket";
+import { aboutContent } from "@/content/about";
 import { featured, projects } from "@/content/projects";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -56,7 +57,7 @@ async function Home({ params }: { params: PageProps<"/[lang]">["params"] }) {
       <Marquee href={to.contact} label={home.marquee} />
       <Routes text={home.routes} servicesHref={to.services} />
       <FlightPlan text={home.plan} processHref={to.process} />
-      <Captain text={home.captain} aboutHref={to.about} />
+      <Captain text={home.captain} entries={aboutContent[lang].log.entries} aboutHref={to.about} />
       <Ticket lang={lang} text={home.ticket} form={form} to={to} />
     </>
   );

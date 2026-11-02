@@ -20,6 +20,8 @@ const pass: BoardingPass = {
   email: "ada@example.com",
   from: "",
   languages: ["FR"],
+  routes: ["ORD", "LND"],
+  when: "",
   message: "A site, please.",
   consent: true,
   company: "",
@@ -46,6 +48,8 @@ describe("composeEmail", () => {
     expect(text).toContain("Email: ada@example.com");
     expect(text).toContain("From: -"); // empty fields show a dash
     expect(text).toContain("Languages: FR");
+    expect(text).toContain("Route: ORD, LND");
+    expect(text).toContain("When: -");
     expect(text).toContain("Page language: FR");
     expect(text.endsWith("A site, please.")).toBe(true);
   });
