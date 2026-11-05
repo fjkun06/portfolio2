@@ -169,15 +169,17 @@
     height: auto;
     overflow: visible;
   }
+  /* <Led animate>: a column stays dark while it waits (its inline animation-delay) and for
+     0.18 s more, then shows. The animation only ever says "dark"; once it's over the column
+     falls back to its own, lit style. (Holding a final "lit" frame with fill-mode instead
+     left random columns dark for good in Safari: WebKit sometimes kept the frame before it.) */
   .led-col {
-    animation: led-on 0.18s steps(1, end) both;
+    animation: led-wait 0.18s backwards;
   }
-  @keyframes led-on {
-    from {
-      opacity: 0;
-    }
+  @keyframes led-wait {
+    from,
     to {
-      opacity: 1;
+      opacity: 0;
     }
   }
   /* <Led flip>: each letter turns over like a split-flap, faces backwards, then turns back.

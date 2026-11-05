@@ -41,7 +41,7 @@ export function HomepageShot({
               <span key={i} className="size-[9px] rounded-full bg-[var(--line-strong)]" />
             ))}
           </span>
-          <span className="mx-auto">
+          <span className="mx-auto min-w-0">
             <Led
               text={address.toUpperCase()}
               pitch={2.4}
@@ -55,9 +55,10 @@ export function HomepageShot({
               href={`https://${project.website}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden text-[13px] text-muted-board lg:inline"
+              className="inline-flex shrink-0 items-center gap-1 text-[13px] font-semibold text-on-board"
             >
               {text.openSite}
+              <Arrow size={14} />
             </a>
           )}
         </div>
