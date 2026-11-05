@@ -1,5 +1,6 @@
 import { Led } from "@/components/Led";
 import { RouteMap } from "@/components/report/RouteMap";
+import { Arrow } from "@/components/site/Arrow";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { arrivalAfter, FlapText } from "@/components/ui/FlapText";
 import { container } from "@/components/ui/layout";
@@ -19,7 +20,8 @@ type ReportHeroProps = {
 
 /**
  * Top of a flight report, on the dark board: breadcrumb, "FLIGHT REPORT FJ 001", the project
- * name, the promise, the route map and a strip of facts (client, route, languages, year, status).
+ * name, the promise, an "Open site" button (when the project has a website), the route map and
+ * a strip of facts (client, route, languages, year, status).
  * The board runs on below the facts so the homepage screenshot can overlap it.
  */
 export function ReportHero({
@@ -85,6 +87,17 @@ export function ReportHero({
             <p className="rv mt-5 mb-0 max-w-[30em] text-lg leading-normal text-on-board-2 lg:mt-7 lg:text-[22px] lg:leading-[1.45]">
               {report.intro}
             </p>
+            {project.website && (
+              <a
+                href={`https://${project.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rv btn btn-accent mt-7 min-h-[52px] gap-2.5 px-6 text-xl lg:mt-9"
+              >
+                {text.openSite.toUpperCase()}
+                <Arrow />
+              </a>
+            )}
           </div>
           <div className="rv-scale hidden lg:block">
             <RouteMap size="desktop" label={text.routeLabel} />

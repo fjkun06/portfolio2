@@ -45,6 +45,9 @@ describe("<ReportHero>", () => {
     for (const label of Object.values(text.facts))
       expect(screen.getByText(label)).toBeInTheDocument();
     expect(screen.getByText(report.client)).toBeInTheDocument();
+    const open = screen.getByRole("link", { name: text.openSite.toUpperCase() });
+    expect(open).toHaveAttribute("href", "https://herzog-translations.com");
+    expect(open).toHaveAttribute("target", "_blank");
   });
 });
 
