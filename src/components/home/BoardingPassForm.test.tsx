@@ -79,6 +79,19 @@ describe("<BoardingPassForm>", () => {
     expect(sent.get("lang")).toBe("en");
   });
 
+  it("on phones, scrolls CHECKED IN to the middle of the screen", async () => {
+    vi.stubGlobal("matchMedia", (query: string) => ({ matches: query === "(max-width: 1023px)" }));
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView;
+    send.mockResolvedValue({ status: "sent" });
+    const { submit } = setup();
+    await fillIn();
+    await submit();
+    await waitFor(() => expect(scrollIntoView).toHaveBeenCalledWith({ block: "center" }));
+    expect(scrollIntoView.mock.contexts[0]).toContainElement(screen.getByText(en.form.sent));
+    vi.unstubAllGlobals();
+  });
+
   it("keeps the short form on the home page: no route or departure questions", () => {
     setup();
     expect(screen.queryByRole("group", { name: en.form.routes.toUpperCase() })).toBeNull();

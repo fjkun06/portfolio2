@@ -145,6 +145,15 @@ export function BoardingPassForm({
   const shown = errors.length ? errors : serverErrors;
   const has = (field: FieldError) => shown.includes(field);
   const sent = state.status === "sent" && !dismissed;
+  const sentRef = useRef<HTMLDivElement>(null);
+
+  // Phones: the form is taller than the screen and the visitor is down at the send button, so
+  // the "checked in" message (centred on the whole form) would be out of sight. Bring it to the
+  // middle of the screen. Smooth unless reduced motion (scroll-behavior in globals.css).
+  useEffect(() => {
+    if (sent && window.matchMedia?.("(max-width: 1023px)").matches)
+      sentRef.current?.scrollIntoView({ block: "center" });
+  }, [sent]);
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -384,19 +393,21 @@ export function BoardingPassForm({
       {sent && (
         <div
           role="status"
-          className="absolute inset-0 flex flex-col items-center justify-center gap-5 rounded-[14px] bg-[rgba(247,247,243,0.95)] p-6 text-center"
+          className="absolute inset-0 flex items-center justify-center rounded-[14px] bg-[rgba(247,247,243,0.95)] p-6 text-center"
         >
-          <span data-mode="dark" className="inline-flex rounded-lg bg-ink px-4 py-3.5">
-            <Led text="CHECKED IN" pitch={6} animate step={12} label="Checked in" />
-          </span>
-          <p className="m-0 max-w-[420px] text-lg lg:text-xl">{text.sent}</p>
-          <button
-            type="button"
-            onClick={again}
-            className="btn btn-outline min-h-[46px] cursor-pointer bg-transparent px-5 font-sans text-base font-semibold tracking-normal"
-          >
-            {text.again}
-          </button>
+          <div ref={sentRef} className="flex flex-col items-center gap-5">
+            <span data-mode="dark" className="inline-flex rounded-lg bg-ink px-4 py-3.5">
+              <Led text="CHECKED IN" pitch={6} animate step={12} label="Checked in" />
+            </span>
+            <p className="m-0 max-w-[420px] text-lg lg:text-xl">{text.sent}</p>
+            <button
+              type="button"
+              onClick={again}
+              className="btn btn-outline min-h-[46px] cursor-pointer bg-transparent px-5 font-sans text-base font-semibold tracking-normal"
+            >
+              {text.again}
+            </button>
+          </div>
         </div>
       )}
     </form>
