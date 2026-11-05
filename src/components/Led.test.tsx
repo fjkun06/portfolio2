@@ -44,8 +44,7 @@ describe("<Led>", () => {
   it("colours the lit dots with the tone's CSS variable", () => {
     const { container } = render(<Led text="A" tone="white" />);
     const group = container.querySelector("svg > g") as SVGGElement;
-    expect(group.style.stroke).toBe("var(--led-white)");
-    expect(group).toHaveAttribute("stroke-linecap", "round");
+    expect(group.style.fill).toBe("var(--led-white)");
   });
 
   it("adds a glow by default and none when glow is off", () => {
@@ -99,9 +98,12 @@ describe("<Led>", () => {
 });
 
 describe("dotsPath", () => {
-  it("writes one zero-length segment per dot, at the dot centres", () => {
-    expect(dotsPath([{ x: 0, rows: [0, 1] }], 10)).toBe("M5 5h0M5 15h0");
-    expect(dotsPath([{ x: 2, rows: [6] }], 3.4)).toBe("M8.5 22.1h0");
+  it("writes one circle (two arcs) per dot, centred in its cell", () => {
+    const arcs = "a3.8 3.8 0 1 0 7.6 0a3.8 3.8 0 1 0 -7.6 0";
+    expect(dotsPath([{ x: 0, rows: [0, 1] }], 10)).toBe(`M1.2 5${arcs}M1.2 15${arcs}`);
+    expect(dotsPath([{ x: 2, rows: [6] }], 3.4)).toBe(
+      "M7.21 22.1a1.29 1.29 0 1 0 2.58 0a1.29 1.29 0 1 0 -2.58 0",
+    );
   });
 });
 
