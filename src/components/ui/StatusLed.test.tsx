@@ -16,7 +16,7 @@ describe("<StatusLed>", () => {
     expect(boarding.container.querySelector("svg")).toHaveClass("blink");
     boarding.unmount();
     const hold = render(<StatusLed status="ON HOLD" text={en.status} />);
-    expect((hold.container.querySelector("svg > g") as SVGGElement).style.stroke).toBe(
+    expect((hold.container.querySelector("svg > g") as SVGGElement).style.fill).toBe(
       "var(--led-dim)",
     );
   });

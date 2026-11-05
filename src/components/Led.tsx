@@ -3,9 +3,11 @@
  *
  * How it's drawn:
  * - The unlit dots are one repeating SVG <pattern> filling a rectangle (cheap, one element).
- * - The lit dots are drawn as a single <path>: each dot is a zero-length line with a round cap,
- *   which renders as a circle. A long headline is then one element instead of hundreds of
- *   <circle>s, which keeps pages light (the home page went from ~13,000 SVG nodes to ~1,000).
+ * - The lit dots are drawn as a single filled <path>: each dot is a circle made of two arcs.
+ *   A long headline is then one element instead of hundreds of <circle>s, which keeps pages
+ *   light (the home page went from ~13,000 SVG nodes to ~1,000).
+ *   (Dots used to be zero-length lines with round caps. Browsers sometimes misjudge how big
+ *   those are when repainting, and random dots or columns were left half drawn.)
  *   With `animate`, there is one path per column, and each column switches on a few
  *   milliseconds after the previous one, so the text lights up from left to right.
  *   With `flip`, each letter is its own group, so it can turn on its own (and with `animate`
@@ -89,17 +91,23 @@ function hash(input: string): string {
 /** Rounds a coordinate to 2 decimals and drops trailing zeros, to keep paths short. */
 const num = (n: number) => String(Math.round(n * 100) / 100);
 
+/** Dot radius as a share of the pitch. */
+const DOT_RADIUS = 0.38;
+
 /**
- * Path data for a set of dots: "M x y h0" per dot. Drawn with a round line cap as wide as the dot,
- * each zero-length segment shows as one filled circle.
+ * Path data for a set of dots: per dot, a move to its left edge and two half-circle arcs, so the
+ * path is filled as one circle per dot.
  *
  * @example
- * dotsPath([{ x: 0, rows: [0, 1] }], 10) // "M5 5h0M5 15h0"
+ * dotsPath([{ x: 0, rows: [0] }], 10) // "M1.2 5a3.8 3.8 0 1 0 7.6 0a3.8 3.8 0 1 0 -7.6 0"
  */
 export function dotsPath(columns: { x: number; rows: number[] }[], pitch: number): string {
+  const r = pitch * DOT_RADIUS;
+  const arcs = `a${num(r)} ${num(r)} 0 1 0 ${num(2 * r)} 0a${num(r)} ${num(r)} 0 1 0 ${num(-2 * r)} 0`;
   let d = "";
   for (const { x, rows } of columns)
-    for (const row of rows) d += `M${num(x * pitch + pitch / 2)} ${num(row * pitch + pitch / 2)}h0`;
+    for (const row of rows)
+      d += `M${num(x * pitch + pitch / 2 - r)} ${num(row * pitch + pitch / 2)}${arcs}`;
   return d;
 }
 
@@ -142,7 +150,7 @@ export function Led({
   style,
 }: LedProps) {
   const { columns, width, chars } = layoutLed(text);
-  const r = pitch * 0.38;
+  const r = pitch * DOT_RADIUS;
   const w = width * pitch;
   const h = 7 * pitch;
   const patternId = `led-${pitch}-${hash(text)}`;
@@ -187,12 +195,7 @@ export function Led({
           <rect width={w} height={h} fill={`url(#${patternId})`} />
         </>
       )}
-      <g
-        fill="none"
-        strokeLinecap="round"
-        strokeWidth={num(r * 2)}
-        style={{ stroke: FILL[tone], filter }}
-      >
+      <g style={{ fill: FILL[tone], filter }}>
         {flip
           ? chars.map((char, i) => (
               <g
